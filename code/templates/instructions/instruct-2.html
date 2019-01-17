@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+
+        <p>In other rounds, you will not get to see the dots; instead, you will be told what another participant thought they saw.</p>
+
+        <p>For example, you might be told:</p>
+
+        <div class="center_div">
+            <img class="stimulus_image" src="/static/images/demo_social.jpg" width="400" alt=""/>
+        </div>
+
+        <p>You will then be asked to make a decision.</p>
+
+        <hr>
+
+        <div>
+            <div class="row">
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
+                    Previous
+                    </button>
+                </div>
+                <div class="col-xs-8">
+                </div>
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-ready');">
+                    Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
