@@ -10,6 +10,7 @@ from dallinger.models import Participant
 from dallinger.networks import DiscreteGenerational
 from dallinger.nodes import Agent
 from dallinger.nodes import Environment
+from dallinger.nodes import Source
 
 
 class RogersExperiment(Experiment):
@@ -36,11 +37,10 @@ class RogersExperiment(Experiment):
         self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
         self.catch_difficulty = 0.80
         self.min_acceptable_performance = 10 / float(12)
-        self.generation_size = 4
+        self.generation_size = 1
         self.generations = 4
         self.bonus_payment = 1.0
         self.initial_recruitment_size = self.generation_size
-        self.known_classes["LearningGene"] = self.models.LearningGene
 
         if session and not self.networks():
             self.setup()
@@ -62,8 +62,6 @@ class RogersExperiment(Experiment):
             net.role = "catch"
 
         for net in self.networks():
-            source = self.models.RogersSource(network=net)
-            source.create_information()
             net.max_size = net.max_size + 1  # make room for environment node.
             env = self.models.RogersEnvironment(network=net)
             env.create_state(proportion=self.color_proportion_for_network(net))
@@ -81,20 +79,12 @@ class RogersExperiment(Experiment):
         return DiscreteGenerational(
             generations=self.generations,
             generation_size=self.generation_size,
-            initial_source=True
+            initial_source=False
         )
 
     def create_node(self, network, participant):
         """Make a new node for participants."""
-        if network.role == "practice" or network.role == "catch":
-            return self.models.RogersAgentFounder(network=network,
-                                                  participant=participant)
-        elif network.size(type=Agent) < network.generation_size:
-            return self.models.RogersAgentFounder(network=network,
-                                                  participant=participant)
-        else:
-            return self.models.RogersAgent(network=network,
-                                           participant=participant)
+        return self.models.RogersAgent(network=network,participant=participant)
 
     def info_post_request(self, node, info):
         """Run whenever an info is created."""
@@ -180,8 +170,7 @@ class RogersExperiment(Experiment):
         environment = network.nodes(type=Environment)[0]
         environment.connect(whom=node)
 
-        gene = node.infos(type=self.models.LearningGene)[0].contents
-        if (gene == "social"):
+        if node.generation > 1: # TODO check if generation is indexed by 0 or 1
             agent_model = self.models.RogersAgent
             prev_agents = agent_model.query\
                 .filter_by(failed=False,
@@ -191,9 +180,5 @@ class RogersExperiment(Experiment):
             parent = random.choice(prev_agents)
             parent.connect(whom=node)
             parent.transmit(what=Meme, to_whom=node)
-        elif (gene == "asocial"):
-            environment.transmit(to_whom=node)
-        else:
-            raise ValueError("{} has invalid learning gene value of {}"
-                             .format(node, gene))
+
         node.receive()
