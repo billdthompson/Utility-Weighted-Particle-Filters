@@ -176,7 +176,7 @@ function shuffle(o){
   return o;
 }
 
-function correcxt(color){
+function correct(color){
   if (color == 'yellow'){
     if (proportionBlue > .5){
       return false
@@ -184,7 +184,7 @@ function correcxt(color){
 
     else {
       return true
-    } 
+    }
   }
 
   else {
@@ -194,7 +194,7 @@ function correcxt(color){
 
     else {
       return false
-    } 
+    }
   }
 };
 
@@ -230,11 +230,11 @@ report = function (color) {
       $("#more-yellow").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
-      if (correct(color) == true){  
+      if (correct(color) == true){
         $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
       }
       else {
-       $("#feedback").html("YOU WERE WRONG! YOU EARNED +-XYZ POINTS") 
+       $("#feedback").html("YOU WERE WRONG! YOU EARNED +-XYZ POINTS")
       }
       $("#feedback").show()
         setTimeout(function() {
