@@ -1,6 +1,7 @@
 var trial = 0;
 var lock = true;
 var my_node_id;
+var generation;
 var proportionBlue;
 
 dallinger.getExperimentProperty('practice_repeats')
@@ -17,6 +18,7 @@ create_agent = function() {
   dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
+      generation = resp.node.property2;
       get_received_infos();
     })
     .fail(function () {
@@ -26,9 +28,9 @@ create_agent = function() {
 
 get_infos = function() {
   dallinger.getInfos(my_node_id, {
-    info_type: "LearningGene"
+    info_type: "LearningGene" // TODO: this class has been removed. why doesn't this break now?
   }).done(function (resp) {
-    learning_strategy = resp.infos[0].contents;
+    //learning_strategy = resp.infos[0].contents;
     get_received_infos();
   });
 };
@@ -51,7 +53,12 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    learning_strategy = "asocial" // TODO FIX THIS SO ALL GENERATIONS AFTER FIRST ARE SOCIAL
+    console.log("generation: ", generation)
+    if(generation == 0) {
+      learning_strategy = "asocial";
+    } else {
+      learning_strategy = "social";
+    }
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
