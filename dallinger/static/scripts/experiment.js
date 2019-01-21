@@ -16,7 +16,7 @@ create_agent = function() {
   dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
-      get_infos();
+      get_received_infos();
     })
     .fail(function () {
       dallinger.goToPage('questionnaire');
@@ -49,6 +49,8 @@ get_received_infos = function() {
     } else {
       $("#practice-trial").html("This is NOT a practice trial");
     }
+
+    learning_strategy = "asocial" // TODO FIX THIS SO ALL GENERATIONS AFTER FIRST ARE SOCIAL
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {

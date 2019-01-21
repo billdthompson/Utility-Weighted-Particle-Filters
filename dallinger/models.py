@@ -10,33 +10,6 @@ from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
 
 
-class LearningGene(Gene):
-    """The Learning Gene."""
-
-    __mapper_args__ = {"polymorphic_identity": "learning_gene"}
-
-    def _mutated_contents(self):
-        alleles = ["social", "asocial"]
-        return random.choice([a for a in alleles if a != self.contents])
-
-
-class RogersSource(Source):
-    """A source that initializes agents as asocial learners."""
-
-    __mapper_args__ = {"polymorphic_identity": "rogers_source"}
-
-    def create_information(self):
-        """Create a new learning gene."""
-        if len(self.infos()) == 0:
-            LearningGene(
-                origin=self,
-                contents="asocial")
-
-    def _what(self):
-        """Transmit a learning gene by default."""
-        return self.infos(type=LearningGene)[0]
-
-
 class RogersAgent(Agent):
     """The Rogers Agent."""
 
@@ -117,33 +90,6 @@ class RogersAgent(Agent):
         baseline = c + 0.0001
 
         self.fitness = (baseline + self.score * b - is_asocial * c) ** e
-
-    def update(self, infos):
-        """Process received infos."""
-        for info_in in infos:
-            if isinstance(info_in, LearningGene):
-                if random.random() < 0.10:
-                    self.mutate(info_in)
-                else:
-                    self.replicate(info_in)
-
-    def _what(self):
-        return self.infos(type=LearningGene)[0]
-
-
-class RogersAgentFounder(RogersAgent):
-    """The Rogers Agent Founder.
-
-    It is like Rogers Agent except it cannot mutate.
-    """
-
-    __mapper_args__ = {"polymorphic_identity": "rogers_agent_founder"}
-
-    def update(self, infos):
-        """Process received infos."""
-        for info in infos:
-            if isinstance(info, LearningGene):
-                self.replicate(info)
 
 
 class RogersEnvironment(Environment):
