@@ -2,6 +2,6 @@
 
 {% block consent_button %}
     <button type="button" class="btn btn-primary btn-lg" 
-    onClick="dallinger.goToPage('instructions/instruct-1');"
+    onClick="window.location='/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';"
     style="float: left;">I agree
 {% endblock %}

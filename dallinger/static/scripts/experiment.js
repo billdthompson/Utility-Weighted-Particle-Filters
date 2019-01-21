@@ -1,6 +1,7 @@
 var trial = 0;
 var lock = true;
 var my_node_id;
+var proportionBlue;
 
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
@@ -57,6 +58,8 @@ get_received_infos = function() {
       $("#instructions").text("Are there more blue or yellow dots?");
 
       state = info.contents;
+      proportionBlue = parseFloat(state)
+      console.log("problue: ", proportionBlue)
       regenerateDisplay(state);
 
       $("#more-blue").addClass('disabled');
@@ -173,6 +176,46 @@ function shuffle(o){
   return o;
 }
 
+function correcxt(color){
+  if (color == 'yellow'){
+    if (proportionBlue > .5){
+      return false
+    }
+
+    else {
+      return true
+    } 
+  }
+
+  else {
+    if (proportionBlue > .5){
+      return true
+    }
+
+    else {
+      return false
+    } 
+  }
+};
+
+function payoff(color, correct){
+  if (correct){
+    if (color == 'yellow'){
+      return "10"
+    }
+
+    else{
+
+      return "50"
+    }
+  }
+
+  else {
+    return "0"
+  }
+
+};
+
 report = function (color) {
   if (lock === false) {
     $("#more-blue").addClass('disabled');
@@ -185,7 +228,22 @@ report = function (color) {
     }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
       $("#more-yellow").removeClass('disabled');
-      create_agent();
+      $("#instructions").html("")
+      $("#instructions").hide()
+      if (correct(color) == true){  
+        $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
+      }
+      else {
+       $("#feedback").html("YOU WERE WRONG! YOU EARNED +-XYZ POINTS") 
+      }
+      $("#feedback").show()
+        setTimeout(function() {
+          $("#feedback").html("")
+          $("#feedback").hide()
+          $("#instructions").html("Are there more blue or yellow dots?")
+          $("#instructions").show()
+          create_agent();
+        }, 1000);
     });
     lock = true;
   }
