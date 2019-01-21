@@ -183,7 +183,17 @@ report = function (color) {
     }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
       $("#more-yellow").removeClass('disabled');
-      create_agent();
+      $("#instructions").html("")
+      $("#instructions").hide()
+      $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
+      $("#feedback").show()
+        setTimeout(function() {
+          $("#feedback").html("")
+          $("#feedback").hide()
+          $("#instructions").html("Are there more blue or yellow dots?")
+          $("#instructions").show()
+          create_agent();
+        }, 1000);
     });
     lock = true;
   }
