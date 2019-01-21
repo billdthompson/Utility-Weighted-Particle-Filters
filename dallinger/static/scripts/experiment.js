@@ -230,7 +230,7 @@ report = function (color) {
       $("#more-yellow").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
-      if (correct(color) == true){
+      if (correct(color) == true){  
         $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
       }
       else {
