@@ -169,8 +169,9 @@ class RogersExperiment(Experiment):
 
         environment = network.nodes(type=Environment)[0]
         environment.connect(whom=node)
+        environment.transmit(to_whom=node)
 
-        if node.generation > 1: # TODO check if generation is indexed by 0 or 1
+        if node.generation > 0: # TODO check if generation is indexed by 0 or 1
             agent_model = self.models.RogersAgent
             prev_agents = agent_model.query\
                 .filter_by(failed=False,

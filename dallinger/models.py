@@ -81,9 +81,12 @@ class RogersAgent(Agent):
         else:
             self.score = 0
 
-        is_asocial = [
-            i for i in infos if isinstance(i, LearningGene)
-        ][0].contents == "asocial"
+        #is_asocial = [
+        #    i for i in infos if isinstance(i, LearningGene)
+        #][0].contents == "asocial"
+
+        is_asocial = True
+
         e = 2
         b = 1
         c = 0.3 * b
