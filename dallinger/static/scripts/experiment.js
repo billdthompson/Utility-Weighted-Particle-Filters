@@ -37,8 +37,11 @@ get_received_infos = function() {
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
-      if (infos[i].type !== "learning_gene") {
-        info = infos[i];
+      if (infos[i].type == "state") {
+        state = infos[i].contents;
+      }
+      if (infos[i].type == "meme") {
+        meme = infos[i].contents;
       }
     }
 
@@ -51,7 +54,6 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    console.log("generation: ", generation)
     if(generation == 0) {
       learning_strategy = "asocial";
     } else {
@@ -62,7 +64,6 @@ get_received_infos = function() {
     if (learning_strategy === "asocial") {
       $("#instructions").text("Are there more blue or yellow dots?");
 
-      state = info.contents;
       proportionBlue = parseFloat(state)
       console.log("problue: ", proportionBlue)
       regenerateDisplay(state);
@@ -84,8 +85,6 @@ get_received_infos = function() {
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
-
-      meme = info.contents;
 
       if (meme === "blue") {
         $("#stimulus").attr("src", "/static/images/blue_social.jpg");
