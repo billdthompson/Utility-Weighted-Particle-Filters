@@ -27,9 +27,7 @@ create_agent = function() {
 };
 
 get_infos = function() {
-  dallinger.getInfos(my_node_id, {
-    info_type: "LearningGene" // TODO: this class has been removed. why doesn't this break now?
-  }).done(function (resp) {
+  dallinger.getInfos(my_node_id).done(function (resp) {
     //learning_strategy = resp.infos[0].contents;
     get_received_infos();
   });
