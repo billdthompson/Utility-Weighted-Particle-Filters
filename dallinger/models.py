@@ -81,18 +81,9 @@ class RogersAgent(Agent):
         else:
             self.score = 0
 
-        #is_asocial = [
-        #    i for i in infos if isinstance(i, LearningGene)
-        #][0].contents == "asocial"
-
-        is_asocial = True
-
-        e = 2
-        b = 1
-        c = 0.3 * b
-        baseline = c + 0.0001
-
-        self.fitness = (baseline + self.score * b - is_asocial * c) ** e
+        # TODO: test that selection of nodes is uniformly random
+        # set fitness to 1 so that fitness isn't involved in network
+        self.fitness = 1
 
 
 class RogersEnvironment(Environment):
