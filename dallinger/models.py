@@ -1,6 +1,9 @@
 from operator import attrgetter
 import random
 
+import logging
+logger = logging.getLogger(__file__)
+
 from sqlalchemy import Float, Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
@@ -60,6 +63,26 @@ class RogersAgent(Agent):
         """Make proportion queryable."""
         return cast(self.property4, Float)
 
+    @hybrid_property
+    def condition(self):
+        """Make property5 condition."""
+        return float(self.property5)
+
+    @condition.setter
+    def condition(self, condition):
+        """Make condition settable."""
+        self.property5 = repr(condition)
+
+    @condition.expression
+    def condition(self):
+        """Make condition queryable."""
+        return cast(self.property5, Float)
+
+    def assign_condition(self):
+        logger.info("--->> Agent assign_condition called")
+        self.condition = self.network.property1
+        logger.info("--->> Property5: {}".format(self.property5))
+
     def calculate_fitness(self):
         """Calculcate your fitness."""
         if self.fitness is not None:
@@ -93,6 +116,12 @@ class RogersAgent(Agent):
         baseline = c + 0.0001
 
         self.fitness = (baseline + self.score * b - is_asocial * c) ** e
+
+    def __init__(self, contents=None, details = None, network = None, participant = None):
+        super(RogersAgent, self).__init__(network, participant)
+        logger.info("--->> Agent Init Called")
+        # self.network = network
+        self.assign_condition()
 
 
 class RogersEnvironment(Environment):
