@@ -30,7 +30,7 @@ class RogersExperiment(Experiment):
         from . import models
         self.models = models
         self.verbose = False
-        self.experiment_repeats = 10
+        self.experiment_repeats = 1
         self.practice_repeats = 0
         self.catch_repeats = 0  # a subset of experiment repeats
         self.practice_difficulty = 0.80
@@ -179,7 +179,7 @@ class RogersExperiment(Experiment):
                            generation=node.generation - 1)\
                 .all()
             parent = random.choice(prev_agents)
-            parent.connect(whom=node)
+            parent.connect(whom=node) # TODO: DiscreteGenerational network also connects nodes. why doesn't this line create a second vector in the database?
             parent.transmit(what=Meme, to_whom=node)
 
         node.receive()
