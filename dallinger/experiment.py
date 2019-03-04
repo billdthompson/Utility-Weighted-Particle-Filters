@@ -30,7 +30,7 @@ class RogersExperiment(Experiment):
         from . import models
         self.models = models
         self.verbose = False
-        self.experiment_repeats = 10
+        self.experiment_repeats = 1
         self.practice_repeats = 0
         self.catch_repeats = 0  # a subset of experiment repeats
         self.practice_difficulty = 0.80
@@ -53,6 +53,9 @@ class RogersExperiment(Experiment):
             'experiment_repeats': self.experiment_repeats,
         }
 
+    def assign_condition(self, network):
+        return "conditione"
+
     def setup(self):
         """First time setup."""
         super(RogersExperiment, self).setup()
@@ -65,6 +68,7 @@ class RogersExperiment(Experiment):
             net.max_size = net.max_size + 1  # make room for environment node.
             env = self.models.RogersEnvironment(network=net)
             env.create_state(proportion=self.color_proportion_for_network(net))
+            net.property1 = self.assign_condition(net)
 
     def color_proportion_for_network(self, net):
         if net.role == "practice":
@@ -169,8 +173,9 @@ class RogersExperiment(Experiment):
 
         environment = network.nodes(type=Environment)[0]
         environment.connect(whom=node)
+        environment.transmit(to_whom=node)
 
-        if node.generation > 1: # TODO check if generation is indexed by 0 or 1
+        if node.generation > 0:
             agent_model = self.models.RogersAgent
             prev_agents = agent_model.query\
                 .filter_by(failed=False,
@@ -178,7 +183,7 @@ class RogersExperiment(Experiment):
                            generation=node.generation - 1)\
                 .all()
             parent = random.choice(prev_agents)
-            parent.connect(whom=node)
+            parent.connect(whom=node) # TODO: DiscreteGenerational network also connects nodes. why doesn't this line create a second vector in the database?
             parent.transmit(what=Meme, to_whom=node)
 
         node.receive()

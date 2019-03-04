@@ -23,7 +23,11 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
+<<<<<<< HEAD
                     <button type="button" class="btn btn-primary btn-lg" onClick=onClickString>
+=======
+                    <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+>>>>>>> 64d4a759cc4deb19450e3c867e7cbfd1aed15261
                     Next</button>
                 </div>
             </div>
@@ -33,7 +37,26 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        dallinger.createParticipant();
+
+        advance = function (){
+
+            $(document).ready(function () {
+
+                dallinger.createParticipant().done(function(){
+
+                        participant = dallinger.get('/participant/' + dallinger.identity.participantId)
+
+                        participant.done(function (participantobject){
+                            // console.log(participantobject)
+                            // TODO: hit dallinger.createAgent() here and use response to direct p to correct instructions
+                            dallinger.goToPage('instructions/instruct-2')
+
+                        })
+
+                })
+        })
+}
+        
     </script>
 {% endblock %}
 

@@ -1,6 +1,8 @@
 var trial = 0;
 var lock = true;
 var my_node_id;
+var generation;
+var proportionBlue;
 
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
@@ -16,6 +18,7 @@ create_agent = function() {
   dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
+      generation = resp.node.property2;
       get_received_infos();
     })
     .fail(function () {
@@ -24,10 +27,8 @@ create_agent = function() {
 };
 
 get_infos = function() {
-  dallinger.getInfos(my_node_id, {
-    info_type: "LearningGene"
-  }).done(function (resp) {
-    learning_strategy = resp.infos[0].contents;
+  dallinger.getInfos(my_node_id).done(function (resp) {
+    //learning_strategy = resp.infos[0].contents;
     get_received_infos();
   });
 };
@@ -36,8 +37,11 @@ get_received_infos = function() {
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
-      if (infos[i].type !== "learning_gene") {
-        info = infos[i];
+      if (infos[i].type == "state") {
+        state = infos[i].contents;
+      }
+      if (infos[i].type == "meme") {
+        meme = infos[i].contents;
       }
     }
 
@@ -50,13 +54,18 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    learning_strategy = "asocial" // TODO FIX THIS SO ALL GENERATIONS AFTER FIRST ARE SOCIAL
+    if(generation == 0) {
+      learning_strategy = "asocial";
+    } else {
+      learning_strategy = "social";
+    }
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
       $("#instructions").text("Are there more blue or yellow dots?");
 
-      state = info.contents;
+      proportionBlue = parseFloat(state)
+      console.log("problue: ", proportionBlue)
       regenerateDisplay(state);
 
       $("#more-blue").addClass('disabled');
@@ -76,8 +85,6 @@ get_received_infos = function() {
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
-
-      meme = info.contents;
 
       if (meme === "blue") {
         $("#stimulus").attr("src", "/static/images/blue_social.jpg");
@@ -173,6 +180,46 @@ function shuffle(o){
   return o;
 }
 
+function correct(color){
+  if (color == 'yellow'){
+    if (proportionBlue > .5){
+      return false
+    }
+
+    else {
+      return true
+    }
+  }
+
+  else {
+    if (proportionBlue > .5){
+      return true
+    }
+
+    else {
+      return false
+    }
+  }
+};
+
+function payoff(color, correct){
+  if (correct){
+    if (color == 'yellow'){
+      return "10"
+    }
+
+    else{
+
+      return "50"
+    }
+  }
+
+  else {
+    return "0"
+  }
+
+};
+
 report = function (color) {
   if (lock === false) {
     $("#more-blue").addClass('disabled');
@@ -185,7 +232,22 @@ report = function (color) {
     }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
       $("#more-yellow").removeClass('disabled');
-      create_agent();
+      $("#instructions").html("")
+      $("#instructions").hide()
+      if (correct(color) == true){
+        $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
+      }
+      else {
+       $("#feedback").html("YOU WERE WRONG! YOU EARNED +-XYZ POINTS")
+      }
+      $("#feedback").show()
+        setTimeout(function() {
+          $("#feedback").html("")
+          $("#feedback").hide()
+          $("#instructions").html("Are there more blue or yellow dots?")
+          $("#instructions").show()
+          create_agent();
+        }, 3000);
     });
     lock = true;
   }
