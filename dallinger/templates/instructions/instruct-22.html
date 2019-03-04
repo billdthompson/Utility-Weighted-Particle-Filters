@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+
+        <p> Your job at the company is to explore gold deposits. 
+            You will observe areas only briefly and decide if the area is good or bad. 
+            Each area has black circles of dirt and yellow circles of gold. 
+            An area is good if there is more gold than dirt, and bad if there is more dirt than gold.
+            For each area you get a $0.25 bonus if you are correct. 
+            Also, if the area has more gold than dirt, you and all employees
+            get an additional $0.25 bonus from the company's profits.</p>
+        <hr>
+
+        <div>
+            <div class="row">
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
+                    Previous
+                    </button>
+                </div>
+                <div class="col-xs-8">
+                </div>
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-ready');">
+                    Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
