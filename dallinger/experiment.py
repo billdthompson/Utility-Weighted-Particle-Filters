@@ -59,7 +59,7 @@ class RogersExperiment(Experiment):
         
         nets_per_condition = int(self.experiment_repeats / 4)
 
-        self.conditions = list(range(4)) * nets_per_condition
+        self.conditions = list(range(1,5)) * nets_per_condition
 
         random.shuffle(self.conditions)
         
