@@ -23,11 +23,8 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
-<<<<<<< HEAD
-                    <button type="button" class="btn btn-primary btn-lg" onClick=onClickString>
-=======
+
                     <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
->>>>>>> 64d4a759cc4deb19450e3c867e7cbfd1aed15261
                     Next</button>
                 </div>
             </div>
@@ -38,6 +35,28 @@
 {% block scripts %}
     <script type="text/javascript">
 
+        create_agent = function() {
+          
+          dallinger.createAgent()
+            
+            .done(function (resp) {
+                localStorage.setItem("my_node_id",resp.node.id);
+                
+                localStorage.setItem("generation",resp.node.property2);
+                
+                localStorage.setItem("condition",parseInt(resp.node.property5.replace(/'/g,'')));
+
+                var nextpage = 'instructions/instruct-2' + resp.node.property5.replace(/'/g,'')
+                
+                dallinger.goToPage(nextpage)
+
+            })
+            
+            .fail(function () {
+              dallinger.goToPage('questionnaire');
+            });
+        };
+
         advance = function (){
 
             $(document).ready(function () {
@@ -47,10 +66,8 @@
                         participant = dallinger.get('/participant/' + dallinger.identity.participantId)
 
                         participant.done(function (participantobject){
-                            // console.log(participantobject)
-                            // TODO: hit dallinger.createAgent() here and use response to direct p to correct instructions
-                            dallinger.goToPage('instructions/instruct-2')
 
+                            create_agent();
                         })
 
                 })
@@ -60,9 +77,9 @@
     </script>
 {% endblock %}
 
-<script>
+<!-- <script>
     // here we will import the correct page of instructions to go to. Output should be a integer of which condition people are assigned to.
     var conditions = [1,2,3,4];
     var sampledCondition = conditions[Math.floor(Math.random() * numbers.length)]; // this should be replaced by the future output
     var onClickString = "dallinger.goToPage('instructions/instruct-2"+String(SampledCondition)+"');"
-</script>
+</script> -->

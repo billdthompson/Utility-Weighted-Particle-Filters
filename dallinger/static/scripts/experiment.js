@@ -15,15 +15,25 @@ dallinger.getExperimentProperty('experiment_repeats')
   });
 
 create_agent = function() {
-  dallinger.createAgent()
+  if (trial == 0){
+    my_node_id = localStorage.getItem("my_node_id");
+    generation = localStorage.getItem("generation");
+    condition = localStorage.getItem("condition"); 
+    get_received_infos();
+  }
+  else {
+    dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
       generation = resp.node.property2;
+      console.log('resp:', resp)
       get_received_infos();
     })
     .fail(function () {
       dallinger.goToPage('questionnaire');
     });
+
+  }
 };
 
 get_infos = function() {
@@ -36,6 +46,8 @@ get_infos = function() {
 get_received_infos = function() {
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     infos = resp.infos;
+    console.log("inside gri: ", resp)
+    console.log('generation', generation)
     for (i = 0; i < infos.length; i++) {
       if (infos[i].type == "state") {
         state = infos[i].contents;
