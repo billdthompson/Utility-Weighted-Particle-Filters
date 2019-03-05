@@ -397,5 +397,3 @@ function updateResponseHTML(truth,response,condition){
   p4_html.innerHTML += '<span class = "computer_number">$' + String(accuracy_bonus+condition_bonus)+ "</span>"
   $('.outcome').show();
   };
-
-}
