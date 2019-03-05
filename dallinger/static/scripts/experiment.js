@@ -247,7 +247,7 @@ report = function (color) {
           $("#instructions").html("Are there more blue or yellow dots?")
           $("#instructions").show()
           create_agent();
-        }, 1000);
+        }, 3000);
     });
     lock = true;
   }

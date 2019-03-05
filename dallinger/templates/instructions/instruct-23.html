@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+
+        <p> Your job at the company is to extract oil deposits in a desert area. You have already been payed for your work. 
+                You will observe areas only briefly and decide if the area is good or bad. 
+                Each area has black circles of oil and yellow circles of sand. 
+                An area is good for you if there is more sand than oil, and bad for if there is more oil than sand. 
+                For each area you get a $0.25 bonus if you are correct. 
+                Areas with more oil are bad because they are expensive to extract -- you must spend $0.25 of the money you've 
+                been to payed to extract the oil in every bad area you find.
+            </p>
+        <hr>
+
+        <div>
+            <div class="row">
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
+                    Previous
+                    </button>
+                </div>
+                <div class="col-xs-8">
+                </div>
+                <div class="col-xs-2">
+                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-ready');">
+                    Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

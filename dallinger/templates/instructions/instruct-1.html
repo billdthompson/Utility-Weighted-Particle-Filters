@@ -6,7 +6,10 @@
 
         <hr>
 
-        <p>In this experiment, you will have to decide whether there are more blue dots or yellow dots. On some rounds, you will see the dots directly. Don't bother trying to count them — they will appear too briefly for that. Instead, you should take your best guess.</p>
+        <p> You work for a company extracting natural resources from unexplored areas. For your work, you will have to decide
+            whether there are more black dots or yellow dots. On each round, you will get a bonus if 
+            you are correct, as well as possible additional bonus depending on your job at the company. 
+            Don't bother trying to count the dots — they will appear too briefly for that. Instead, you should take your best guess.</p>
 
         <p>Here is an example of what you might see:</p>
         <div class="center_div">
@@ -20,7 +23,11 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
-                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-2');">
+<<<<<<< HEAD
+                    <button type="button" class="btn btn-primary btn-lg" onClick=onClickString>
+=======
+                    <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+>>>>>>> 64d4a759cc4deb19450e3c867e7cbfd1aed15261
                     Next</button>
                 </div>
             </div>
@@ -30,6 +37,32 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        dallinger.createParticipant();
+
+        advance = function (){
+
+            $(document).ready(function () {
+
+                dallinger.createParticipant().done(function(){
+
+                        participant = dallinger.get('/participant/' + dallinger.identity.participantId)
+
+                        participant.done(function (participantobject){
+                            // console.log(participantobject)
+                            // TODO: hit dallinger.createAgent() here and use response to direct p to correct instructions
+                            dallinger.goToPage('instructions/instruct-2')
+
+                        })
+
+                })
+        })
+}
+        
     </script>
 {% endblock %}
+
+<script>
+    // here we will import the correct page of instructions to go to. Output should be a integer of which condition people are assigned to.
+    var conditions = [1,2,3,4];
+    var sampledCondition = conditions[Math.floor(Math.random() * numbers.length)]; // this should be replaced by the future output
+    var onClickString = "dallinger.goToPage('instructions/instruct-2"+String(SampledCondition)+"');"
+</script>

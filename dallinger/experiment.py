@@ -53,6 +53,9 @@ class RogersExperiment(Experiment):
             'experiment_repeats': self.experiment_repeats,
         }
 
+    def assign_condition(self, network):
+        return "conditione"
+
     def setup(self):
         """First time setup."""
         super(RogersExperiment, self).setup()
@@ -65,6 +68,7 @@ class RogersExperiment(Experiment):
             net.max_size = net.max_size + 1  # make room for environment node.
             env = self.models.RogersEnvironment(network=net)
             env.create_state(proportion=self.color_proportion_for_network(net))
+            net.property1 = self.assign_condition(net)
 
     def color_proportion_for_network(self, net):
         if net.role == "practice":
