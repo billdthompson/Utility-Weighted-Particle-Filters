@@ -330,10 +330,10 @@ function updateResponseHTML(truth,response,condition){
           var condition_bonus = 0;
       }
   }
-  $("#outcome").innerHTML = "<div class='outcome'><div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
+  $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
   "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
   "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp;    Good Area Bonus:</p><hr>"+
-  "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p></div></div>"
+  "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p></div>")
 
   if (truth=='yellow'){
     // Condition is gold and truth is more gold
