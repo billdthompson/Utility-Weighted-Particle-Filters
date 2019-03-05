@@ -1,4 +1,37 @@
 {% extends "layout.html" %}
+<style>
+
+.computer_number span {
+            font-family: Monaco, monospace;
+            line-height: 100%;
+            background-color: #eee;
+            padding: 0.2em;
+            letter-spacing: -0.05em;
+            word-break: normal;
+        }
+        .everything {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            margin-top: 25px;
+            max-width: 215px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        .outcome {
+            display:none;
+        }
+
+        .text_left {
+            text-align:right;
+        }
+
+        .titleOutcome {
+            font-size: 20px;
+        }
+</style>
 
 {% block body %}
     <div class="main_div">
@@ -8,7 +41,7 @@
         </div>
         <div class="center_div">
             <p class="trial_text" id="instructions">Are there more blue or yellow dots?</p>
-            <div>
+            <div class = "outcome">
             <p class="trial_info_text" id="feedback"></p><p class="trial_info_text" id="feedback"></p>
             </div>
             <br>

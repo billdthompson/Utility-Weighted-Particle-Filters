@@ -202,6 +202,14 @@ function correct(color){
   }
 };
 
+function correctStr(){
+  if (proportionBlue>0.5){
+    return 'blue'
+  } else{
+    return 'yellow'
+  }
+}
+
 function payoff(color, correct){
   if (correct){
     if (color == 'yellow'){
@@ -234,20 +242,28 @@ report = function (color) {
       $("#more-yellow").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
-      if (correct(color) == true){
-        $("#feedback").html("YOU WERE CORRECT! YOU EARNED +-XYZ POINTS")
+      var condition_var = localStorage.getItem("condition");
+      if (condition_var==1){
+        var condition = 'yellow gain'
+      } else if (condition_var==2){
+        var condition = 'blue gain'
+      } else if (condition_var==3){
+        var condition= 'yellow loss'
+      } else if (condition_var==4){
+        var condition_var=4
+      } else {
+        console.log(condition)
       }
-      else {
-       $("#feedback").html("YOU WERE WRONG! YOU EARNED +-XYZ POINTS")
-      }
+      true_color = correctStr()
+      updateResponseHTML(true_color,color,condition_var)
       $("#feedback").show()
-        setTimeout(function() {
-          $("#feedback").html("")
-          $("#feedback").hide()
-          $("#instructions").html("Are there more blue or yellow dots?")
-          $("#instructions").show()
-          create_agent();
-        }, 3000);
+      setTimeout(function() {
+        $("#feedback").html("")
+        $("#feedback").hide()
+        $("#instructions").html("Are there more blue or yellow dots?")
+        $("#instructions").show()
+        create_agent();
+      }, 3000);
     });
     lock = true;
   }
@@ -273,3 +289,101 @@ $(document).ready(function() {
     }
   });
 });
+
+
+
+// Condition 1: 'blue gain' -> Get paid more for blue than than
+// Condition 2: 'yellow gain' -> get paid more for yellow than blue
+// Condition 3: 'blue loss' -> lose more for blue than yellow
+// Condition 4: 'yellow loss' -> lose more for yellow than blue
+
+function updateResponseHTML(truth,response,condition){
+  // truth is a string: 'yellow' or 'blue'
+  // response also a string: 'yellow' or 'blue'
+  // condition a string: 'yellow gain', 'yellow loss', ect.
+  if (truth == 'good'){
+    if (response=="good"){
+        var accuracy_bonus = 1;
+        var condition_bonus = 1;
+    } else {
+        var accuracy_bonus = 0;
+        var condition_bonus = 0;
+    }
+  } else {
+      if (truth == "good"){
+          var accuracy_bonus = 0;
+          var condition_bonus = 1;
+      } else {
+          var accuracy_bonus = 1;
+          var condition_bonus = 0;
+      }
+  }
+  $("#outcome").innerHTML = "<div class='outcome'><div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
+  "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
+  "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp;    Good Area Bonus:</p><hr>"+
+  "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p></div></div>"
+
+  if (truth=='yellow'){
+    // Condition is gold and truth is more gold
+    if (condition.indexOf('yellow') != -1){
+      if (condition.indexOf('gain') != -1){
+        // More gold in gold gain
+        condition_bonus = 1
+      }
+      else{
+        // more gold in gold loss
+        condition_bonus = -2
+      }
+    } else{
+      // Condition is gold truth is more dirt
+      if (condition.indexOf('gain') != -1){
+        // More dirt gold gain
+        condition_bonus = 0
+      }
+      else {
+        // More gold gold loss
+        condition_bonus = -2
+      }
+    }
+  } else if (truth=='blue'){
+    // Condition is oil and truth is more oil
+    if (condition.indexOf('yellow') != -1){
+      if (condition.indexOf('gain') != -1){
+        // More sand than oil
+        condition_bonus = 0
+      }
+      else{
+        // More sand than oil, loss
+        condition_bonus = -1
+      }
+    } else{
+      // Condition is blue truth is blue
+      if (condition.indexOf('gain') != -1){
+        // Gain condition, more oil than sand
+        condition_bonus = 1
+      }
+      else {
+        // Loss condition, more oil than sand
+        condition_bonus = -2
+      }
+    }
+  }
+
+  if (truth.indexOf('yellow')!=-1){
+    var true_state = "yellow"
+      } else{
+      var true_state = 'blue'
+    }
+
+  var p1_html = document.getElementById('topResult');
+  var p2_html = document.getElementById('accuracy');
+  var p3_html = document.getElementById('goodArea');
+  var p4_html = document.getElementById('total');
+  p1_html.innerHTML += '<span class = "computer_number">' + true_state + "</span>"
+  p2_html.innerHTML += '<span class = "computer_number">$' + String(accuracy_bonus) + "</span>"
+  p3_html.innerHTML += '<span class = "computer_number">$' + String(condition_bonus)+ "</span>"
+  p4_html.innerHTML += '<span class = "computer_number">$' + String(accuracy_bonus+condition_bonus)+ "</span>"
+  $('.outcome').show();
+  };
+
+}
