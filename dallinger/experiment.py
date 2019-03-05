@@ -30,7 +30,7 @@ class RogersExperiment(Experiment):
         from . import models
         self.models = models
         self.verbose = False
-        self.experiment_repeats = 1
+        self.experiment_repeats = 4
         self.practice_repeats = 0
         self.catch_repeats = 0  # a subset of experiment repeats
         self.practice_difficulty = 0.80
@@ -53,22 +53,31 @@ class RogersExperiment(Experiment):
             'experiment_repeats': self.experiment_repeats,
         }
 
-    def assign_condition(self, network):
-        return "conditione"
+    def create_conditions(self):
+         # equal number of networks asigned to each condition
+        assert self.experiment_repeats % 4 == 0
+        
+        nets_per_condition = int(self.experiment_repeats / 4)
 
+        self.conditions = list(range(4)) * nets_per_condition
+
+        random.shuffle(self.conditions)
+        
     def setup(self):
         """First time setup."""
         super(RogersExperiment, self).setup()
 
+        self.create_conditions()
+
         for net in random.sample(self.networks(role="experiment"),
                                  self.catch_repeats):
             net.role = "catch"
-
-        for net in self.networks():
+        
+        for i, net in enumerate(self.networks()):
             net.max_size = net.max_size + 1  # make room for environment node.
             env = self.models.RogersEnvironment(network=net)
             env.create_state(proportion=self.color_proportion_for_network(net))
-            net.property1 = self.assign_condition(net)
+            net.property1 = self.conditions[i]
 
     def color_proportion_for_network(self, net):
         if net.role == "practice":
