@@ -31,6 +31,10 @@
         .titleOutcome {
             font-size: 20px;
         }
+
+        .hrclass{
+            max-width:30%;
+        }
 </style>
 
 {% block body %}
@@ -42,7 +46,7 @@
         <div class="center_div">
             <p class="trial_text" id="instructions">Are there more blue or yellow dots?</p>
             <div class = "outcome">
-            <p class="trial_info_text" id="feedback"></p><p class="trial_info_text" id="feedback"></p>
+                    <button id="continue_button" type="button">Continue</button>
             </div>
             <br>
             <button id="more-blue" type="button" class="btn btn-primary">Blue</button>

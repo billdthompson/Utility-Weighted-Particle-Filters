@@ -268,14 +268,14 @@ report = function (color) {
       }
       true_color = correctStr()
       updateResponseHTML(true_color,color,condition_var)
-      $("#feedback").show()
-      setTimeout(function() {
-        $("#feedback").html("")
-        $("#feedback").hide()
+      $('#continue_button').click(function(){
+        $(".outcome").html("")
+        $(".outcome").hide()
         $("#instructions").html("Are there more blue or yellow dots?")
         $("#instructions").show()
         create_agent();
-      }, 3000);
+
+      });
     });
     lock = true;
   }
@@ -330,10 +330,19 @@ function updateResponseHTML(truth,response,condition){
           var condition_bonus = 0;
       }
   }
-  $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
-  "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-  "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp;    Good Area Bonus:</p><hr>"+
-  "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p></div>")
+
+  if (condition.indexOf('loss')!=-1){
+    $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
+    "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
+    "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Cost:</p><div class = 'hrclass'><hr></div>"+
+    "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p><button id='continue_button' type='button'>Continue</button></div>")
+
+  } else {
+    $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
+    "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
+    "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bonus:</p><hr>"+
+    "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p><button id='continue_button' type='button'>Continue</button></div>")
+  }
 
   if (truth=='yellow'){
     // Condition is gold and truth is more gold
