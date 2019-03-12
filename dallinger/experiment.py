@@ -49,8 +49,8 @@ class RogersExperiment(Experiment):
     @property
     def public_properties(self):
         return {
-            'practice_repeats': self.practice_repeats,
             'experiment_repeats': self.experiment_repeats,
+            'practice_repeats': self.practice_repeats
         }
 
     def create_conditions(self):
