@@ -6,12 +6,14 @@ var proportionBlue;
 
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
-    num_practice_trials = resp.practice_repeats;
+    //num_practice_trials = resp.practice_repeats;
+    num_practice_trials = 1;
   });
 
 dallinger.getExperimentProperty('experiment_repeats')
   .done(function (resp) {
-    num_experiment_trials = resp.experiment_repeats;
+    //num_experiment_trials = resp.experiment_repeats;
+    num_experiment_trials = 4;
   });
 
 create_agent = function() {
@@ -59,7 +61,8 @@ get_received_infos = function() {
 
     trial = trial + 1;
     $("#trial-number").html(trial);
-    $("#total-trial-number").html(num_practice_trials + num_experiment_trials);
+    //$("#total-trial-number").html(num_practice_trials + num_experiment_trials);
+    $("#total-trial-number").html(5);
     if (trial <= num_practice_trials) {
       $("#practice-trial").html("This is a practice trial");
     } else {
@@ -241,15 +244,14 @@ function payoff(color, correct){
 };
 
 report = function (color) {
-  if (lock === false) {
-    $("#more-blue").addClass('disabled');
-    $("#more-yellow").addClass('disabled');
-    $("#reproduction").val("");
+  $("#more-blue").addClass('disabled');
+  $("#more-yellow").addClass('disabled');
+  $("#reproduction").val("");
 
-    dallinger.createInfo(my_node_id, {
-      contents: color,
-      info_type: 'Meme'
-    }).done(function (resp) {
+  dallinger.createInfo(my_node_id, {
+    contents: color,
+    info_type: 'Meme'
+  }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
       $("#more-yellow").removeClass('disabled');
       $("#instructions").html("")
@@ -262,23 +264,13 @@ report = function (color) {
       } else if (condition_var==3){
         var condition= 'yellow loss'
       } else if (condition_var==4){
-        var condition_var=4
+        var condition= 'blue loss'      
       } else {
         console.log(condition)
       }
       true_color = correctStr()
-      updateResponseHTML(true_color,color,condition_var)
-      $('#continue_button').click(function(){
-        $(".outcome").html("")
-        $(".outcome").hide()
-        $("#instructions").html("Are there more blue or yellow dots?")
-        $("#instructions").show()
-        create_agent();
-
-      });
-    });
-    lock = true;
-  }
+      updateResponseHTML(true_color,color,condition)
+  });
 };
 
 $(document).ready(function() {
@@ -331,19 +323,19 @@ function updateResponseHTML(truth,response,condition){
       }
   }
 
+  console.log('Condition Variable: ' + condition)
   if (condition.indexOf('loss')!=-1){
     $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
     "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Cost:</p><div class = 'hrclass'><hr></div>"+
-    "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p><button id='continue_button' type='button'>Continue</button></div>")
+    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Area cost: </p><hr class='hr_block'>"+
+    "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings: </p></div>")
 
   } else {
     $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
     "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    "Accuracy Bonus:</p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bonus:</p><hr>"+
-    "<p class = 'computer_number' id = 'total'>= &nbsp;  Total Bonus:</p><button id='continue_button' type='button'>Continue</button></div>")
+    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bbnus: </p><hr class = 'hr_block'>"+
+    "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
   }
-
   if (truth=='yellow'){
     // Condition is gold and truth is more gold
     if (condition.indexOf('yellow') != -1){
@@ -396,13 +388,56 @@ function updateResponseHTML(truth,response,condition){
       var true_state = 'blue'
     }
 
+  if (accuracy_bonus>=0){
+    accuracyStr = '$' + String(accuracy_bonus)
+  } else {
+    accuracyStr = '-$' + String(Math.abs(accuracy_bonus))
+  }
+
+  if (condition_bonus>=0){
+    conditionStr = '$' + String(condition_bonus)
+  } else {
+    conditionStr = '$' + String(Math.abs(condition_bonus))
+  }
+
+  if (accuracy_bonus+condition_bonus>=0){
+    netStr = '$' + String(accuracy_bonus+condition_bonus)
+  } else {
+    netStr = '-$' + String(Math.abs(accuracy_bonus+condition_bonus))
+  }
+
+
   var p1_html = document.getElementById('topResult');
   var p2_html = document.getElementById('accuracy');
   var p3_html = document.getElementById('goodArea');
   var p4_html = document.getElementById('total');
   p1_html.innerHTML += '<span class = "computer_number">' + true_state + "</span>"
-  p2_html.innerHTML += '<span class = "computer_number">$' + String(accuracy_bonus) + "</span>"
-  p3_html.innerHTML += '<span class = "computer_number">$' + String(condition_bonus)+ "</span>"
-  p4_html.innerHTML += '<span class = "computer_number">$' + String(accuracy_bonus+condition_bonus)+ "</span>"
-  $('.outcome').show();
-  };
+  p2_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
+  p3_html.innerHTML += '<span class = "computer_number">' + conditionStr+ "</span>"
+  p4_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+  $('.outcome').css('margin','0 auto')
+  $('.titleOutcome').css('font-size','25px')
+  $(".outcome").css("visibility", "visible");
+  $('.outcome').css('text-align','center')  
+  $(".button-wrapper").css("text-align", "right");
+  $(".button-wrapper").css("visibility", "visible");
+  $(".center_div").css("visibility", "hidden");
+  $('.text_left').css('margin','0 auto')
+  $('.text_left').css('width','200px')
+
+
+  $('.text_left').css('text-align','right') 
+
+  $('#continue_button').click(function(){
+    $(".outcome").css("visibility", "hidden");
+    $(".center_div").css("visibility", "visible");
+    $(".button-wrapper").css("visibility", "hidden");
+    $(".outcome").html("")
+    $("#instructions").html("Are there more blue or yellow dots?")
+    $("#instructions").show()
+    create_agent();
+  });
+
+
+  
+};

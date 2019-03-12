@@ -1,53 +1,15 @@
 {% extends "layout.html" %}
-<style>
-
-.computer_number span {
-            font-family: Monaco, monospace;
-            line-height: 100%;
-            background-color: #eee;
-            padding: 0.2em;
-            letter-spacing: -0.05em;
-            word-break: normal;
-        }
-        .everything {
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-            margin-top: 25px;
-            max-width: 215px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-
-        .outcome {
-            display:none;
-        }
-
-        .text_left {
-            text-align:right;
-        }
-
-        .titleOutcome {
-            font-size: 20px;
-        }
-
-        .hrclass{
-            max-width:30%;
-        }
-</style>
-
 {% block body %}
     <div class="main_div">
-        <div class="right_div">
-            <p class="trial_info_text">Round <span id="trial-number">0</span> of <span id="total-trial-number"></span></p>
-            <p class="trial_info_text"><span id="practice-trial">This is a practice trial</span></p>
-        </div>
+            <div class="right_div">
+                <p class="trial_info_text">Round <span id="trial-number">0</span> of <span id="total-trial-number"></span></p>
+                <p class="trial_info_text" id = 'total_earnings'>Total earnings: $0.25</p>
+                <p class="trial_info_text"><span id="practice-trial">This is a practice trial</span></p>
+            </div>
+            <div class = "outcome"></div>
+            <div class = "button-wrapper"><button  type="button" class="btn btn-success btn-lg" id = "continue_button">Continue</button></div>
         <div class="center_div">
             <p class="trial_text" id="instructions">Are there more blue or yellow dots?</p>
-            <div class = "outcome">
-                    <button id="continue_button" type="button">Continue</button>
-            </div>
             <br>
             <button id="more-blue" type="button" class="btn btn-primary">Blue</button>
             <button id="more-yellow" type="button" class="btn btn-warning">Yellow</button>
