@@ -178,7 +178,7 @@ function presentDisplay (argument) {
 function regenerateDisplay (state) {
   // Display parameters
   width = 600;
-  height = 400;
+  height = 300;
   numDots = 80;
   dots = [];
   blueDots = Math.round(state * numDots);
@@ -338,12 +338,6 @@ $(document).ready(function() {
 });
 
 
-
-// Condition 1: 'blue gain' -> Get paid more for blue than than
-// Condition 2: 'yellow gain' -> get paid more for yellow than blue
-// Condition 3: 'blue loss' -> lose more for blue than yellow
-// Condition 4: 'yellow loss' -> lose more for yellow than blue
-
 function updateResponseHTML(truth,response,condition){
   // truth is a string: 'yellow' or 'blue'
   // response also a string: 'yellow' or 'blue'
@@ -362,49 +356,89 @@ function updateResponseHTML(truth,response,condition){
       }
   }
 
+  if (response=='yellow'){
+    responseStr = yellowStr
+  } else{
+    responseStr = blueStr
+  }
+
+
   console.log('Condition Variable: ' + condition)
   if (condition.indexOf('loss')!=-1){
-    $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
-    "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Cleaning cost: </p><hr class='hr_block'>"+
-    "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings: </p></div>")
+    $(".outcome").html("<div class='titleOutcome'>"+
+    "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+    "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+    "<p class = 'computer_number' id = 'goodAreaStr'></p>" + 
+    "<p class = 'computer_number' id = 'goodAreaPay'>Cleaning cost: </p> &nbsp;" + 
+    "<hr class='hr_block'>"+
+    "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+    "</div>")
+
+    //</div>&nbsp; 
+    
+    //<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
+    //"Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Cleaning cost: </p><hr class='hr_block'>"+
+    //"<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings: </p></div>")
 
   } else {
-    $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
-    "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bbnus: </p><hr class = 'hr_block'>"+
-    "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
+    $(".outcome").html("<div class='titleOutcome'>"+
+    "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+    "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+    "<p class = 'computer_number' id = 'goodAreaStr'></p>" + 
+    "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
+    "<hr class='hr_block'>"+
+    "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+    "</div>")
+      
+      
+      
+      //"<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
+    //"This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
+    //"Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bbnus: </p><hr class = 'hr_block'>"+
+    //"<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
   }
   if (truth=='yellow'){
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
         condition_bonus = 0.1
+        var areaStr = 'A mine is built in this area'
       }
       else{
         condition_bonus = -0.1
+        var areaStr = 'This area needs to be cleaned'
       }
     } else{
       if (condition.indexOf('gain') != -1){
+        //blue gain, truth=yellow
         condition_bonus = 0
+        var areaStr = 'A well will not be built in this area'
       }
       else {
+        // blue loss, truth=yellow
         condition_bonus = 0
+        var areaStr = 'This area does not need to be cleaned'
       }
     }
   } else if (truth=='blue'){
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
         condition_bonus = 0
+        var areaStr = 'A mine is not built in this area'
       }
       else{
         condition_bonus = 0
+        var areaStr = 'This area does not need to be cleaned'
       }
     } else{
       if (condition.indexOf('gain') != -1){
         condition_bonus = 0.1
+        var areaStr = 'A well is built in this area'
       }
       else {
         condition_bonus = -0.1
+        var areaStr = 'This area needs to be cleaned'
       }
     }
   }
@@ -416,21 +450,21 @@ function updateResponseHTML(truth,response,condition){
     }
 
   if (accuracy_bonus>=0){
-    accuracyStr = '$' + String(accuracy_bonus)
+    accuracyStr = '$' + accuracy_bonus.toFixed(2)
   } else {
-    accuracyStr = '-$' + String(Math.abs(accuracy_bonus))
+    accuracyStr = '-$' + Math.abs(accuracy_bonus).toFixed(2)
   }
 
   if (condition_bonus>=0){
-    conditionStr = '$' + String(condition_bonus)
+    conditionStr = '$' + condition_bonus.toFixed(2)
   } else {
-    conditionStr = '$' + String(Math.abs(condition_bonus))
+    conditionStr = '$' + Math.abs(condition_bonus).toFixed(2)
   }
 
   if (accuracy_bonus+condition_bonus>=0){
-    netStr = '$' + String(accuracy_bonus+condition_bonus)
+    netStr = '$' + (accuracy_bonus+condition_bonus).toFixed(2)
   } else {
-    netStr = '-$' + String(Math.abs(accuracy_bonus+condition_bonus))
+    netStr = '-$' + (Math.abs(accuracy_bonus+condition_bonus)).toFixed(2)
   }
 
 
@@ -440,21 +474,36 @@ function updateResponseHTML(truth,response,condition){
 
 
   var p1_html = document.getElementById('topResult');
-  var p2_html = document.getElementById('accuracy');
-  var p3_html = document.getElementById('goodArea');
-  var p4_html = document.getElementById('total');
-  p1_html.innerHTML += '<span class = "computer_number">' + true_state + "</span>"
-  p2_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
-  p3_html.innerHTML += '<span class = "computer_number">' + conditionStr+ "</span>"
-  p4_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+  var p2_html = document.getElementById('responseResult');
+  var p3_html = document.getElementById('accuracy');
+  var p4_html = document.getElementById('goodAreaStr');
+  var p5_html = document.getElementById('goodAreaPay');
+  var p6_html = document.getElementById('total');
+  p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
+  p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
+  p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
+  p4_html.innerHTML =  areaStr
+  p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
+  p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
 
   $('.outcome').css('margin','0 auto')
-  $('.titleOutcome').css('font-size','25px')
-  $(".outcome").css("visibility", "visible");
-  $('.outcome').css('text-align','center')  
+  $('.outcome').css('width','300px')
+  $('.outcome').css('text-align','right')
+  //$('#topResult').css('text-align','center')
+  //$('#responseResult').css('text-align','center')
+  //$('#accuracy').css('text-align','right')
+  //$('#goodAreaStr').css('text-align','center')
+  //$('#goodAreaPay').css('text-align','right')
+
+  //$('#total').css('text-align','right')
+
+
+  //$('.titleOutcome').css('font-size','20px')
+  $(".outcome").css("display", "block");
+  //$('.outcome').css('text-align','center')  
   $(".button-wrapper").css("text-align", "right");
-  $(".button-wrapper").css("visibility", "visible");
-  $(".center_div").css("visibility", "hidden");
+  $(".button-wrapper").css("display", "block");
+  $(".center_div").css("display", "none");
   $('.text_left').css('margin','0 auto')
   $('.text_left').css('width','200px')
 
@@ -462,9 +511,9 @@ function updateResponseHTML(truth,response,condition){
   $('.text_left').css('text-align','right') 
 
   $('#continue_button').click(function(){
-    $(".outcome").css("visibility", "hidden");
-    $(".center_div").css("visibility", "visible");
-    $(".button-wrapper").css("visibility", "hidden");
+    $(".outcome").css("display", "none");
+    $(".center_div").css("display", "block");
+    $(".button-wrapper").css("display", "none");
     $(".outcome").html("")
     $("#instructions").html("Are there more blue or yellow dots?")
     $("#instructions").show()
