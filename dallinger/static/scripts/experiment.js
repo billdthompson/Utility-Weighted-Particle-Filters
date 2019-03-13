@@ -51,14 +51,14 @@ $('#total_earnings').html('Total earnings: $'+ total_str)
 
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
-    //num_practice_trials = resp.practice_repeats;
-    num_practice_trials = 1;
+    num_practice_trials = resp.practice_repeats;
+    // num_practice_trials = 1;
   });
 
 dallinger.getExperimentProperty('experiment_repeats')
   .done(function (resp) {
-    //num_experiment_trials = resp.experiment_repeats;
-    num_experiment_trials = 4;
+    num_experiment_trials = resp.experiment_repeats;
+    // num_experiment_trials = 4;
   });
 
 create_agent = function() {
@@ -93,8 +93,6 @@ get_infos = function() {
 get_received_infos = function() {
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     infos = resp.infos;
-    console.log("inside gri: ", resp)
-    console.log('generation', generation)
     for (i = 0; i < infos.length; i++) {
       if (infos[i].type == "state") {
         state = infos[i].contents;
@@ -106,8 +104,8 @@ get_received_infos = function() {
 
     trial = trial + 1;
     $("#trial-number").html(trial);
-    //$("#total-trial-number").html(num_practice_trials + num_experiment_trials);
-    $("#total-trial-number").html(5);
+    $("#total-trial-number").html(num_practice_trials + num_experiment_trials);
+    // $("#total-trial-number").html(5);
     if (trial <= num_practice_trials) {
       $("#practice-trial").html("This is a practice trial");
     } else {
