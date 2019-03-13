@@ -79,9 +79,7 @@ class RogersAgent(Agent):
         return cast(self.property5, Float)
 
     def assign_condition(self):
-        logger.info("--->> Agent assign_condition called")
         self.condition = self.network.property1
-        logger.info("--->> Property5: {}".format(self.property5))
 
     def calculate_fitness(self):
         """Calculcate your fitness."""
