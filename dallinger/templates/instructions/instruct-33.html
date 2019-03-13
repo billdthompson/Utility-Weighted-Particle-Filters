@@ -4,23 +4,17 @@
 
 {% block body %}
     <div class="main_div">
-        <h1>Instructions 1/3</h1>
+        <h1>Instructions 2/3</h1>
 
         <hr>
-
-        <p> You work for a company cleaning a chemical recently spilled in a protected ocean zone. 
-                You will observe areas briefly and decide if the areas contain more chemical or more water. 
-                An areas has more chemical if there are more yellow dots than blue, and more water if there 
-                are more blue dots than yellow.  <b>Note that the size of the dots does not matter, only the number. </b>
-        </p>
-
-        <p>Here is an example of what you might see:</p> &nbsp;
-        <div class="center_div">
-            <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
-        </div>
-        &nbsp;
-        <p>In this image, there is more chemical than water.
-        </p>
+        <p>
+            You have already been paid $5.00 to clean the spill. On each round 
+            you will get a $0.05 bonus if you are correct, and will spend $0.10
+            to clean the area if it has more chemical than water. You do not need to spend 
+            money to clean areas with more water than chemical. </p>
+            <p>Don't bother trying to count 
+            the dots — they will appear too briefly for that. 
+            Instead, you should take your best guess.</p>
 
         <hr>
 
@@ -46,10 +40,13 @@
     {% block scripts %}
     <script>
         advance = function(){
-            var nextpage = 'instructions/instruct-3' + localStorage.getItem("condition");
+            var nextpage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
             dallinger.goToPage(nextpage)
         }
 
-
+        reverse = function(){
+            var previouspage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
+            dallinger.goToPage(previouspage)
+        }
     </script>
     {% endblock %}

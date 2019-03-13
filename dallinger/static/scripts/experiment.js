@@ -3,6 +3,51 @@ var lock = true;
 var my_node_id;
 var generation;
 var proportionBlue;
+var global_condition = localStorage.getItem("condition");
+if (global_condition==1){
+  var global_str = 'yellow gain'
+  var yellowStr = 'gold'
+  var blueStr = 'water'
+  var instructionsText = 'Is there more gold or more water?'
+  $('#instructions').html(instructionsText)
+  $('#more-blue').html('Water')
+  $('#more-yellow').html('Gold')
+} else if (global_condition==2){
+  var global_str = 'blue gain'
+  var yellowStr = 'water'
+  var blueStr = 'sand'
+  var instructionsText = 'Is there more water or more sand?'
+  $('#instructions').html(instructionsText)
+  $('#more-blue').html('Water')
+  $('#more-yellow').html('Sand')
+} else if (global_condition==3){
+  var global_str= 'yellow loss'
+  var yellowStr = 'chemical'
+  var blueStr = 'water'
+  var instructionsText = 'Is there more chemical or more water?'
+  $('#instructions').html(instructionsText)
+  $('#more-blue').html('Water')
+  $('#more-yellow').html('Chemical')
+} else if (global_condition==4){
+  var global_str= 'blue loss'
+  var yellowStr = 'sand'
+  var blueStr = 'chemical'      
+  var instructionsText = 'Is there more chemical or more sand?'
+  $('#instructions').html(instructionsText)
+  $('#more-blue').html('Chemical')
+  $('#more-yellow').html('Sand')
+}
+
+if (global_str.indexOf('gain')!=-1){
+  var total_pay = 0
+} else {
+  var total_pay = 5
+}
+
+total_str = total_pay.toFixed(2)
+$('#total_earnings').html('Total earnings: $'+ total_str)
+
+
 
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
@@ -77,7 +122,7 @@ get_received_infos = function() {
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
-      $("#instructions").text("Are there more blue or yellow dots?");
+      $("#instructions").text(instructionsText);
 
       proportionBlue = parseFloat(state)
       console.log("problue: ", proportionBlue)
@@ -96,7 +141,7 @@ get_received_infos = function() {
 
     // Show the participant the hint.
     if (learning_strategy === "social") {
-      $("#instructions").html("Are there more blue or yellow dots?");
+      $("#instructions").html(instructionsText);
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
@@ -305,21 +350,17 @@ function updateResponseHTML(truth,response,condition){
   // truth is a string: 'yellow' or 'blue'
   // response also a string: 'yellow' or 'blue'
   // condition a string: 'yellow gain', 'yellow loss', ect.
-  if (truth == 'good'){
-    if (response=="good"){
-        var accuracy_bonus = 1;
-        var condition_bonus = 1;
+  if (truth == 'yellow'){
+    if (response=="yellow"){
+        var accuracy_bonus = 0.05;
     } else {
         var accuracy_bonus = 0;
-        var condition_bonus = 0;
     }
   } else {
-      if (truth == "good"){
-          var accuracy_bonus = 0;
-          var condition_bonus = 1;
+      if (response == "blue"){
+          var accuracy_bonus = 0.05;
       } else {
-          var accuracy_bonus = 1;
-          var condition_bonus = 0;
+          var accuracy_bonus = 0;
       }
   }
 
@@ -327,7 +368,7 @@ function updateResponseHTML(truth,response,condition){
   if (condition.indexOf('loss')!=-1){
     $(".outcome").html("<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
     "This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Area cost: </p><hr class='hr_block'>"+
+    "Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Cleaning cost: </p><hr class='hr_block'>"+
     "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings: </p></div>")
 
   } else {
@@ -337,55 +378,43 @@ function updateResponseHTML(truth,response,condition){
     "<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
   }
   if (truth=='yellow'){
-    // Condition is gold and truth is more gold
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
-        // More gold in gold gain
-        condition_bonus = 1
+        condition_bonus = 0.1
       }
       else{
-        // more gold in gold loss
-        condition_bonus = -2
+        condition_bonus = -0.1
       }
     } else{
-      // Condition is gold truth is more dirt
       if (condition.indexOf('gain') != -1){
-        // More dirt gold gain
         condition_bonus = 0
       }
       else {
-        // More gold gold loss
-        condition_bonus = -2
+        condition_bonus = 0
       }
     }
   } else if (truth=='blue'){
-    // Condition is oil and truth is more oil
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
-        // More sand than oil
         condition_bonus = 0
       }
       else{
-        // More sand than oil, loss
-        condition_bonus = -1
+        condition_bonus = 0
       }
     } else{
-      // Condition is blue truth is blue
       if (condition.indexOf('gain') != -1){
-        // Gain condition, more oil than sand
-        condition_bonus = 1
+        condition_bonus = 0.1
       }
       else {
-        // Loss condition, more oil than sand
-        condition_bonus = -2
+        condition_bonus = -0.1
       }
     }
   }
 
   if (truth.indexOf('yellow')!=-1){
-    var true_state = "yellow"
+    var true_state = yellowStr
       } else{
-      var true_state = 'blue'
+      var true_state = blueStr
     }
 
   if (accuracy_bonus>=0){
@@ -407,6 +436,11 @@ function updateResponseHTML(truth,response,condition){
   }
 
 
+  total_pay += (accuracy_bonus+condition_bonus)
+  total_str = total_pay.toFixed(2)
+  $('#total_earnings').html('Total earnings: $'+ total_str)
+
+
   var p1_html = document.getElementById('topResult');
   var p2_html = document.getElementById('accuracy');
   var p3_html = document.getElementById('goodArea');
@@ -415,6 +449,7 @@ function updateResponseHTML(truth,response,condition){
   p2_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
   p3_html.innerHTML += '<span class = "computer_number">' + conditionStr+ "</span>"
   p4_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+
   $('.outcome').css('margin','0 auto')
   $('.titleOutcome').css('font-size','25px')
   $(".outcome").css("visibility", "visible");
