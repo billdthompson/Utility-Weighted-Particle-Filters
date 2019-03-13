@@ -2,34 +2,53 @@
 
 {% block body %}
     <div class="main_div">
-        <h1>Instructions</h1>
+        <h1>Instructions 1/3</h1>
 
         <hr>
 
-        <p> Your job at the company is to explore gold deposits. 
-            You will observe areas only briefly and decide if the area is good or bad. 
-            Each area has black circles of dirt and yellow circles of gold. 
-            An area is good if there is more gold than dirt, and bad if there is more dirt than gold.
-            For each area you get a $0.25 bonus if you are correct. 
-            Also, if the area has more gold than dirt, you and all employees
-            get an additional $0.25 bonus from the company's profits.</p>
+        <p> You work for a company looking for water in a desert area. 
+            You will observe areas briefly and decide if the area has more water
+            or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are 
+            more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b>
+        </p>
+
+        <p>Here is an example of what you might see:</p> &nbsp;
+        <div class="center_div">
+            <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
+        </div>
+        &nbsp;
+        <p>In this area, there is more sand than water.
+        </p>
+
         <hr>
 
         <div>
-            <div class="row">
-                <div class="col-xs-2">
-                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
-                    Previous
-                    </button>
-                </div>
-                <div class="col-xs-8">
-                </div>
-                <div class="col-xs-2">
-                    <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-ready');">
-                    Next
-                    </button>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-{% endblock %}
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+
+        advance = function(){
+            var nextpage = 'instructions/instruct-3' + localStorage.getItem("condition");
+            dallinger.goToPage(nextpage)
+        }
+
+        
+    </script>
+    {% endblock %}

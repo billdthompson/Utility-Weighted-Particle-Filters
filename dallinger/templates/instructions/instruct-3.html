@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="main_div">
-        <h1>Instructions 1/3</h1>
+        <h1>Instructions</h1>
 
         <hr>
 
@@ -13,13 +13,20 @@
                 An areas has more chemical if there are more blue dots than yellow, and more sand if there 
                 are more yellow dots than blue.  <b>Note that the size of the dots does not matter, only the number. </b>
         </p>
+        <p>
+            You have already been paid <b>$5.00</b> to clean the spill. On each round 
+            you will get a <b>$0.05</b> bonus if you are correct, and will spend <b>$0.10</b> 
+            to clean the area if it has more chemical than sand. You do not need to spend 
+            money to clean areas with more sand than chemical. Don't bother trying to count 
+            the dots — they will appear too briefly for that. 
+            Instead, you should take your best guess.</p>
 
-        <p>Here is an example of what you might see:</p> &nbsp;
+        <p>Here is an example of what you might see:</p>
         <div class="center_div">
             <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
         </div>
-        &nbsp;
-        <p>In this area, there is more sand than chemical.
+        <p>In this image, there is more sand than chemical. Regardless of your judgement, you will not spend
+            any money to clean this area.
         </p>
 
         <hr>
@@ -34,21 +41,11 @@
                     <div class="col-xs-8">
                     </div>
                     <div class="col-xs-2">
-                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-ready');">
                         Next
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    {% endblock %}
-
-    {% block scripts %}
-    <script>
-
-        advance = function(){
-            var nextpage = 'instructions/instruct-3' + localStorage.getItem("condition");
-            dallinger.goToPage(nextpage)
-        }
-    </script>
     {% endblock %}

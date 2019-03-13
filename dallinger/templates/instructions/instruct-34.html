@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+3 
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions 2/3</h1>
+
+        <hr>
+
+        <p>
+            You have already been paid $5.00 to clean the spill. On each round 
+            you will get a $0.05 bonus if you are correct. However, you will spend $0.10 
+            to clean the area if it has more chemical than sand. You do not need to spend 
+            money to clean areas with more sand than chemical. </p>
+            <p>Don't bother trying to count 
+            the dots — they will appear too briefly for that. 
+            Instead, you should take your best guess.</p>
+
+        <hr>
+
+        <div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-24');">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+
+        advance = function(){
+            var nextpage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
+            dallinger.goToPage(nextpage)
+        }
+    </script>
+    {% endblock %}

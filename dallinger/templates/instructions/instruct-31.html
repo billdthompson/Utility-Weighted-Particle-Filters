@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions 2/3</h1>
+
+        <hr>
+
+        <p>
+            You have already been paid $0.25 as a salary.
+            On each round, you will get a $0.05 bonus if 
+            you are correct. Also, if there area has more gold than water, the company will be a mine on this site 
+            and you will get an additional bonus of $0.10. The company will not build a mine if there is more water than gold. </p>
+            <p>
+            Don't bother trying to count the dots — they will appear too briefly for that. 
+            Instead, you should take your best guess.
+        </p>
+
+
+        <hr>
+
+        <div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="reverse();">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+
+        advance = function(){
+            var nextpage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
+            dallinger.goToPage(nextpage)
+        }
+
+        reverse = function(){
+            var previouspage = 'instructions/instruct-2' + localStorage.getItem("condition");
+            dallinger.goToPage(previouspage)
+        }
+    </script>
+    {% endblock %}
