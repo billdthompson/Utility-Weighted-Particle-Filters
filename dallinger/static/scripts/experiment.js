@@ -419,7 +419,7 @@ function updateResponseHTML(truth,response,condition){
       if (condition.indexOf('gain') != -1){
         // blue gain, truth=yellow
         condition_bonus = numBlue*0.01;
-        var dotStr = 'This area has <span>' + numBlue + '</span> blue  deposits'
+        var dotStr = 'This area has <span>' + numBlue + '</span> water deposits'
       }
       else {
         // blue loss, truth=yellow
