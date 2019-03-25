@@ -4,18 +4,18 @@
 
 {% block body %}
     <div class="main_div">
-        <h1>Instructions 2/3</h1>
+        <h1>Instructions</h1>
 
         <hr>
 
         <p>
-            You have already been paid $5.00 to clean the spill. On each round 
-            you will get a $0.05 bonus if you are correct. However, you will spend $0.10 
-            to clean the area if it has more chemical than sand. You do not need to spend 
-            money to clean areas with more sand than chemical. </p>
-            <p>Don't bother trying to count 
-            the dots — they will appear too briefly for that. 
-            Instead, you should take your best guess.</p>
+                You have already been paid $5.00 to clean the spill. On each round 
+                you will get a $0.05 bonus if you are correct in judging the 
+                area as containing more chemical or more sand. </p>
+            <p> In addition to this accuracy bonus, however, you need to spend $0.01 to clean every chemical spill 
+                (blue dot) regardless of the size of this spill. This cost is paid regardless of whether 
+                you are correct in judging the area as containing more chemical or more sand.
+            </p>
 
         <hr>
 
@@ -42,7 +42,7 @@
     <script>
 
         advance = function(){
-            var nextpage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
+            var nextpage = 'instructions/instruct-4' + localStorage.getItem("condition");
             dallinger.goToPage(nextpage)
         }
     </script>
