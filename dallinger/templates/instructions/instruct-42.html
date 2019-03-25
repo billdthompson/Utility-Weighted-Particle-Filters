@@ -6,27 +6,22 @@
 
         <hr>
 
-        <p> You work for a company looking for water in a desert area. 
-            You will observe areas briefly and decide if the area has more water
-            or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are 
-            more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b>
-            Don't bother trying to count the dots — they will appear too briefly for that. 
-            Instead, you should take your best guess.
-        </p>
-
-        <p>Here is an example of what you might see:</p> &nbsp;
+        <p>For example, this area contains 30 water deposits. If you answer correctly that there is 
+            more sand than water, you will get a $0.05 accuracy bonus, plus a $0.01 bonus for all 
+            30 water deposits. Your bonus from the round will be $0.35.
+        </p> &nbsp;
         <div class="center_div">
             <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
         </div>
         &nbsp;
-        <p>In this area, there is more sand than water.
-        </p>
-
         <hr>
 
         <div>
                 <div class="row">
                     <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="reverse();">
+                        Previous
+                        </button>
                     </div>
                     <div class="col-xs-8">
                     </div>
@@ -43,11 +38,14 @@
     {% block scripts %}
     <script>
 
-        advance = function(){
-            var nextpage = 'instructions/instruct-3' + localStorage.getItem("condition");
+advance = function(){
+            var nextpage = 'instructions/instruct-5' + localStorage.getItem("condition");
             dallinger.goToPage(nextpage)
         }
 
-        
+        reverse = function(){
+            var previouspage = 'instructions/instruct-3' + localStorage.getItem("condition");
+            dallinger.goToPage(previouspage)
+        }
     </script>
     {% endblock %}

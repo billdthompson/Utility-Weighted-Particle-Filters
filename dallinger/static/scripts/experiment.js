@@ -229,6 +229,10 @@ function regenerateDisplay (state) {
   }
 }
 
+function getBlueDots(state){
+  return Math.round(state * numDots)
+}
+
 function randi(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -363,13 +367,12 @@ function updateResponseHTML(truth,response,condition){
   }
 
 
-  console.log('Condition Variable: ' + condition)
   if (condition.indexOf('loss')!=-1){
     $(".outcome").html("<div class='titleOutcome'>"+
     "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
     "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
     "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-    "<p class = 'computer_number' id = 'goodAreaStr'></p>" + 
+    "<p class = 'computer_number' id = 'numDots'></p>" + 
     "<p class = 'computer_number' id = 'goodAreaPay'>Cleaning cost: </p> &nbsp;" + 
     "<hr class='hr_block'>"+
     "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
@@ -386,7 +389,7 @@ function updateResponseHTML(truth,response,condition){
     "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
     "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
     "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-    "<p class = 'computer_number' id = 'goodAreaStr'></p>" + 
+    "<p class = 'computer_number' id = 'numDots'></p>" + 
     "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
     "<hr class='hr_block'>"+
     "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
@@ -399,49 +402,31 @@ function updateResponseHTML(truth,response,condition){
     //"Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bbnus: </p><hr class = 'hr_block'>"+
     //"<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
   }
-  if (truth=='yellow'){
+  var numBlue = getBlueDots(state);
+  var numYellow = 80-numBlue;
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
-        condition_bonus = 0.1
-        var areaStr = 'A mine is built in this area'
+        // yellow gain
+        condition_bonus = numYellow*0.01;
+        var dotStr = 'This area has <span>' + numYellow + '</span> gold deposits'
       }
       else{
-        condition_bonus = -0.1
-        var areaStr = 'This area needs to be cleaned'
+        // yellow loss
+        condition_bonus = -1*(numYellow*0.01);
+        var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
       }
     } else{
       if (condition.indexOf('gain') != -1){
-        //blue gain, truth=yellow
-        condition_bonus = 0
-        var areaStr = 'A well will not be built in this area'
+        // blue gain, truth=yellow
+        condition_bonus = numBlue*0.01;
+        var dotStr = 'This area has <span>' + numBlue + '</span> blue  deposits'
       }
       else {
         // blue loss, truth=yellow
-        condition_bonus = 0
-        var areaStr = 'This area does not need to be cleaned'
+        condition_bonus = -1*(numBlue*0.01);
+        var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
       }
     }
-  } else if (truth=='blue'){
-    if (condition.indexOf('yellow') != -1){
-      if (condition.indexOf('gain') != -1){
-        condition_bonus = 0
-        var areaStr = 'A mine is not built in this area'
-      }
-      else{
-        condition_bonus = 0
-        var areaStr = 'This area does not need to be cleaned'
-      }
-    } else{
-      if (condition.indexOf('gain') != -1){
-        condition_bonus = 0.1
-        var areaStr = 'A well is built in this area'
-      }
-      else {
-        condition_bonus = -0.1
-        var areaStr = 'This area needs to be cleaned'
-      }
-    }
-  }
 
   if (truth.indexOf('yellow')!=-1){
     var true_state = yellowStr
@@ -476,13 +461,13 @@ function updateResponseHTML(truth,response,condition){
   var p1_html = document.getElementById('topResult');
   var p2_html = document.getElementById('responseResult');
   var p3_html = document.getElementById('accuracy');
-  var p4_html = document.getElementById('goodAreaStr');
+  var p4_html = document.getElementById('numDots');
   var p5_html = document.getElementById('goodAreaPay');
   var p6_html = document.getElementById('total');
   p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
   p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
   p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
-  p4_html.innerHTML =  areaStr
+  p4_html.innerHTML =  dotStr
   p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
   p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
 
