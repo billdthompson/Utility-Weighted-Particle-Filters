@@ -104,7 +104,7 @@ class RogersExperiment(Experiment):
     def info_post_request(self, node, info):
         """Run whenever an info is created."""
         if info.type != "trialbonus":
-             node.calculate_fitness()
+            node.calculate_fitness()
 
     def submission_successful(self, participant):
         """Run when a participant submits successfully."""
