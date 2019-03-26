@@ -41,6 +41,8 @@ class RogersExperiment(Experiment):
         self.generations = 4
         self.bonus_payment = 1.0
         self.initial_recruitment_size = self.generation_size
+        self.known_classes["trialbonus"] = self.models.TrialBonus
+        self.bonus_max = 8.
 
         if session and not self.networks():
             self.setup()
@@ -101,7 +103,8 @@ class RogersExperiment(Experiment):
 
     def info_post_request(self, node, info):
         """Run whenever an info is created."""
-        node.calculate_fitness()
+        if info.type != "trialbonus":
+             node.calculate_fitness()
 
     def submission_successful(self, participant):
         """Run when a participant submits successfully."""
@@ -125,15 +128,11 @@ class RogersExperiment(Experiment):
 
     def bonus(self, participant):
         """Calculate a participants bonus."""
-        nodes = participant.nodes()
-        nets = Network.query.filter_by(role="experiment").all()
-        net_ids = [net.id for net in nets]
-        nodes = [node for node in nodes if node.network_id in net_ids]
-
-        score = [node.score for node in nodes]
-        average = float(sum(score)) / float(len(score))
-        bonus = round(max(0.0, ((average - 0.5) * 2)) * self.bonus_payment, 2)
-        return bonus
+        nodes = participant.infos()
+        totalbonus = sum([info.property1 for info in infos if info.type == "trialbonus"])
+        if totalbonus > self.bonus_max:
+            totalbonus = self.bonus_max
+        return totalbonus
 
     def attention_check(self, participant=None):
         """Check a participant paid attention."""

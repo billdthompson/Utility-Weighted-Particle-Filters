@@ -395,9 +395,10 @@ function getBonusAmount(truth,response,condition){
 
  
   var total_pay = accuracy_bonus+condition_bonus
-  
-  updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)
-  
+  console.log("got here")
+  dallinger.createInfo(my_node_id, 
+    {contents: JSON.stringify({bonus:total_pay}),info_type: 'trialbonus'})
+  .done(function (resp) {updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)})
 }
 
 
