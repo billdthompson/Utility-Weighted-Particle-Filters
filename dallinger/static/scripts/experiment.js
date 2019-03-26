@@ -14,8 +14,8 @@ if (global_condition==1){
   $('#more-yellow').html('Gold')
 } else if (global_condition==2){
   var global_str = 'blue gain'
-  var yellowStr = 'water'
-  var blueStr = 'sand'
+  var yellowStr = 'sand'
+  var blueStr = 'water'
   var instructionsText = 'Is there more water or more sand?'
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Water')
@@ -38,10 +38,15 @@ if (global_condition==1){
   $('#more-yellow').html('Sand')
 }
 
+function round(num, places) {
+  var multiplier = Math.pow(10, places);
+  return Math.round(num * multiplier) / multiplier;
+}
+
 if (global_str.indexOf('gain')!=-1){
   var total_pay = 0
 } else {
-  var total_pay = 5
+  var total_pay = 4
 }
 
 total_str = total_pay.toFixed(2)
@@ -52,13 +57,11 @@ $('#total_earnings').html('Total earnings: $'+ total_str)
 dallinger.getExperimentProperty('practice_repeats')
   .done(function (resp) {
     num_practice_trials = resp.practice_repeats;
-    // num_practice_trials = 1;
   });
 
 dallinger.getExperimentProperty('experiment_repeats')
   .done(function (resp) {
     num_experiment_trials = resp.experiment_repeats;
-    // num_experiment_trials = 4;
   });
 
 create_agent = function() {
@@ -242,6 +245,7 @@ function shuffle(o){
   return o;
 }
 
+
 function correct(color){
   if (color == 'yellow'){
     if (proportionBlue > .5){
@@ -316,7 +320,7 @@ report = function (color) {
         console.log(condition)
       }
       true_color = correctStr()
-      updateResponseHTML(true_color,color,condition)
+      getBonusAmount(true_color,color,condition)
   });
 };
 
@@ -342,47 +346,74 @@ $(document).ready(function() {
 });
 
 
-function updateResponseHTML(truth,response,condition){
-  // truth is a string: 'yellow' or 'blue'
+
+
+function getBonusAmount(truth,response,condition){
+    // truth is a string: 'yellow' or 'blue'
   // response also a string: 'yellow' or 'blue'
   // condition a string: 'yellow gain', 'yellow loss', ect.
+  
   if (truth == 'yellow'){
     if (response=="yellow"){
-        var accuracy_bonus = 0.05;
-    } else {
+        var accuracy_bonus = 0.2;
+    } else {                                                           
         var accuracy_bonus = 0;
     }
   } else {
       if (response == "blue"){
-          var accuracy_bonus = 0.05;
+          var accuracy_bonus = 0.2;
       } else {
           var accuracy_bonus = 0;
       }
   }
 
-  if (response=='yellow'){
-    responseStr = yellowStr
-  } else{
-    responseStr = blueStr
-  }
+  var numBlue = getBlueDots(state);
+  var numYellow = 80-numBlue;
+    if (condition.indexOf('yellow') != -1){
+      if (condition.indexOf('gain') != -1){
+        // yellow gain
+        var dotStr = 'This area has <span>' + numYellow + '</span> gold deposits'
+        var condition_bonus = round((numYellow/2)*0.01,2);
+      }
+      else{
+        // yellow loss
+        var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
+        var condition_bonus = -1*round((numYellow/2)*0.01,2);
+      }
+    } else{
+      if (condition.indexOf('gain') != -1){
+        // blue gain, truth=yellow
+        var dotStr = 'This area has <span>' + numBlue + '</span> water deposits'
+        var condition_bonus = round((numBlue/2)*0.01,2);
+      }
+      else {
+        // blue loss, truth=yellow
+        var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
+        var condition_bonus = -1*round((numBlue/2)*0.01,2);
+      }
+    }
 
+ 
+  var total_pay = accuracy_bonus+condition_bonus
+  
+  updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)
+  
+}
+
+
+
+function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
 
   if (condition.indexOf('loss')!=-1){
     $(".outcome").html("<div class='titleOutcome'>"+
     "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
     "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
     "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-    "<p class = 'computer_number' id = 'numDots'></p>" + 
+    "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
     "<p class = 'computer_number' id = 'goodAreaPay'>Cleaning cost: </p> &nbsp;" + 
     "<hr class='hr_block'>"+
-    "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+    "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
     "</div>")
-
-    //</div>&nbsp; 
-    
-    //<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    //"Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>- &nbsp; Cleaning cost: </p><hr class='hr_block'>"+
-    //"<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings: </p></div>")
 
   } else {
     $(".outcome").html("<div class='titleOutcome'>"+
@@ -392,47 +423,22 @@ function updateResponseHTML(truth,response,condition){
     "<p class = 'computer_number' id = 'numDots'></p>" + 
     "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
     "<hr class='hr_block'>"+
-    "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+    "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
     "</div>")
-      
-      
-      
-      //"<div class='titleOutcome'><p class = 'computer_number' id = 'topResult'>" +
-    //"This area has more </p></div>&nbsp;<div class = 'text_left'><p class = 'computer_number' id = 'accuracy'>"+
-    //"Accuracy bonus: </p><p class = 'computer_number' id = 'goodArea'>+ &nbsp; Area Bbnus: </p><hr class = 'hr_block'>"+
-    //"<p class = 'computer_number' id = 'total'>= &nbsp;  Trial earnings:  </p></div>")
+                                                                                  
   }
-  var numBlue = getBlueDots(state);
-  var numYellow = 80-numBlue;
-    if (condition.indexOf('yellow') != -1){
-      if (condition.indexOf('gain') != -1){
-        // yellow gain
-        condition_bonus = numYellow*0.01;
-        var dotStr = 'This area has <span>' + numYellow + '</span> gold deposits'
-      }
-      else{
-        // yellow loss
-        condition_bonus = -1*(numYellow*0.01);
-        var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
-      }
+
+  if (response=='yellow'){
+      responseStr = yellowStr
     } else{
-      if (condition.indexOf('gain') != -1){
-        // blue gain, truth=yellow
-        condition_bonus = numBlue*0.01;
-        var dotStr = 'This area has <span>' + numBlue + '</span> water deposits'
-      }
-      else {
-        // blue loss, truth=yellow
-        condition_bonus = -1*(numBlue*0.01);
-        var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
-      }
-    }
+      responseStr = blueStr
+  }
 
   if (truth.indexOf('yellow')!=-1){
     var true_state = yellowStr
       } else{
-      var true_state = blueStr
-    }
+    var true_state = blueStr
+  }
 
   if (accuracy_bonus>=0){
     accuracyStr = '$' + accuracy_bonus.toFixed(2)
@@ -474,25 +480,12 @@ function updateResponseHTML(truth,response,condition){
   $('.outcome').css('margin','0 auto')
   $('.outcome').css('width','300px')
   $('.outcome').css('text-align','right')
-  //$('#topResult').css('text-align','center')
-  //$('#responseResult').css('text-align','center')
-  //$('#accuracy').css('text-align','right')
-  //$('#goodAreaStr').css('text-align','center')
-  //$('#goodAreaPay').css('text-align','right')
-
-  //$('#total').css('text-align','right')
-
-
-  //$('.titleOutcome').css('font-size','20px')
   $(".outcome").css("display", "block");
-  //$('.outcome').css('text-align','center')  
   $(".button-wrapper").css("text-align", "right");
   $(".button-wrapper").css("display", "block");
   $(".center_div").css("display", "none");
   $('.text_left').css('margin','0 auto')
   $('.text_left').css('width','200px')
-
-
   $('.text_left').css('text-align','right') 
 
   $('#continue_button').click(function(){
