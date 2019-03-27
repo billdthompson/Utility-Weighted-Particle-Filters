@@ -45,7 +45,7 @@ function round(num, places) {
 }
 
 if (global_str.indexOf('gain')!=-1){
-  var total_pay = 0
+  var total_pay = 0.25
 } else {
   var total_pay = 4
 }
@@ -397,14 +397,14 @@ function getBonusAmount(truth,response,condition){
     }
 
   if (is_practice){
-    var total_pay = 0
+    var total_bonus = 0
 
   } else {
-    var total_pay = accuracy_bonus+condition_bonus
+    var total_bonus = accuracy_bonus+condition_bonus
   }
 
   dallinger.createInfo(my_node_id, 
-    {contents: JSON.stringify({bonus:total_pay}),info_type: 'trialbonus'})
+    {contents: JSON.stringify({bonus:total_bonus}),info_type: 'trialbonus'})
   .done(function (resp) {updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)})
 }
 
@@ -466,11 +466,11 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
     netStr = '-$' + (Math.abs(accuracy_bonus+condition_bonus)).toFixed(2)
   }
 
-
-  total_pay += (accuracy_bonus+condition_bonus)
+  if (is_practice==false){
+    total_pay += (accuracy_bonus+condition_bonus)
+  }
   total_str = total_pay.toFixed(2)
   $('#total_earnings').html('Total earnings: $'+ total_str)
-
 
   var p1_html = document.getElementById('topResult');
   var p2_html = document.getElementById('responseResult');
@@ -497,13 +497,30 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
   $('.text_left').css('text-align','right') 
 
   $('#continue_button').click(function(){
-    $(".outcome").css("display", "none");
-    $(".center_div").css("display", "block");
-    $(".button-wrapper").css("display", "none");
-    $(".outcome").html("")
-    $("#instructions").html("Are there more blue or yellow dots?")
-    $("#instructions").show()
-    create_agent();
+    if (trial==num_practice_trials){
+      $(".outcome").html("")
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>You will now complete 10 test trials. Earnings from these rounds will be added " +
+      "to your final pay </p> ")
+      $("#topResult").css('font-size','30px')
+      $('#continue_button').click(function(){
+        $(".outcome").css("display", "none");
+        $(".center_div").css("display", "block");
+        $(".button-wrapper").css("display", "none");
+        $(".outcome").html("")
+        $("#instructions").html("Are there more blue or yellow dots?")
+        $("#instructions").show()
+        create_agent();
+      });
+    } else{
+      $(".outcome").css("display", "none");
+      $(".center_div").css("display", "block");
+      $(".button-wrapper").css("display", "none");
+      $(".outcome").html("")
+      $("#instructions").html("Are there more blue or yellow dots?")
+      $("#instructions").show()
+      create_agent();
+    }
   });
 
 
