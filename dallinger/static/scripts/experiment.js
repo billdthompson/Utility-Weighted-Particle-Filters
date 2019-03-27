@@ -1,5 +1,6 @@
 var trial = 0;
 var lock = true;
+is_practice = true;
 var my_node_id;
 var generation;
 var proportionBlue;
@@ -111,8 +112,10 @@ get_received_infos = function() {
     // $("#total-trial-number").html(5);
     if (trial <= num_practice_trials) {
       $("#practice-trial").html("This is a practice trial");
+      is_practice = true
     } else {
       $("#practice-trial").html("This is NOT a practice trial");
+      is_practice = false
     }
 
     if(generation == 0) {
@@ -393,11 +396,16 @@ function getBonusAmount(truth,response,condition){
       }
     }
 
- 
-  var total_pay = accuracy_bonus+condition_bonus
-  
-  updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)
-  
+  if (is_practice){
+    var total_pay = 0
+
+  } else {
+    var total_pay = accuracy_bonus+condition_bonus
+  }
+
+  dallinger.createInfo(my_node_id, 
+    {contents: JSON.stringify({bonus:total_pay}),info_type: 'trialbonus'})
+  .done(function (resp) {updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)})
 }
 
 

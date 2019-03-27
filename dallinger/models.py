@@ -1,5 +1,6 @@
 from operator import attrgetter
 import random
+import json
 
 import logging
 logger = logging.getLogger(__file__)
@@ -7,10 +8,12 @@ logger = logging.getLogger(__file__)
 from sqlalchemy import Float, Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
+from sqlalchemy.ext.declarative import declared_attr
 
 from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
+from dallinger.models import Info
 
 
 class RogersAgent(Agent):
@@ -79,9 +82,7 @@ class RogersAgent(Agent):
         return cast(self.property5, Float)
 
     def assign_condition(self):
-        logger.info("--->> Agent assign_condition called")
         self.condition = self.network.property1
-        logger.info("--->> Property5: {}".format(self.property5))
 
     def calculate_fitness(self):
         """Calculcate your fitness."""
@@ -113,6 +114,45 @@ class RogersAgent(Agent):
         logger.info("--->> Agent Init Called")
         # self.network = network
         self.assign_condition()
+
+class TrialBonus(Info):
+    """An Info that represents a parametrisable technology with a utility function."""
+
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
+
+    @hybrid_property
+    def bonus(self):
+        """Use property1 to store the bonus."""
+        try:
+            return float(self.property1)
+        except TypeError:
+            return None
+
+    @bonus.setter
+    def bonus(self, bonus):
+        """Assign bonus to property1."""
+        self.property1 = float(bonus)
+
+    @bonus.expression
+    def bonus(self):
+        """Retrieve bonus via property1."""
+        return cast(self.property1, float)
+
+    def parse_data(self, contents):
+        self.bonus = json.loads(contents)["bonus"]
+
+    def __init__(self, origin, contents=None, details = None, initialparametrisation = None):
+        self.origin = origin
+        self.origin_id = origin.id
+        self.network_id = origin.network_id
+        self.network = origin.network
+        self.parse_data(contents)
+
 
 
 class RogersEnvironment(Environment):
