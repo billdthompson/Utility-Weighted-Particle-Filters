@@ -34,7 +34,8 @@ class RogersExperiment(Experiment):
         self.practice_repeats = 0
         self.catch_repeats = 0  # a subset of experiment repeats
         self.practice_difficulty = 0.80
-        self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
+        #self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
+        self.difficulties = [0.3] * self.experiment_repeats
         self.catch_difficulty = 0.80
         self.min_acceptable_performance = 10 / float(12)
         self.generation_size = 1
