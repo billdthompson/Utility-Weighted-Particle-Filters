@@ -1,5 +1,4 @@
 var trial = 0;
-var lock = true;
 is_practice = true;
 var my_node_id;
 var generation;
@@ -53,19 +52,9 @@ if (global_str.indexOf('gain')!=-1){
 total_str = total_pay.toFixed(2)
 $('#total_earnings').html('Total earnings: $'+ total_str)
 
-
-
-dallinger.getExperimentProperty('practice_repeats')
-  .done(function (resp) {
-    num_practice_trials = resp.practice_repeats;
-  });
-
-dallinger.getExperimentProperty('experiment_repeats')
-  .done(function (resp) {
-    num_experiment_trials = resp.experiment_repeats;
-  });
-
 create_agent = function() {
+  // if this is the first trial, then dallinger.createAgent has already been 
+  // called by instruct
   if (trial == 0){
     my_node_id = localStorage.getItem("my_node_id");
     generation = localStorage.getItem("generation");
@@ -73,25 +62,18 @@ create_agent = function() {
     get_received_infos();
   }
   else {
+    console.log("Calling createAgent")
     dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
       generation = resp.node.property2;
-      console.log('resp:', resp)
       get_received_infos();
     })
-    .fail(function () {
+    .fail(function (resp) {
       dallinger.goToPage('questionnaire');
     });
 
   }
-};
-
-get_infos = function() {
-  dallinger.getInfos(my_node_id).done(function (resp) {
-    //learning_strategy = resp.infos[0].contents;
-    get_received_infos();
-  });
 };
 
 get_received_infos = function() {
@@ -118,11 +100,12 @@ get_received_infos = function() {
       is_practice = false
     }
 
-    if(generation == 0) {
-      learning_strategy = "asocial";
-    } else {
-      learning_strategy = "social";
-    }
+    var learning_strategy = "asocial";
+    // if(generation == 0) {
+    //   learning_strategy = "asocial";
+    // } else {
+    //   learning_strategy = "social";
+    // }
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
@@ -143,26 +126,25 @@ get_received_infos = function() {
       $("#more-blue").show();
     }
 
-    // Show the participant the hint.
-    if (learning_strategy === "social") {
-      $("#instructions").html(instructionsText);
+    // // Show the participant the hint.
+    // if (learning_strategy === "social") {
+    //   $("#instructions").html(instructionsText);
 
-      $("#more-blue").addClass('disabled');
-      $("#more-yellow").addClass('disabled');
+    //   $("#more-blue").addClass('disabled');
+    //   $("#more-yellow").addClass('disabled');
 
-      if (meme === "blue") {
-        $("#stimulus").attr("src", "/static/images/blue_social.jpg");
-      } else if (meme === "yellow") {
-        $("#stimulus").attr("src", "/static/images/yellow_social.jpg");
-      }
-      $("#stimulus").show();
-      setTimeout(function() {
-        $("#stimulus").hide();
-        $("#more-blue").removeClass('disabled');
-        $("#more-yellow").removeClass('disabled');
-        lock = false;
-      }, 2000);
-    }
+    //   if (meme === "blue") {
+    //     $("#stimulus").attr("src", "/static/images/blue_social.jpg");
+    //   } else if (meme === "yellow") {
+    //     $("#stimulus").attr("src", "/static/images/yellow_social.jpg");
+    //   }
+    //   $("#stimulus").show();
+    //   setTimeout(function() {
+    //     $("#stimulus").hide();
+    //     $("#more-blue").removeClass('disabled');
+    //     $("#more-yellow").removeClass('disabled');
+    //   }, 2000);
+    // }
   });
 };
 
@@ -176,7 +158,7 @@ function presentDisplay (argument) {
     }
     $("#more-blue").removeClass('disabled');
     $("#more-yellow").removeClass('disabled');
-    lock = false;
+    console.log("clearing paper")
     paper.clear();
   }, 1000);
 }
@@ -298,12 +280,20 @@ function payoff(color, correct){
 };
 
 report = function (color) {
+  paper.clear();
   $("#more-blue").addClass('disabled');
   $("#more-yellow").addClass('disabled');
   $("#reproduction").val("");
 
+  var contents = {choice:color,
+                  is_practice:is_practice,
+                  proportionBlue:proportionBlue,
+                  condition:localStorage.getItem("condition"),
+                  running_total_bonus:total_pay,
+                  participant_id: dallinger.identity.participantId}
+
   dallinger.createInfo(my_node_id, {
-    contents: color,
+    contents: JSON.stringify(contents),
     info_type: 'Meme'
   }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
@@ -398,14 +388,16 @@ function getBonusAmount(truth,response,condition){
 
   if (is_practice){
     var total_bonus = 0
+    updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)
+    return
 
   } else {
     var total_bonus = accuracy_bonus+condition_bonus
-  }
-
-  dallinger.createInfo(my_node_id, 
+      dallinger.createInfo(my_node_id, 
     {contents: JSON.stringify({bonus:total_bonus}),info_type: 'trialbonus'})
-  .done(function (resp) {updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)})
+    .done(function (resp) {updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus)})
+    return
+    }
 }
 
 
@@ -496,7 +488,7 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
   $('.text_left').css('width','200px')
   $('.text_left').css('text-align','right') 
 
-  $('#continue_button').click(function(){
+  $('#continue_button').unbind('click').click(function(){
     if (trial==num_practice_trials){
       $(".outcome").html("")
       $(".outcome").html("<div class='titleOutcome'>"+

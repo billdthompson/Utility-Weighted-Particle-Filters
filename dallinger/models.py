@@ -13,7 +13,65 @@ from sqlalchemy.ext.declarative import declared_attr
 from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
-from dallinger.models import Info
+from dallinger.models import Info, Network
+
+class ParticleFilter(Network):
+    """Discrete fixed size generations with random transmission"""
+
+    __mapper_args__ = {"polymorphic_identity": "particlefilter"}
+
+    def __init__(self, generations, generation_size, initial_source):
+        """Endow the network with some persistent properties."""
+        self.property1 = repr(generations)
+        self.property2 = repr(generation_size)
+        self.property3 = repr(initial_source)
+        if self.initial_source:
+            self.max_size = generations * generation_size + 1
+        else:
+            self.max_size = generations * generation_size
+
+    @property
+    def generations(self):
+        """The length of the network: the number of generations."""
+        return int(self.property1)
+
+    @property
+    def generation_size(self):
+        """The width of the network: the size of a single generation."""
+        return int(self.property2)
+
+    @property
+    def initial_source(self):
+        """The source that seeds the first generation."""
+        return self.property3.lower() != "false"
+
+    def add_node(self, node):
+        """Link to the agent from a parent based on the parent's fitness"""
+        num_agents = len(self.nodes(type=Agent))
+        
+        curr_generation = int((num_agents - 1) / float(self.generation_size))
+        
+        node.generation = curr_generation
+
+        logger.info("--->>> add_node gen: {}".format(curr_generation))
+
+        if curr_generation == 0 and self.initial_source:
+            parent = self._select_oldest_source()
+        else:
+            parent = self._sample_previous_generation(node_type=type(node), generation=curr_generation - 1)
+
+        if parent is not None:
+            parent.connect(whom=node)
+            parent.transmit(to_whom=node)
+
+    def _select_oldest_source(self):
+        logger.info("--->>> createnet nodes: {}".format(self.nodes()))
+        return min(self.nodes(type=Environment), key=attrgetter("creation_time"))
+
+    def _sample_previous_generation(self, node_type, generation):
+        logger.info("--->>> gen: {}".format(generation))
+        previous_generation = node_type.query.filter_by(failed=False, network_id=self.id, generation=(generation)).all()
+        return random.choice(previous_generation)
 
 
 class RogersAgent(Agent):
@@ -83,31 +141,6 @@ class RogersAgent(Agent):
 
     def assign_condition(self):
         self.condition = self.network.property1
-
-    def calculate_fitness(self):
-        """Calculcate your fitness."""
-        if self.fitness is not None:
-            raise Exception("You are calculating the fitness of agent {}, "
-                            .format(self.id) +
-                            "but they already have a fitness")
-        infos = self.infos()
-
-        said_blue = ([i for i in infos if
-                      isinstance(i, Meme)][0].contents == "blue")
-        proportion = float(
-            max(State.query.filter_by(network_id=self.network_id).all(),
-                key=attrgetter('creation_time')).contents)
-        self.proportion = proportion
-        is_blue = proportion > 0.5
-
-        if said_blue is is_blue:
-            self.score = 1
-        else:
-            self.score = 0
-
-        # TODO: test that selection of nodes is uniformly random
-        # set fitness to 1 so that fitness isn't involved in network
-        self.fitness = 1
 
     def __init__(self, contents=None, details = None, network = None, participant = None):
         super(RogersAgent, self).__init__(network, participant)
