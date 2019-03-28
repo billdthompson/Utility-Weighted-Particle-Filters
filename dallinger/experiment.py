@@ -30,7 +30,7 @@ class RogersExperiment(Experiment):
         from . import models
         self.models = models
         self.verbose = False
-        self.experiment_repeats = 4
+        self.experiment_repeats = 1
         self.practice_repeats = 0
         self.catch_repeats = 0  # a subset of experiment repeats
         self.practice_difficulty = [0.80]
