@@ -119,8 +119,8 @@ class RogersExperiment(Experiment):
 
     def bonus(self, participant):
         """Calculate a participants bonus."""
-        nodes = participant.infos()
-        totalbonus = sum([info.property1 for info in infos if info.type == "trialbonus"])
+        infos = participant.infos()
+        totalbonus = sum([float(info.property1) for info in infos if info.type == "trialbonus"])
         if totalbonus > self.bonus_max:
             totalbonus = self.bonus_max
         return totalbonus
