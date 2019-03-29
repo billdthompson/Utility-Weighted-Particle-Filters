@@ -217,11 +217,7 @@ class RogersExperiment(Experiment):
         self.models = models
         self.verbose = False
         self.experiment_repeats = 1
-<<<<<<< HEAD
         self.practice_repeats = 0
-=======
-        self.practice_repeats = 3
->>>>>>> 2d19576523e4c09f829dd38432b635a065a7f5e1
         self.catch_repeats = 0  # a subset of experiment repeats
         self.difficulties = [0.4375,0.4625,0.4875] * self.experiment_repeats
         self.practice_difficulty = [0.4375,0.4625,0.4875] * self.practice_repeats
