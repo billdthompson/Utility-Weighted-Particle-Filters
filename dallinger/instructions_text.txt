@@ -1,0 +1,144 @@
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- Condition 1 - Looking for underwater gold -- -- -- -- --
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --- -- -- --
+
+-- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
+You work for a company looking for underwater gold. 
+You will observe areas briefly and decide if the area has more water or more gold. 
+An area has more gold if there are more yellow dots than blue, and more water if there are more blue dots than yellow.
+Note that the size of the dots does not matter, only the number. Don't bother trying to count the 
+dots — they will appear too briefly for that. Instead, you should take your best guess.
+
+-- -- -- -- -- -- -- Page 2 -- -- -- -- -- -- --
+You have already been paid $0.25 as a salary.
+On each round, you will get a $0.20 bonus if you are correct in judging the area as containing more gold or more water.
+In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (yellow dot) in the area, 
+regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus 
+regardless of whether you are correct in judging the area as containing more gold or more water.
+
+-- -- -- -- -- -- -- Page 3 -- -- -- -- -- -- --
+For example, this area contains 50 gold deposits. If you answer correctly that there is 
+more gold than water, you will get a $0.20 accuracy bonus, plus a $0.005 bonus for all 
+50 gold deposits. In total, your bonus from the round will be $0.45.
+
+-- -- -- -- -- -- -- Page 4 -- -- -- -- -- -- --
+If you answer incorrectly that there is more water than gold, you will not get 
+an accuracy bonus, but you will still get a $0.005 bonus for all 50 gold deposits. In this case, your bonus from the round will be $0.25.
+
+-- -- -- -- -- -- -- Page 5 -- -- -- -- -- -- --
+There are 12 rounds in total. The first 2 are practice rounds. For each area, your bonus will be rounded to the 
+nearest cent and shown to you. The practice rounds will not affect your bonus. 
+Also note that if you leave the experiment early, you will not recieve any bonus.
+Each area is different from the others - just because there was more gold in one 
+area does not mean there will be more in the next area.
+
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- Condition 2 - Looking for water in the desert -- -- -- --
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --- -- -- --
+
+-- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
+You work for a company looking for water in a desert area. You will observe areas briefly and 
+decide if the area has more water or more sand. An area has more water if there are more blue dots 
+than yellow, and more sand if there are more yellow dots than blue. Note that the size of the dots 
+does not matter, only the number. Don't bother trying to count the dots — they will appear too briefly for that. 
+Instead, you should take your best guess.
+
+-- -- -- -- -- -- -- Page 2 -- -- -- -- -- -- --
+You have already been paid $0.25 as a salary. On each round, you will get a $0.20 bonus if 
+you are correct in judging the area as containing more water or more sand. In addition to this 
+accuracy bonus, you will be paid $0.005 for every water deposit (blue dot) in the area, regardless 
+of the size of the deposit. Because the water will always be collected, you will get this bonus 
+regardless of whether you are correct in judging the area as containing more water or more sand.
+
+-- -- -- -- -- -- -- Page 3 -- -- -- -- -- -- --
+For example, this area contains 30 water deposits. If you answer correctly that there is 
+more sand than water, you will get a $0.20 accuracy bonus, plus a $0.005 bonus for all 
+30 water deposits. In total, your bonus from the round will be $0.35.
+
+-- -- -- -- -- -- -- Page 4 -- -- -- -- -- -- --
+If you answer incorrectly that there is more water than sand, you will not get an accuracy bonus, 
+but you will still get a $0.005 bonus for all 30 water deposits. In this case, your bonus from 
+the round will be $0.15.
+
+-- -- -- -- -- -- -- Page 5 -- -- -- -- -- -- --
+There are 12 rounds in total. The first 2 are practice rounds. For each area, your bonus will be rounded to the 
+nearest cent and shown to you. The practice rounds will not affect your bonus. Also note that if you leave the 
+experiment early, you will not recieve any bonus. Each area is different from the others - just because 
+there was more water in one area does not mean there will be more in the next area.
+
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- Condition 3 - Cleaning up chemical from the ocean -- -- 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --- -- -- --
+
+-- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
+You work for a company cleaning a chemical recently spilled in a protected ocean zone. 
+You will observe areas briefly and decide if the areas contain more chemical or more water. 
+An areas has more chemical if there are more yellow dots than blue, and more water if there 
+are more blue dots than yellow. Note that the size of the dots does not matter, only the number. 
+Don't bother trying to count the dots — they will appear too briefly for that. 
+Instead, you should take your best guess.
+
+-- -- -- -- -- -- -- Page 2 -- -- -- -- -- -- --
+You have already been paid $4.00 to clean the spill. On each round 
+you will get a $0.20 bonus if you are correct in judging the area as containing more 
+chemical or more water.In addition to this accuracy bonus, however, you need to spend 
+$0.005 to clean every chemical spill (yellow dot), regardless of the size of this spill. 
+Because all the chemical needs to be cleaned, you will pay this cost regardless of whether 
+you are correct in judging the area as containing more chemical or more water.
+
+-- -- -- -- -- -- -- Page 3 -- -- -- -- -- -- --
+For example, this area contains 50 chemical spills. If you answer correctly that there is 
+more chemical than water, you will get a $0.20 accuracy bonus. However, you must also pay 
+a $0.005 fee for all 50 chemical spills. In total, you will lose $0.05 on this round.
+
+-- -- -- -- -- -- -- Page 4 -- -- -- -- -- -- --
+If you answer incorrectly that there is more water than chemical, 
+you will not get an accuracy bonus, but you will still need to pay $0.005 for all 
+50 chemical spills. In this case, you will lose $0.25 on this round.
+
+-- -- -- -- -- -- -- Page 5 -- -- -- -- -- -- --
+There are 12 rounds in total. The first 2 are practice rounds. For each area, your bonus will be rounded to the 
+nearest cent and shown to you. The practice rounds will not affect your bonus. 
+Also note that if you leave the experiment early, you will not recieve any bonus. Each area is different 
+from the others - just because there was more chemical in one area does not mean there will be more in the next area.
+
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+-- -- -- -- Condition 4 - Cleaning up chemical from the desert -- -- 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --- -- -- --
+
+-- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
+You work for a company cleaning a chemical recently spilled in a protected desert zone. 
+You will observe areas briefly and decide if the areas contain more chemical or more sand. 
+An areas has more chemical if there are more blue dots than yellow, and more sand if there are 
+more yellow dots than blue. Note that the size of the dots does not matter, only the number. 
+Don't bother trying to count the dots — they will appear too briefly for that. Instead, you 
+should take your best guess.
+
+-- -- -- -- -- -- -- Page 2 -- -- -- -- -- -- --
+You have already been paid $4.00 to clean the spill. On each round you will get a $0.20 
+bonus if you are correct in judging the area as containing more chemical or more sand. In addition 
+to this accuracy bonus, however, you need to spend $0.005 to clean every chemical spill (blue dot), 
+regardless of the size of this spill. Because all the chemical needs to be cleaned, you will pay 
+this cost regardless of whether you are correct in judging the area as containing more chemical or more sand.
+
+-- -- -- -- -- -- -- Page 3 -- -- -- -- -- -- --
+For example, this area contains 30 chemical spills. If you answer correctly that there is more 
+sand than chemical, you will get a $0.20 accuracy bonus. However, you must also pay a $0.005 fee for all 
+30 chemical spills. In total, you will gain $0.05 on this round.
+
+-- -- -- -- -- -- -- Page 4 -- -- -- -- -- -- --
+If you answer incorrectly that there is more chemical than sand, you will not get an accuracy 
+bonus, but you will still need to pay $0.005 for all 30 chemical spills. In this case, you will 
+lose $0.15 on this round.
+
+-- -- -- -- -- -- -- Page 5 -- -- -- -- -- -- --
+There are 12 rounds in total. The first 2 are practice rounds. For each area, your bonus will be rounded 
+to the nearest cent and shown to you. The practice rounds will not affect your bonus. Also note that 
+if you leave the experiment early, you will not recieve any bonus. Each area is different from the 
+others - just because there was more chemical in one area does not mean there will be more in the next area.
