@@ -1,7 +1,37 @@
-{% extends "base/consent.html" %}
+{% extends “base/consent.html” %}
 
-{% block consent_button %}
-    <button type="button" class="btn btn-primary btn-lg" 
-    onClick="window.location='/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';"
-    style="float: left;">I agree
+{% block body %}
+   <div class=“main_div”>
+       <noscript>
+           <h1>Warning: Javascript is not working on your browser</h1>
+           <p>The study will not work unless Javascript is enabled on your browser.</p>
+           <p>Please enable Javascript then refresh this page.<p>
+       </noscript>
+       <h1>We need your consent to proceed</h1>
+       <hr>
+       <div class=“consent_div text-justify”><small>
+
+           <p>This research is being conducted by Bill Thompson, a postdoctoral research fellow, and Tom Griffiths, a faculty member, at the University of California, Berkeley. This study takes between five and ten minutes.</p>
+
+           <p>If you agree to take part in the research, you will be asked to play a game in which you will make a series of choices estimating the number of blue and yellow dots on the screen. On each round, you will get a bonus if your judgement is correct, and another bonus depending the true numbers of dots. All of the information we obtain during the research will be kept confidential, and not associated with your name in any way. However, while the study is running it will be associated with your MTurk worker id. Once the study is complete we will replace your worker id with a random string.</p>
+
+           <p>Your participation in this research is voluntary. You are free to refuse to take part, and you may stop taking part at any time. You are free to discontinue participation in this study at any time with no penalty.</p>
+
+           <p>If you have any questions about this research, do not hesitate to contact Bill Thompson at billdthompson@berkeley.edu. If you have any questions about your rights or treatment as a participant in this research project, please contact UC Berkeley’s Committee for Protection of Human Subjects at (510) 642-7461 or subjects@berkeley.edu</p>
+
+           <p>By consenting to participate, you acknowledge that you are 18 years or older, have read this consent form, agree to its contents, and agree to take part in this research. If you do not wish to consent, close this page and return the HIT on Mechanical Turk.</p>
+           <hr>
+           <h4>Do you understand and consent to these terms?</h4>
+           <br>
+           {% block consent_button %}
+           <button type=“button” class=“btn btn-primary btn-lg” id=“consent” onClick=“window.location=‘/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}’;” style=“float: left;“>I agree
+           </button>
+           {% endblock consent_button %}
+           {% block reject_button %}
+           <button type=“button” class=“btn btn-danger btn-lg” onClick=“self.close();” style=“float: right;“>No thanks (exit HIT)
+           </button>
+           {% endblock reject_button %}
+       </div>
+   </div>
+
 {% endblock %}
