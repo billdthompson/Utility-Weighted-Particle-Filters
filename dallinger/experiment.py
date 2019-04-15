@@ -45,7 +45,7 @@ class RogersExperiment(Experiment):
         self.initial_recruitment_size = self.generation_size
         self.known_classes["trialbonus"] = self.models.TrialBonus
         self.known_classes["particlefilter"] = self.models.ParticleFilter
-        self.bonus_max = 8.
+        self.bonus_max = 4.3
 
         if session and not self.networks():
             self.setup()
