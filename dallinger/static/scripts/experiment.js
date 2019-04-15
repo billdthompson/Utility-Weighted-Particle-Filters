@@ -62,7 +62,7 @@ create_agent = function() {
     get_received_infos();
   }
   else {
-    console.log("Calling createAgent")
+    // console.log("Calling createAgent")
     dallinger.createAgent()
     .done(function (resp) {
       my_node_id = resp.node.id;
@@ -114,7 +114,7 @@ get_received_infos = function() {
       $("#instructions").text(instructionsText);
 
       proportionBlue = parseFloat(state)
-      console.log("problue: ", proportionBlue)
+      // console.log("problue: ", proportionBlue)
       regenerateDisplay(state);
 
       $("#more-blue").addClass('disabled');
@@ -160,7 +160,7 @@ function presentDisplay (argument) {
     }
     $("#more-blue").removeClass('disabled');
     $("#more-yellow").removeClass('disabled');
-    console.log("clearing paper")
+    // console.log("clearing paper")
     paper.clear();
   }, 1000);
 }
@@ -296,7 +296,7 @@ report = function (color) {
   } else if (condition_var==4){
     var condition= 'blue loss'      
   } else {
-    console.log(condition)
+    // console.log(condition)
   }
   true_color = correctStr()
   bonuses=getBonusAmount(true_color,color,condition)
@@ -329,12 +329,12 @@ report = function (color) {
 
 $(document).ready(function() {
   $("#more-yellow").click(function() {
-    console.log("Reported more yellow.");
+    // console.log("Reported more yellow.");
     report("yellow");
   });
 
   $("#more-blue").click(function() {
-    console.log("Reported more blue.");
+    // console.log("Reported more blue.");
     report("blue");
   });
 

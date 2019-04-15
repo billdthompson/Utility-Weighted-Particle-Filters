@@ -39,7 +39,7 @@ class RogersExperiment(Experiment):
         #self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
         self.catch_difficulty = 0.80
         self.min_acceptable_performance = 10 / float(12)
-        self.generation_size = 3
+        self.generation_size = 20
         self.generations = 1
         self.bonus_payment = 1.0
         self.initial_recruitment_size = self.generation_size
@@ -84,7 +84,7 @@ class RogersExperiment(Experiment):
             env = self.models.RogersEnvironment(network=net)
             env.create_state(proportion=self.color_proportion_for_network(net))
             net.property1 = self.conditions[i]
-            logger.info("--->>> nodes: {}".format(net.nodes()))
+            # logger.info("--->>> nodes: {}".format(net.nodes()))
 
     def color_proportion_for_network(self, net):
         if net.role == "practice":
