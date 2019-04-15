@@ -1,4 +1,4 @@
-{% extends “base/consent.html” %}
+{% extends "base/consent.html" %}
 
 {% block body %}
    <div class=“main_div”>
@@ -24,8 +24,8 @@
            <h4>Do you understand and consent to these terms?</h4>
            <br>
            {% block consent_button %}
-           <button type=“button” class=“btn btn-primary btn-lg” id=“consent” onClick=“window.location=‘/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}’;” style=“float: left;“>I agree
-           </button>
+           <button type="button" class="btn btn-primary btn-lg" onClick="window.location='/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';"
+           style="float: left;">I agree
            {% endblock consent_button %}
            {% block reject_button %}
            <button type=“button” class=“btn btn-danger btn-lg” onClick=“self.close();” style=“float: right;“>No thanks (exit HIT)
