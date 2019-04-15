@@ -4,6 +4,12 @@ var my_node_id;
 var generation;
 var proportionBlue;
 var global_condition = localStorage.getItem("condition");
+var sampleArray = [0.4625,0.475,0.4875,0.4625,0.475,0.4875,0.5375,0.525,0.5125,0.5375,0.525,0.5125]
+function sampleWithoutReplacement(input_array) {
+  var randomIndex = Math.floor(Math.random()*input_array.length);
+  return input_array.splice(randomIndex, 1)[0];
+}
+
 if (global_condition==1){
   var global_str = 'yellow gain'
   var yellowStr = 'gold'
@@ -113,7 +119,8 @@ get_received_infos = function() {
     if (learning_strategy === "asocial") {
       $("#instructions").text(instructionsText);
 
-      proportionBlue = parseFloat(state)
+      //proportionBlue = parseFloat(state)
+      proportionBlue = sampleWithoutReplacement(sampleArray)
       console.log("problue: ", proportionBlue)
       regenerateDisplay(state);
 
