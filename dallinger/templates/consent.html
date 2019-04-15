@@ -1,7 +1,7 @@
 {% extends "base/consent.html" %}
 
 {% block body %}
-   <div class=“main_div”>
+   <div class="main_div">
        <noscript>
            <h1>Warning: Javascript is not working on your browser</h1>
            <p>The study will not work unless Javascript is enabled on your browser.</p>
@@ -9,7 +9,7 @@
        </noscript>
        <h1>We need your consent to proceed</h1>
        <hr>
-       <div class=“consent_div text-justify”><small>
+       <div class="consent_div text-justify"><small>
 
            <p>This research is being conducted by Bill Thompson, a postdoctoral research fellow, and Tom Griffiths, a faculty member, at the University of California, Berkeley. This study takes between five and ten minutes.</p>
 
@@ -28,7 +28,7 @@
            style="float: left;">I agree
            {% endblock consent_button %}
            {% block reject_button %}
-           <button type=“button” class=“btn btn-danger btn-lg” onClick=“self.close();” style=“float: right;“>No thanks (exit HIT)
+           <button type="button" class="btn btn-primary btn-lg" onClick="self.close();" style="float: right;">No thanks (exit HIT)
            </button>
            {% endblock reject_button %}
        </div>
