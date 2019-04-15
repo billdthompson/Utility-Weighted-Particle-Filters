@@ -25,7 +25,16 @@
 
 {% block scripts %}
     <script type="text/javascript">
-
+    var condition_num = Math.random()
+    if (condition_num<=0.25){
+        var condition='1'
+    } else if (condition_num>=0.25 && condition_num<0.5){
+        var condition='2'
+    } else if (condition_num>=0.5 && condition_num<0.75){
+        var condition='3'
+    } else{
+        var condition='4'
+    }
         create_agent = function() {
           
           dallinger.createAgent()
@@ -35,9 +44,9 @@
                 
                 localStorage.setItem("generation",resp.node.property2);
                 
-                localStorage.setItem("condition",parseInt(resp.node.property5.replace(/'/g,'')));
+                localStorage.setItem("condition",condition);
 
-                var nextpage = 'instructions/instruct-2' + resp.node.property5.replace(/'/g,'')
+                var nextpage = 'instructions/instruct-2' + condition)
                 
                 dallinger.goToPage(nextpage)
 
