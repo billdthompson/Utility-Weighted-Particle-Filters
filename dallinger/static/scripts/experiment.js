@@ -21,7 +21,7 @@ if (global_condition==1){
 } else if (global_condition==2){
   var global_str = 'blue gain'
   var yellowStr = 'sand'
-  var blueStr = 'water'
+  var blueStr = 'water' 
   var instructionsText = 'Are there more water dots or more sand dots?'
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Water')
@@ -121,7 +121,8 @@ get_received_infos = function() {
 
       //proportionBlue = parseFloat(state)
       proportionBlue = sampleWithoutReplacement(sampleArray)
-      regenerateDisplay(state);
+      console.log("problue: ", proportionBlue)
+      regenerateDisplay(proportionBlue);
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
@@ -171,13 +172,13 @@ function presentDisplay (argument) {
   }, 1000);
 }
 
-function regenerateDisplay (state) {
+function regenerateDisplay (propBlue) {
   // Display parameters
   width = 600;
   height = 300;
   numDots = 80;
   dots = [];
-  blueDots = Math.round(state * numDots);
+  blueDots = Math.round(propBlue * numDots);
   yellowDots = numDots - blueDots;
   sizes = [];
   rMin = 10; // The dots' minimum radius.
@@ -225,8 +226,8 @@ function regenerateDisplay (state) {
   }
 }
 
-function getBlueDots(state){
-  return Math.round(state * numDots)
+function getBlueDots(propBlue){
+  return Math.round(propBlue * numDots)
 }
 
 function randi(min, max) {
@@ -376,7 +377,7 @@ function getBonusAmount(truth,response,condition){
       }
   }
 
-  var numBlue = getBlueDots(state);
+  var numBlue = getBlueDots(proportionBlue);
   var numYellow = 80-numBlue;
     if (condition.indexOf('yellow') != -1){
       if (condition.indexOf('gain') != -1){
