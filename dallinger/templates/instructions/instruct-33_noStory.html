@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+3 
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+        <p>
+            You have already been paid $4.00 for this experiment. On every round, you will get an additional $0.20 bonus if you are correct. 
+            Furthermore, for every blue dot in the image you will lose $0.005. You will not lose any money for yellow dots. You will lose this money 
+            for blue dots regardless of whether your judgement is correct.
+        </p>
+        <hr>
+
+        <div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="dallinger.goToPage('instructions/instruct-1');">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+        advance = function(){
+            var nextpage = 'instructions/instruct-4' + localStorage.getItem("condition")+'_noStory';
+            dallinger.goToPage(nextpage)
+        }
+
+        reverse = function(){
+            var previouspage = 'instructions/instruct-2' + localStorage.getItem("condition")+'_noStory';
+            dallinger.goToPage(previouspage)
+        }
+    </script>
+    {% endblock %}

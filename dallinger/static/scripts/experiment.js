@@ -5,6 +5,7 @@ var generation;
 var proportionBlue;
 var global_condition = localStorage.getItem("condition");
 var sampleArray = [0.4625,0.475,0.4875,0.4625,0.475,0.4875,0.5375,0.525,0.5125,0.5375,0.525,0.5125]
+var noStory = true;
 function sampleWithoutReplacement(input_array) {
   var randomIndex = Math.floor(Math.random()*input_array.length);
   return input_array.splice(randomIndex, 1)[0];
@@ -42,6 +43,27 @@ if (global_condition==1){
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Chemical')
   $('#more-yellow').html('Sand')
+}
+
+if (noStory==true){
+  if (global_condition==3){
+    var global_str= 'yellow loss'
+    var yellowStr = 'yellow dots'
+    var blueStr = 'blue dots'
+    var instructionsText = 'Are there more yellow dots or more blue dots?'
+    $('#instructions').html(instructionsText)
+    $('#more-blue').html('Blue')
+    $('#more-yellow').html('Yellow')
+  } else if (global_condition==4){
+    var global_str= 'blue loss'
+    var yellowStr = 'yellow dots'
+    var blueStr = 'blue dots'
+    var instructionsText = 'Are there more yellow dots or more blue dots?'
+    $('#instructions').html(instructionsText)
+    $('#more-blue').html('Blue')
+    $('#more-yellow').html('Yellow')
+  }
+
 }
 
 function round(num, places) {
@@ -121,7 +143,7 @@ get_received_infos = function() {
 
       //proportionBlue = parseFloat(state)
       proportionBlue = sampleWithoutReplacement(sampleArray)
-      console.log("problue: ", proportionBlue)
+      //console.log("problue: ", proportionBlue)
       regenerateDisplay(proportionBlue);
 
       $("#more-blue").addClass('disabled');
@@ -386,8 +408,12 @@ function getBonusAmount(truth,response,condition){
         var condition_bonus = round((numYellow/2)*0.01,2);
       }
       else{
+        if (noStory==true){
+          var dotStr = 'This area has <span>' + numYellow + '</span> yellow dots'
+        } else{
+          var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
+        }
         // yellow loss
-        var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
         var condition_bonus = -1*round((numYellow/2)*0.01,2);
       }
     } else{
@@ -398,7 +424,11 @@ function getBonusAmount(truth,response,condition){
       }
       else {
         // blue loss, truth=yellow
-        var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
+        if (noStory==true){
+          var dotStr = 'This area has <span>' + numBlue + '</span> blue dots'
+        } else{
+          var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
+        }
         var condition_bonus = -1*round((numBlue/2)*0.01,2);
       }
     }
@@ -411,15 +441,27 @@ function getBonusAmount(truth,response,condition){
 function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
 
   if (condition.indexOf('loss')!=-1){
-    $(".outcome").html("<div class='titleOutcome'>"+
-    "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-    "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-    "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-    "<p class = 'computer_number' id = 'goodAreaPay'>Cleaning cost: </p> &nbsp;" + 
-    "<hr class='hr_block'>"+
-    "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
-    "</div>")
+    if (condition.indexOf('yellow')!=-1){
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot cost: </p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "</div>")
+    } else if (condition.indexOf('blue')!=-1){
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot cost: </p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "</div>")
+    }
 
   } else {
     $(".outcome").html("<div class='titleOutcome'>"+
