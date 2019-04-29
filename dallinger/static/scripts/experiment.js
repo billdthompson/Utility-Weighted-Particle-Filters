@@ -409,7 +409,7 @@ function getBonusAmount(truth,response,condition){
       }
       else{
         if (noStory==true){
-          var dotStr = 'This area has <span>' + numYellow + '</span> yellow dots'
+          var dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
         } else{
           var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
         }
@@ -425,7 +425,7 @@ function getBonusAmount(truth,response,condition){
       else {
         // blue loss, truth=yellow
         if (noStory==true){
-          var dotStr = 'This area has <span>' + numBlue + '</span> blue dots'
+          var dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
         } else{
           var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
         }
@@ -443,23 +443,23 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
   if (condition.indexOf('loss')!=-1){
     if (condition.indexOf('yellow')!=-1){
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
       "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
       "</div>")
     } else if (condition.indexOf('blue')!=-1){
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
       "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
       "</div>")
     }
 
