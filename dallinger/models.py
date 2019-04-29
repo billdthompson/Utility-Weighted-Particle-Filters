@@ -187,6 +187,51 @@ class TrialBonus(Info):
         self.parse_data(contents)
 
 
+class ComprehensionTest(Info):
+    """An Info that represents a comprehension test."""
+
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
+
+    @hybrid_property
+    def passed(self):
+        """Use property1 to store the technology's parameters and their ranges as a json string."""
+        try:
+            return bool(self.property1)
+        except TypeError:
+            return None
+
+    @passed.setter
+    def passed(self, p):
+        """Assign passed to property1."""
+        self.property1 = p
+
+    @passed.expression
+    def passed(self):
+        """Retrieve passed via property1."""
+        return cast(self.property1, bool)
+
+    def evaluate_answers(self):
+
+        return (self.questions["q1"] == "9") &\
+        (self.questions["q2"] == "8") &\
+        (self.questions["q3"] == "10") &\
+        (self.questions["q4"] == "10")
+
+    def __init__(self, origin, contents=None, details = None, initialparametrisation = None):
+        self.origin = origin
+        self.origin_id = origin.id
+        self.network_id = origin.network_id
+        self.network = origin.network
+        self.questions = json.loads(contents)
+        self.passed = self.evaluate_answers()
+        self.contents = contents
+
+
 
 class RogersEnvironment(Environment):
     """The Rogers environment."""

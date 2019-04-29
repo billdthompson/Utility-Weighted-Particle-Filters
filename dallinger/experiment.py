@@ -39,12 +39,13 @@ class RogersExperiment(Experiment):
         #self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
         self.catch_difficulty = 0.80
         self.min_acceptable_performance = 10 / float(12)
-        self.generation_size = 30
+        self.generation_size = 3
         self.generations = 1
         self.bonus_payment = 1.0
         self.initial_recruitment_size = self.generation_size
         self.known_classes["trialbonus"] = self.models.TrialBonus
         self.known_classes["particlefilter"] = self.models.ParticleFilter
+        self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
         self.bonus_max = 4.3
 
         if session and not self.networks():
