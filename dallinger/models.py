@@ -217,10 +217,8 @@ class ComprehensionTest(Info):
 
     def evaluate_answers(self):
 
-        return (self.questions["q1"] == "9") &\
-        (self.questions["q2"] == "8") &\
-        (self.questions["q3"] == "10") &\
-        (self.questions["q4"] == "10")
+        return (self.questions["q1"] == "10") &\
+        (self.questions["q2"] == "9")
 
     def __init__(self, origin, contents=None, details = None, initialparametrisation = None):
         self.origin = origin

@@ -1,0 +1,47 @@
+.instructions {
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%!important ;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.sliders {
+  margin-left: 100px;
+  margin-right: 100px;
+
+}
+
+/* Scale canvas with resize attribute to full size */
+canvas[resize] {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+.btn-success:focus {
+  outline: none;
+}
+
+.btn-primary:focus {
+  outline: none;
+}
+
+.btn-warning:focus {
+  outline: none;
+}
+
+.btn-info:focus {
+  outline: none;
+}
+
+
+
+

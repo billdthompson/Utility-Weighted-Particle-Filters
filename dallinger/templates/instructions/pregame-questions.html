@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block stylesheets %}
+    <link rel=stylesheet href="/static/css/bootstrap.min.css" type="text/css">
+    <link rel='stylesheet' type='text/css' href='/static/css/custom.css'/>  
+{% endblock %}
+
+{% block body %}
+    <div class="main_div" id="questions-div">
+        <h1>Questions</h1>
+        
+        <div class="main_div">
+            <form>
+            	{% block replace_questions %}
+	                {% block questions %}
+	                {% endblock %}
+	                <div class="row question">
+	                    <div class="col-md-8">
+	                        On every round of the experiment, your task is to:
+	                    </div>
+	                    <div class="col-md-4">
+	                        <select id="q1" name="q1">
+	                            <option value="10">Judge whether there are more blue or more yellow dots</option>
+                              <option value="9">Judge how many blue dots are in the image</option>
+                              <option value="9">Judge how many yellow dots are in the image</option>
+	                            <option value="5" SELECTED>None of these options</option>
+	                        </select>
+	                    </div>
+	                </div>
+                  <br>
+                  <br>
+	                <div class="row question">
+	                    <div class="col-md-8">
+	                        In this experiment, which color dots cost more?
+	                    </div>
+	                    <div class="col-md-4">
+	                        <select id="q2" name="q2">
+                              <option value="10">Yellow</option>
+                              <option value="9">Blue</option>
+                              <option value="5" SELECTED>None of these options</option>
+	                        </select>
+	                    </div>
+	                </div>
+                  <br>
+                  <hr>
+	            {% endblock %}
+            </form>
+        </div>
+        <di class="instructionsnav">
+            <div class="row">
+                <div class="col-xs-2">
+                </div>
+                <div class="col-xs-7">
+                </div>
+                <div class="col-xs-3">
+                    <button type="button" id="submit-pregame-questions" class="btn btn-primary btn-lg continue">Continue</button>
+                </div>
+            </div>
+        </div>
+
+<!-- Instructions Div -->
+<div class="instructions" id="instructions-div-success" style="visibility:hidden">
+    
+    <span id="instructions-text-1">Thank you.</span>
+    <br>
+    <span id="instructions-text-2">Please click Continue to begin.</span>
+    <br>
+    <hr>
+    <div align="right"><button type="button" class="btn-primary" id="instructions-next" onClick="beginExperiment()">Continue &raquo;</button></div>
+</div>
+
+<!-- Instructions Div -->
+<div class="instructions" id="instructions-div-failure" style="visibility:hidden">
+    
+    <span id="instructions-text-1">You did not answer all of the questions correctly.</span>
+    <br>
+    <span id="instructions-text-2">Here are some important points about the game: </span>
+    <br>
+    <hr>
+    <span id="instructions-text-3">1) On every round, you must try to accurately judge whether there are more blue or more yellow dots in the image. </span>
+    <br>
+    <hr>
+    <span id="instructions-text-3">1) In this experiment, you will pay a cost for every BLUE dot in the image. </span>
+    <br>
+    <hr>
+    <span id="instructions-text-2">Please click Continue to answer the questions again.</span>
+    <br>
+    <hr>
+    <div align="right"><button type="button" class="btn-primary" id="instructions-next" onClick="showQuestions()">Continue &raquo;</button></div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+
+  beginExperiment = function () {
+    dallinger.goToPage('instructions/instruct_practice')
+  }
+
+  showQuestions = function () {
+    $("#questions-div").show()
+    $("#instructions-div-failure").hide()
+  }
+
+  submitQuestions = function () {
+    spinner = dallinger.BusyForm()
+    spinner.freeze([])
+
+    // populate dictionary of redsponses
+    var formSerialized = $("form").serializeArray()
+    formDict = {};
+    formSerialized.forEach(function (field) {
+      formDict[field.name] = field.value;
+    });
+
+    // post as info to dallimger
+    my_node_id = localStorage.getItem("my_node_id")
+    dallinger.createInfo(my_node_id, {info_type:'comprehensiontest', contents:JSON.stringify(formDict)})
+    .done(function (resp) {
+        spinner.unfreeze();
+        updateFeedback(resp)
+    })
+    .fail(function (err) {
+        spinner.unfreeze();  
+        dallinger.allowExit();        
+        dallinger.goToPage('questionnaire')
+    })
+  }
+ 
+  updateFeedback = function (resp) {
+    if (resp.info.property1 == "true") {
+      $("#questions-div").hide()
+      $("#instructions-div-success").attr("style", "visibility:visible")
+      console.log("passed")
+    }
+
+    else {
+      console.log("failed")
+      console.log(resp)
+      $("#questions-div").hide()
+      $("#instructions-div-failure").attr("style", "visibility:visible")
+    }
+  }
+
+    $(document).ready(function () {$("#submit-pregame-questions").click(function() {submitQuestions()});})
+  </script>
+{% endblock %}
