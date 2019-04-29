@@ -5,7 +5,7 @@ var generation;
 var proportionBlue;
 var global_condition = localStorage.getItem("condition");
 var sampleArray = [0.4625,0.475,0.4875,0.4625,0.475,0.4875,0.5375,0.525,0.5125,0.5375,0.525,0.5125]
-var noStory = true;
+var noStory = false;
 function sampleWithoutReplacement(input_array) {
   var randomIndex = Math.floor(Math.random()*input_array.length);
   return input_array.splice(randomIndex, 1)[0];
@@ -443,23 +443,23 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
   if (condition.indexOf('loss')!=-1){
     if (condition.indexOf('yellow')!=-1){
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")
     } else if (condition.indexOf('blue')!=-1){
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total trial earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")
     }
 

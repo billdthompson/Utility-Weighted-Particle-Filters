@@ -7,9 +7,14 @@
         <hr>
 
         <p>For example, this area contains 50 chemical spills. If you answer correctly that there is 
-            more chemical than water, you will get a $0.20 accuracy bonus. However, you must also pay a $0.005 fee for all 
-            50 chemical spills. In total, you will lose $0.05 on this round.
-        </p> &nbsp;
+            more chemical than water, you will get a $0.20 accuracy bonus. However, you must also pay $0.005 for all 
+            50 chemical spills. In total, if you answer correctly, you will lose $0.05 on this round.
+        </p> 
+        <p>If you answer incorrectly that there is 
+            more water than chemical, you will not get an accuracy bonus, but you will still need to pay $0.005 for all 
+            50 chemical spills. In this case, you will lose $0.25 on this round.
+        </p>
+        &nbsp;
         <div class="center_div">
             <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
         </div>
@@ -39,7 +44,7 @@
     <script>
 
 advance = function(){
-            var nextpage = 'instructions/instruct-5' + localStorage.getItem("condition");
+            var nextpage = 'instructions/instruct-ready-' + localStorage.getItem("condition");
             dallinger.goToPage(nextpage)
         }
 
