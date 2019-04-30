@@ -36,8 +36,8 @@
 	                    </div>
 	                    <div class="col-md-4">
 	                        <select id="q2" name="q2">
-                              <option value="10">Yellow</option>
-                              <option value="9">Blue</option>
+                              <option value="9">Yellow</option>
+                              <option value="10">Blue</option>
                               <option value="5" SELECTED>None of these options</option>
 	                        </select>
 	                    </div>
@@ -93,6 +93,7 @@
 var condition = localStorage.getItem("condition");
 if (condition==4){
   $('#instructions-text-4').html('<font size="+1">2). In this experiment, you will pay a cost for every BLUE dot in the image.</font>')
+  $('#q2').html('<option value="9">Blue</option><option value="10">Yellow</option><option value="5" SELECTED>None of these options</option>')
 }
 
   beginExperiment = function () {
