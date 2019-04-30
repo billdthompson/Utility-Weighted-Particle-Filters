@@ -447,7 +447,7 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cleaning cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")
@@ -457,7 +457,7 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cleaning cost: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")

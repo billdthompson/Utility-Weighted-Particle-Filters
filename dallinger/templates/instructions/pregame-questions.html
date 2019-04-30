@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block body %}
+<font size="+1">
     <div class="main_div" id="questions-div">
         <h1>Questions</h1>
         
@@ -16,7 +17,7 @@
 	                {% endblock %}
 	                <div class="row question">
 	                    <div class="col-md-8">
-	                        On every round of the experiment, your task is to:
+	                       On every round of the experiment, your task is to:
 	                    </div>
 	                    <div class="col-md-4">
 	                        <select id="q1" name="q1">
@@ -56,7 +57,7 @@
                     <button type="button" id="submit-pregame-questions" class="btn btn-primary btn-lg continue">Continue</button>
                 </div>
             </div>
-        </div>
+      </div>
 
 <!-- Instructions Div -->
 <div class="instructions" id="instructions-div-success" style="visibility:hidden">
@@ -65,34 +66,36 @@
     <br>
     <span id="instructions-text-2">Please click Continue to begin.</span>
     <br>
-    <hr>
     <div align="right"><button type="button" class="btn-primary" id="instructions-next" onClick="beginExperiment()">Continue &raquo;</button></div>
 </div>
 
 <!-- Instructions Div -->
 <div class="instructions" id="instructions-div-failure" style="visibility:hidden">
     
-    <span id="instructions-text-1">You did not answer all of the questions correctly.</span>
+    <span id="instructions-text-1"><font size="+1">You did not answer all of the questions correctly.</font></span>
     <br>
-    <span id="instructions-text-2">Here are some important points about the game: </span>
-    <br>
-    <hr>
-    <span id="instructions-text-3">1) On every round, you must try to accurately judge whether there are more blue or more yellow dots in the image. </span>
+    <span id="instructions-text-2"><font size="+1">Here are some important points about the game:</font></span>
     <br>
     <hr>
-    <span id="instructions-text-3">1) In this experiment, you will pay a cost for every BLUE dot in the image. </span>
+    <span id="instructions-text-3"><font size="+1">1). On every round, you must try to accurately judge whether there are more blue or more yellow dots in the image.</font></span>
     <br>
     <hr>
-    <span id="instructions-text-2">Please click Continue to answer the questions again.</span>
+    <span id="instructions-text-4"><font size="+1">2). In this experiment, you will pay a cost for every YELLOW dot in the image.</font></span>
     <br>
     <hr>
-    <div align="right"><button type="button" class="btn-primary" id="instructions-next" onClick="showQuestions()">Continue &raquo;</button></div>
+    <div align="right"><button type="button" class="btn-primary" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>
 
     </div>
+  </font>
 {% endblock %}
 
 {% block scripts %}
   <script type="text/javascript">
+
+var condition = localStorage.getItem("condition");
+if (condition==4){
+  $('#instructions-text-4').html('<font size="+1">2). In this experiment, you will pay a cost for every BLUE dot in the image.</font>')
+}
 
   beginExperiment = function () {
     dallinger.goToPage('instructions/instruct_practice')
