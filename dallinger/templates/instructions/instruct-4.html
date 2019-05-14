@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+
+        <p id ='story-instructions'>
+        </p>
+    
+
+        <hr>
+
+        <div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="reverse();">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+
+        var condition=localStorage.getItem("condition"); 
+        var generation_num= localStorage.getItem("generation"); 
+        var cover_story = localStorage.getItem("cover_story"); 
+        var payout_blue = localStorage.getItem("payout_blue"); 
+        
+        
+        if (condition=='social'){
+            if (no_story==true){
+                $('#story-instructions').html('To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
+            'This participant viewed an image with the same number of blue and yellow dots as the one you will see.')
+            } else{
+                if (payout_blue==true){
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an area with the same number of water and sand dots as the one you will see.')
+                } else{
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an area with the same number of gold and water dots as the one you will see.')
+            }
+        }
+
+        } else if (condition=='social_with_info'){
+            if (no_story==true){
+                if (payout_blue==true){
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for blue dots but not yellow dots.')
+                } else{
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for yellow dots but not blue dots.')
+                }
+            } else{
+                if (payout_blue==true){
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an area with the same number of water and sand dots as the one you will see. This participant was also paid for water but not sand in each area.')
+                } else{
+                    $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
+            'This participant viewed an area with the same number of gold and water dots as the one you will see. This participant was also paid for gold but not water in each area.')
+            }
+            }
+        }
+
+        advance = function(){
+            var nextpage = 'instructions/instruct-5'
+            dallinger.goToPage(nextpage)
+        }
+
+        reverse = function(){
+            var previouspage = 'instructions/instruct-3'
+            dallinger.goToPage(previouspage)
+        }
+    </script>
+    {% endblock %}

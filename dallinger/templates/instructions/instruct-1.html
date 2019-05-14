@@ -25,24 +25,18 @@
 
 {% block scripts %}
     <script type="text/javascript">
-    var condition_num = Math.random()
-    if (condition_num<=0.5){
-        var condition='3'
-    } else{
-        var condition='4'
-    }
         create_agent = function() {
           
           dallinger.createAgent()
             
             .done(function (resp) {
-                localStorage.setItem("my_node_id",resp.node.id);
-                
+                localStorage.setItem("node_id",resp.node.id);
                 localStorage.setItem("generation",resp.node.property2);
-                
-                localStorage.setItem("condition",condition);
-
-                var nextpage = 'instructions/instruct-2' + condition
+                localStorage.setItem("condition",resp.property5);
+                localStorage.setItem("prop_blue",resp.property4);
+                localStorage.setItem("trial_type",resp.property1);
+                localStorage.setItem("network_id",resp.node.network_id);
+                var nextpage = 'instructions/instruct-2'
                 
                 dallinger.goToPage(nextpage)
 
@@ -64,7 +58,6 @@
                         participant.done(function (participantobject){
 
                             create_agent();
-                        })
 
                 })
         })
@@ -73,9 +66,3 @@
     </script>
 {% endblock %}
 
-<!-- <script>
-    // here we will import the correct page of instructions to go to. Output should be a integer of which condition people are assigned to.
-    var conditions = [1,2,3,4];
-    var sampledCondition = conditions[Math.floor(Math.random() * numbers.length)]; // this should be replaced by the future output
-    var onClickString = "dallinger.goToPage('instructions/instruct-2"+String(SampledCondition)+"');"
-</script> -->

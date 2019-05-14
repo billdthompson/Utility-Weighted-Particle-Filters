@@ -1,69 +1,70 @@
+
+//
 var trial = 0;
 is_practice = true;
-var my_node_id;
-var generation;
-var proportionBlue;
-var global_condition = localStorage.getItem("condition");
-var sampleArray = [0.4625,0.475,0.4875,0.4625,0.475,0.4875,0.5375,0.525,0.5125,0.5375,0.525,0.5125]
-var noStory = false;
-function sampleWithoutReplacement(input_array) {
-  var randomIndex = Math.floor(Math.random()*input_array.length);
-  return input_array.splice(randomIndex, 1)[0];
+
+
+var cover_story = localStorage.getItem('cover_story');
+var condition = localStorage.getItem('condition');
+var payout_blue = localStorage.getItem('payout_blue')
+var num_practice_trials = localStorage.getItem('num_practice')
+var num_test_trials = localStorage.getItem('num_test')
+
+function random(seed) {
+  var x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
 }
 
-if (global_condition==1){
-  var global_str = 'yellow gain'
-  var yellowStr = 'gold'
-  var blueStr = 'water'
-  var instructionsText = 'Are there more gold dots or more water dots?'
-  $('#instructions').html(instructionsText)
-  $('#more-blue').html('Water')
-  $('#more-yellow').html('Gold')
-} else if (global_condition==2){
-  var global_str = 'blue gain'
-  var yellowStr = 'sand'
-  var blueStr = 'water' 
-  var instructionsText = 'Are there more water dots or more sand dots?'
-  $('#instructions').html(instructionsText)
-  $('#more-blue').html('Water')
-  $('#more-yellow').html('Sand')
-} else if (global_condition==3){
-  var global_str= 'yellow loss'
-  var yellowStr = 'chemical'
-  var blueStr = 'water'
-  var instructionsText = 'Are there more chemical dots or more water dots?'
-  $('#instructions').html(instructionsText)
-  $('#more-blue').html('Water')
-  $('#more-yellow').html('Chemical')
-} else if (global_condition==4){
-  var global_str= 'blue loss'
-  var yellowStr = 'sand'
-  var blueStr = 'chemical'      
-  var instructionsText = 'Are there more chemical dots or more sand dots?'
-  $('#instructions').html(instructionsText)
-  $('#more-blue').html('Chemical')
-  $('#more-yellow').html('Sand')
-}
 
-if (noStory==true){
-  if (global_condition==3){
-    var global_str= 'yellow loss'
-    var yellowStr = 'yellow dots'
-    var blueStr = 'blue dots'
-    var instructionsText = 'Are there more yellow dots or more blue dots?'
-    $('#instructions').html(instructionsText)
-    $('#more-blue').html('Blue')
-    $('#more-yellow').html('Yellow')
-  } else if (global_condition==4){
-    var global_str= 'blue loss'
-    var yellowStr = 'yellow dots'
-    var blueStr = 'blue dots'
-    var instructionsText = 'Are there more yellow dots or more blue dots?'
-    $('#instructions').html(instructionsText)
-    $('#more-blue').html('Blue')
-    $('#more-yellow').html('Yellow')
+if (cover_story==false){
+  // without story
+  var yellowStr = 'Yellow';
+  var blueStr = 'Blue'
+  $('#instructions').html('Are there more yellow dots or more blue dots?')
+  $('#more-blue').html('Blue')
+  $('#more-yellow').html('Yellow')
+  if (condition=='social_with_info'){
+    if (condition==blue){
+      var yellow_filepath = '/static/images/more_blue_with_info_base_blue.jpg'
+      var blue_filepath = '/static/images/more_yellow_with_info_base_blue.jpg'
+    } else{
+      var yellow_filepath = '/static/images/more_blue_with_info_base_yellow.jpg'
+      var blue_filepath = '/static/images/more_yellow_with_info_base_yellow.jpg'
+    }
+  } else{
+    var yellow_filepath = '/static/images/more_blue.jpg'
+    var blue_filepath = '/static/images/more_yellow.jpg'
   }
-
+  } else{
+    if (payout_blue==true){
+      // with story, payout blue
+      var yellowStr = 'Sand';
+      var blueStr = 'Water'
+      $('#instructions').html('Are there more sand dots or more yellow dots?')
+      $('#more-blue').html('Water')
+      $('#more-yellow').html('Sand')
+      if (condition=='social'){
+        var yellow_filepath = '/static/images/more_sand.jpg'
+        var blue_filepath = '/static/images/more_water.jpg'
+      } else{
+        var yellow_filepath = '/static/images/more_sand_with_info.jpg'
+        var blue_filepath = '/static/images/more_water_with_info.jpg'
+      }
+    } else{
+      // with story, payout yellow
+      var yellowStr = 'Gold';
+      var blueStr = 'Water'
+      $('#instructions').html('Are there more gold dots or more yellow dots?')
+      $('#more-blue').html('Water')
+      $('#more-yellow').html('Gold')
+      if (condition=='social'){
+        var yellow_filepath = '/static/images/more_gold.jpg'
+        var blue_filepath = '/static/images/more_water.jpg'
+      } else{
+        var yellow_filepath = '/static/images/more_gold_with_info.jpg'
+        var blue_filepath = '/static/images/more_water_with_info.jpg'
+      }
+    }
 }
 
 function round(num, places) {
@@ -71,22 +72,19 @@ function round(num, places) {
   return Math.round(num * multiplier) / multiplier;
 }
 
-if (global_str.indexOf('gain')!=-1){
-  var total_pay = 0.25
-} else {
-  var total_pay = 4
-}
-
-total_str = total_pay.toFixed(2)
-$('#total_earnings').html('Total earnings: $'+ total_str)
+$('#total_earnings').html('Total earnings: $0.25')
 
 create_agent = function() {
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
   if (trial == 0){
-    my_node_id = localStorage.getItem("my_node_id");
+    my_node_id = localStorage.getItem("node_id");
     generation = localStorage.getItem("generation");
-    condition = localStorage.getItem("condition"); 
+    proportion_blue = localStorage.getItem("prop_blue");
+    is_practice = localStorage.getItem("trial_type")=='practice';
+    network_id = localStorage.getItem("network_id");
+    generation_seed = generation;
+    network_id_seed = network_id;
     get_received_infos();
   }
   else {
@@ -95,12 +93,16 @@ create_agent = function() {
     .done(function (resp) {
       my_node_id = resp.node.id;
       generation = resp.node.property2;
+      is_practice = resp.node.property1=='practice';
+      proportion_blue = resp.node.property4;
+      network_id = resp.node.network_id;
+      generation_seed = generation;
+      network_id_seed = network_id;
       get_received_infos();
     })
     .fail(function (resp) {
       dallinger.goToPage('questionnaire');
     });
-
   }
 };
 
@@ -119,32 +121,24 @@ get_received_infos = function() {
     trial = trial + 1;
     $("#trial-number").html(trial);
     $("#total-trial-number").html(num_practice_trials + num_experiment_trials);
-    // $("#total-trial-number").html(5);
     $(".center_div").css("display", "block");
     $("#instructions").show()
-    if (trial <= num_practice_trials) {
+    if (is_practice) {
       $("#practice-trial").html("This is a practice trial");
-      is_practice = true
     } else {
       $("#practice-trial").html("This is NOT a practice trial");
-      is_practice = false
     }
 
-    var learning_strategy = "asocial";
-    // if(generation == 0) {
-    //   learning_strategy = "asocial";
-    // } else {
-    //   learning_strategy = "social";
-    // }
+    if (generation==0 || condition=='asocial'){
+      var learning_strategy = "asocial";
+    } else{
+      var learning_strategy = "social";
+    }
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
       $("#instructions").text(instructionsText);
-
-      //proportionBlue = parseFloat(state)
-      proportionBlue = sampleWithoutReplacement(sampleArray)
-      //console.log("problue: ", proportionBlue)
-      regenerateDisplay(proportionBlue);
+      regenerateDisplay(proportion_blue);
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
@@ -158,24 +152,26 @@ get_received_infos = function() {
     }
 
     // // Show the participant the hint.
-    // if (learning_strategy === "social") {
-    //   $("#instructions").html(instructionsText);
+    if (learning_strategy === "social") {
 
-    //   $("#more-blue").addClass('disabled');
-    //   $("#more-yellow").addClass('disabled');
+      $("#more-blue").addClass('disabled');
+      $("#more-yellow").addClass('disabled');
 
-    //   if (meme === "blue") {
-    //     $("#stimulus").attr("src", "/static/images/blue_social.jpg");
-    //   } else if (meme === "yellow") {
-    //     $("#stimulus").attr("src", "/static/images/yellow_social.jpg");
-    //   }
-    //   $("#stimulus").show();
-    //   setTimeout(function() {
-    //     $("#stimulus").hide();
-    //     $("#more-blue").removeClass('disabled');
-    //     $("#more-yellow").removeClass('disabled');
-    //   }, 2000);
-    // }
+      meme = info.contents;
+
+      if (meme === "blue") {
+        $("#stimulus").attr("src", blue_filepath);
+      } else if (meme === "yellow") {
+        $("#stimulus").attr("src", yellow_filepath);
+      }
+      $("#stimulus").show();
+      setTimeout(function() {
+        $("#stimulus").hide();
+        $("#more-blue").removeClass('disabled');
+        $("#more-yellow").removeClass('disabled');
+        lock = false;
+      }, 2000);
+    }
   });
 };
 
@@ -196,9 +192,9 @@ function presentDisplay (argument) {
 
 function regenerateDisplay (propBlue) {
   // Display parameters
-  width = 600;
-  height = 300;
-  numDots = 80;
+  width = 650;
+  height = 350;
+  numDots = 100;
   dots = [];
   blueDots = Math.round(propBlue * numDots);
   yellowDots = numDots - blueDots;
@@ -253,80 +249,36 @@ function getBlueDots(propBlue){
 }
 
 function randi(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  generation_seed = generation_seed + 1;
+  network_id_seed = network_id_seed + 1;
+  random_number = (random(generation_seed)+random(network_id_seed))/2
+  return Math.floor(random_number * (max - min + 1)) + min;
+
 }
 
 function shuffle(o){
-  for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  generation_seed = generation_seed + 1;
+  network_id_seed = network_id_seed + 1;
+  random_number = (random(generation_seed)+random(network_id_seed))/2
+  for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
 
-
-function correct(color){
-  if (color == 'yellow'){
-    if (proportionBlue > .5){
-      return false
-    }
-
-    else {
-      return true
-    }
-  }
-
-  else {
-    if (proportionBlue > .5){
-      return true
-    }
-
-    else {
-      return false
-    }
-  }
-};
-
 function correctStr(){
-  if (proportionBlue>0.5){
+  if (proportion_blue>0.5){
     return 'blue'
   } else{
     return 'yellow'
   }
 }
 
-function payoff(color, correct){
-  if (correct){
-    if (color == 'yellow'){
-      return "10"
-    }
 
-    else{
-
-      return "50"
-    }
-  }
-
-  else {
-    return "0"
-  }
-
-};
 
 report = function (color) {
   paper.clear();
   $("#more-blue").addClass('disabled');
   $("#more-yellow").addClass('disabled');
   $("#reproduction").val("");
-  var condition_var = localStorage.getItem("condition");
-  if (condition_var==1){
-    var condition = 'yellow gain'
-  } else if (condition_var==2){
-    var condition = 'blue gain'
-  } else if (condition_var==3){
-    var condition= 'yellow loss'
-  } else if (condition_var==4){
-    var condition= 'blue loss'      
-  } else {
-    // console.log(condition)
-  }
   true_color = correctStr()
   bonuses=getBonusAmount(true_color,color,condition)
   accuracy_b = bonuses[0]
@@ -338,10 +290,14 @@ report = function (color) {
 
   var contents = {choice:color,
                   is_practice:is_practice,
-                  proportionBlue:proportionBlue,
-                  condition:localStorage.getItem("condition"),
+                  payout_blue:payout_blue,
+                  proportionBlue:proportion_blue,
+                  condition:condition,
+                  generation: generation,
+                  network_id:network_id,
                   running_total_bonus:total_pay,
                   current_bonus: accuracy_b+condition_b,
+                  social_info: meme,
                   participant_id: dallinger.identity.participantId}
 
   dallinger.createInfo(my_node_id, {
@@ -365,25 +321,15 @@ $(document).ready(function() {
   $("#more-blue").click(function() {
     // console.log("Reported more blue.");
     report("blue");
-  });
-
-  $(document).keydown(function(e) {
-    var code = e.keyCode || e.which;
-    if(code === 70) { //Enter keycode
-      report("blue");
-    } else if (code === 74) {
-      report("yellow");
-    }
+    
   });
 });
 
 
-
-
-function getBonusAmount(truth,response,condition){
+function getBonusAmount(truth,response,isBluePayout){
     // truth is a string: 'yellow' or 'blue'
   // response also a string: 'yellow' or 'blue'
-  // condition a string: 'yellow gain', 'yellow loss', ect.
+  // isBluePayout is boolean
   
   if (truth == 'yellow'){
     if (response=="yellow"){
@@ -398,83 +344,56 @@ function getBonusAmount(truth,response,condition){
           var accuracy_bonus = 0;
       }
   }
+  var numBlue = getBlueDots(proportion_blue);
+  var numYellow = 100-numBlue;
 
-  var numBlue = getBlueDots(proportionBlue);
-  var numYellow = 80-numBlue;
-    if (condition.indexOf('yellow') != -1){
-      if (condition.indexOf('gain') != -1){
-        // yellow gain
-        var dotStr = 'This area has <span>' + numYellow + '</span> gold deposits'
-        var condition_bonus = round((numYellow/2)*0.01,2);
-      }
-      else{
-        if (noStory==true){
-          var dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
-        } else{
-          var dotStr = 'This area has <span>' + numYellow + '</span> chemical spills'
-        }
-        // yellow loss
-        var condition_bonus = -1*round((numYellow/2)*0.01,2);
-      }
+  if (cover_story==true){
+    if (isBluePayout){
+      var dotStr = 'This area has <span>' + numYellow + '</span> water dots'
+      var condition_bonus = round((numBlue/2)*0.01,2);
     } else{
-      if (condition.indexOf('gain') != -1){
-        // blue gain, truth=yellow
-        var dotStr = 'This area has <span>' + numBlue + '</span> water deposits'
-        var condition_bonus = round((numBlue/2)*0.01,2);
-      }
-      else {
-        // blue loss, truth=yellow
-        if (noStory==true){
-          var dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
-        } else{
-          var dotStr = 'This area has <span>' + numBlue + '</span> chemical spills'
-        }
-        var condition_bonus = -1*round((numBlue/2)*0.01,2);
-      }
+      var dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
+      var condition_bonus = round((numYellow/2)*0.01,2);
     }
+  } else{
+    if (isBluePayout){
+      var dotStr = 'This image has <span>' + numYellow + '</span> blue dots'
+      var condition_bonus = round((numBlue/2)*0.01,2);
+    } else{
+      var dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
+      var condition_bonus = round((numYellow/2)*0.01,2);
+    }
+  }
     return [accuracy_bonus,condition_bonus,dotStr]
-
   }
 
 
 
 function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
 
-  if (condition.indexOf('loss')!=-1){
-    if (condition.indexOf('yellow')!=-1){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+  if (no_story==true){
+    $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cleaning cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'></p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Image bonus: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total image earnings: </p>" +
       "</div>")
-    } else if (condition.indexOf('blue')!=-1){
-      $(".outcome").html("<div class='titleOutcome'>"+
+
+  } else{
+    $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p                                 >" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Chemical cleaning cost: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'></p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")
     }
 
-  } else {
-    $(".outcome").html("<div class='titleOutcome'>"+
-    "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-    "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-    "<p class = 'computer_number' id = 'numDots'></p>" + 
-    "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
-    "<hr class='hr_block'>"+
-    "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
-    "</div>")
-                                                                                  
-  }
 
   if (response=='yellow'){
       responseStr = yellowStr
@@ -487,24 +406,10 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       } else{
     var true_state = blueStr
   }
-
-  if (accuracy_bonus>=0){
-    accuracyStr = '$' + accuracy_bonus.toFixed(2)
-  } else {
-    accuracyStr = '-$' + Math.abs(accuracy_bonus).toFixed(2)
-  }
-
-  if (condition_bonus>=0){
-    conditionStr = '$' + condition_bonus.toFixed(2)
-  } else {
-    conditionStr = '$' + Math.abs(condition_bonus).toFixed(2)
-  }
-
-  if (accuracy_bonus+condition_bonus>=0){
-    netStr = '$' + (accuracy_bonus+condition_bonus).toFixed(2)
-  } else {
-    netStr = '-$' + (Math.abs(accuracy_bonus+condition_bonus)).toFixed(2)
-  }
+  
+  accuracyStr = '$' + accuracy_bonus.toFixed(2)
+  conditionStr = '$' + condition_bonus.toFixed(2)
+  netStr = '$' + (accuracy_bonus+condition_bonus).toFixed(2)
 
   total_str = total_pay.toFixed(2)
   $('#total_earnings').html('Total earnings: $'+ total_str)
@@ -538,15 +443,15 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       $(".outcome").html("")
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>You will now complete 10 test trials. Earnings from these rounds will be added " +
-      "to your final pay </p> ")
-      //$("#topResult").css('font-size','30px')
+      "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
+        "Earnings from these rounds will be added to your final pay </p> ")
+
       $('#continue_button').click(function(){
-        $(".outcome").css("display", "none");
-        $(".button-wrapper").css("display", "none");
-        $(".outcome").html("")
-        $("#instructions").html("")
-        create_agent();
+      $(".outcome").css("display", "none");
+      $(".button-wrapper").css("display", "none");
+      $(".outcome").html("")
+      $("#instructions").html("")
+      create_agent();
       });
     } else{
       $(".outcome").css("display", "none");
@@ -556,7 +461,4 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       create_agent();
     }
   });
-
-
-  
 };
