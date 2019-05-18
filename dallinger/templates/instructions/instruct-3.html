@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Instructions</h1>
+
+        <hr>
+
+        <div id ='story-instructions'>
+        </div>
+    
+
+        <hr>
+
+        <div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="reverse();">
+                        Previous
+                        </button>
+                    </div>
+                    <div class="col-xs-8">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script>
+        var condition = localStorage.getItem("condition");      
+        var generation_num = localStorage.getItem("generation");     
+        var cover_story = localStorage.getItem("cover_story");    
+        var payout_blue = localStorage.getItem("payout_blue");    
+
+        if (cover_story==true){
+            if (payout_blue==true){
+                $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
+                'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
+                'containing more water or more sand. </p>' +
+                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every water deposit (blue dot) '+
+                'in the area, regardless of the size of the deposit. Because the water will always be collected, you will get this bonus '+
+                'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
+
+            } else{ 
+                $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
+                'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
+                'containing more gold or more water. </p>' +
+                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (yellow dot) '+
+                'in the area, regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus '+
+                'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
+            }
+        } else{
+            if (payout_blue==true){
+                $('#story-instructions').html('<p>You have already been paid $0.25. '+
+                'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
+                'containing more blue or more yellow dots. </p>' +
+                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every blue dot '+
+                'in the image, regardless of the size of the dot. You will get this bonus '+
+                'regardless of whether you are correct in judging the image as containing more blue or yellow dots.</p>')
+            } else{
+                $('#story-instructions').html('<p>You have already been paid $0.25. '+
+                'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
+                'containing more yellow or more blue dots. </p>' +
+                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every yellow dot '+
+                'in the image, regardless of the size of the dot. You will get this bonus '+
+                'regardless of whether you are correct in judging the image as containing more yellow or blue dots.</p>')
+            }
+        }
+
+
+        if (condition=='asocial' || generation==0){
+            advance = function(){
+            var nextpage = 'instructions/instruct-5'
+            dallinger.goToPage(nextpage)
+        }
+
+        reverse = function(){
+            var previouspage = 'instructions/instruct-2'
+            dallinger.goToPage(previouspage)
+        }
+        } else{
+            advance = function(){
+            var nextpage = 'instructions/instruct-4'
+            dallinger.goToPage(nextpage)
+        }
+
+        reverse = function(){
+            var previouspage = 'instructions/instruct-2'
+            dallinger.goToPage(previouspage)
+        }
+        }
+    </script>
+    {% endblock %}
