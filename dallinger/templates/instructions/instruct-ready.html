@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
-                    <button type="button" class="btn btn-success btn-lg" onClick="dallinger.goToPage('stage');">
+                    <button type="button" class="btn btn-success btn-lg" onClick="dallinger.goToPage('instructions/pregame-questions');">
                     Begin</button>
                 </div>
             </div>
@@ -24,47 +24,56 @@
 
 {% block scripts %}
 <script>
-    dallinger.getExperimentProperty('num_practice')
-                .done(function (propertiesResp) {num_practice = propertiesResp.num_practice_networks_per_condition})
-    dallinger.getExperimentProperty('num_test_fixed')
-                .done(function (propertiesResp) {num_test_fixed = propertiesResp.num_fixed_order_experimental_networks})
-    dallinger.getExperimentProperty('num_test_random')
-                .done(function (propertiesResp) {num_test_random = propertiesResp.num_random_order_experimental_networks})
-    var num_test = num_fixed_order_experimental_networks+num_test_random;
+    var num_practice, num_test_fixed,num_test_random
 
-    var cover_story = localStorage.getItem('condition')
-    var payout_blue = localStorage.getItem('payout_blue')
+    dallinger.getExperimentProperty('num_practice_networks_per_condition')
+                .done(function (propertiesResp) {
+                    num_practice = propertiesResp.num_practice_networks_per_condition
+                    dallinger.getExperimentProperty('num_fixed_order_experimental_networks_per_condition')
+                    .done(function (propertiesResp) {
+                        num_test_fixed = propertiesResp.num_fixed_order_experimental_networks_per_condition
+                        dallinger.getExperimentProperty('num_random_order_experimental_networks_per_condition')
+                            .done(function (propertiesResp) {
+                                num_test_random = propertiesResp.num_random_order_experimental_networks_per_condition
+                                var num_test = num_test_fixed+num_test_random;
+                                var cover_story = localStorage.getItem('condition')
+                                var payout_blue = localStorage.getItem('payout_blue')
+                                
+                                localStorage.setItem('num_practice',num_practice)
+                                localStorage.setItem('num_test',num_test)
+
+
+                                // look at figuring out this stuff exactly and/or calling it from back end
+                                var max_bonus = num_test*(0.45)
+                                var max_bonus = max_bonus.toFixed(2)
+                                var base_pay = 0.25;
+
+                                if (cover_story==true){
+                                    if (payout_blue==true){
+                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
+                                        'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
+                                        ' The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                        '<p>Each round is different from the others - just because there was more water in one '+
+                                        'area does not mean there will be more on the next round.</p>')
+                                    } else{
+                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
+                                        'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
+                                        ' The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                        '<p>Each round is different from the others - just because there was more gold in one '+
+                                        'area does not mean there will be more on the next round.</p>')
+                                    }
+                                    } else{
+                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
+                                        'Depending on how many images you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
+                                        ' The first '+ String(num_practice) + ' images for practice and will not count towards your bonus.</p>' +
+                                        '<p>Each round is different from the others - just because there were ' +
+                                        'more blue dots on one round does not mean there will be more on the next round.</p>')
+                                    }
+                            })
+                    })
+                })
     
-    localStorage.setItem('num_practice',num_practice)
-    localStorage.setItem('num_test',num_test)
 
-
-    // look at figuring out this stuff exactly and/or calling it from back end
-    var max_bonus = num_test*(0.45)
-    var max_bonus = max_bonus.toFixed(2)
-    var base_pay = 0.25;
-
-    if (cover_story==true){
-        if (payout_blue==true){
-            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-            'The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-            '<p>Each round is different from the others - just because there was more water in one '+
-            'area does not mean there will be more on the next round.</p>')
-        } else{
-            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-            'The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-            '<p>Each round is different from the others - just because there was more gold in one '+
-            'area does not mean there will be more on the next round.</p>')
-        }
-        } else{
-            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-            'Depending on how many images you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-            'The first '+ String(num_practice) + ' images for practice and will not count towards your bonus.</p>' +
-            '<p>Each round is different from the others - just because there were ' +
-            'more blue dots on one round does not mean there will be more on the next round.</p>')
-        }
 
 
 </script>

@@ -32,9 +32,9 @@
             .done(function (resp) {
                 localStorage.setItem("node_id",resp.node.id);
                 localStorage.setItem("generation",resp.node.property2);
-                localStorage.setItem("condition",resp.property5);
-                localStorage.setItem("prop_blue",resp.property4);
-                localStorage.setItem("trial_type",resp.property1);
+                localStorage.setItem("condition",resp.node.property5);
+                localStorage.setItem("prop_blue",resp.node.property4);
+                localStorage.setItem("trial_type",resp.node.property1);
                 localStorage.setItem("network_id",resp.node.network_id);
                 var nextpage = 'instructions/instruct-2'
                 

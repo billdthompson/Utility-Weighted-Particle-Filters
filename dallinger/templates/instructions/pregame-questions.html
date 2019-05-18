@@ -234,7 +234,7 @@
       }
     }
   } else{
-    if (payout_blue==true){
+    if (payout_blue=='true'){
       if (condition=='social_with_info'){
          // payout_blue, with cover, with-info
         $('#question-4').html('<div class="col-md-8" id="social-info">'+
@@ -337,7 +337,7 @@
         });
 
         // post as info to dallimger
-        my_node_id = localStorage.getItem("my_node_id")
+        my_node_id = localStorage.getItem("node_id")
         dallinger.createInfo(my_node_id, {info_type:'comprehensiontest', contents:JSON.stringify(formDict)})
         .done(function (resp) {
             spinner.unfreeze();
