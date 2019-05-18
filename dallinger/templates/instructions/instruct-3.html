@@ -34,12 +34,12 @@
     {% block scripts %}
     <script>
         var condition = localStorage.getItem("condition");      
-        var generation_num = localStorage.getItem("generation");     
+        var generation = localStorage.getItem("generation");     
         var cover_story = localStorage.getItem("cover_story");    
         var payout_blue = localStorage.getItem("payout_blue");    
 
-        if (cover_story==true){
-            if (payout_blue==true){
+        if (cover_story=="true"){
+            if (payout_blue=="true"){
                 $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
                 'containing more water or more sand. </p>' +
@@ -56,7 +56,7 @@
                 'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
             }
         } else{
-            if (payout_blue==true){
+            if (payout_blue=="true"){
                 $('#story-instructions').html('<p>You have already been paid $0.25. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
                 'containing more blue or more yellow dots. </p>' +

@@ -36,6 +36,8 @@
 
     {% block scripts %}
     <script>
+
+        var cover_story, payout_blue
         
         dallinger.getExperimentProperty('cover_story')
                 .done(function (propertiesResp) {cover_story = propertiesResp.cover_story})
@@ -46,8 +48,8 @@
         localStorage.setItem("cover_story",cover_story);
         localStorage.setItem("payout_blue",payout_blue);
 
-        if (cover_story==true){
-            if (payout_blue==true){
+        if (cover_story=="true"){
+            if (payout_blue=="true"){
                 $('#story-instructions').html('You work for a company looking for water in a desert area. '+
                 'You will observe areas briefly and decide if the area has more water '+
                 'or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are '+

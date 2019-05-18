@@ -51,17 +51,12 @@
 
             $(document).ready(function () {
 
-                dallinger.createParticipant().done(function(){
-
-                        participant = dallinger.get('/participant/' + dallinger.identity.participantId)
-
-                        participant.done(function (participantobject){
-
-                            create_agent();
-
-                })
-        })
-}
+                dallinger.createParticipant()
+                .done(function () {
+                    create_agent()
+                });
+            })
+        }
         
     </script>
 {% endblock %}
