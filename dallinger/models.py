@@ -106,7 +106,7 @@ class ParticleFilter(Network):
 class Particle(Agent):
     """The Rogers Agent."""
 
-    __mapper_args__ = {"polymorphic_identity": "rogers_agent"}
+    __mapper_args__ = {"polymorphic_identity": "particle"}
 
     @hybrid_property
     def role(self):
@@ -259,9 +259,7 @@ class ComprehensionTest(Info):
         return cast(self.property1, bool)
 
     def evaluate_answers(self):
-
-        return (self.questions["q1"] == "10") &\
-        (self.questions["q2"] == "9")
+        return all([q == "1" for q in self.questions.values()])
 
     def __init__(self, origin, contents=None, details = None, initialparametrisation = None):
         self.origin = origin
