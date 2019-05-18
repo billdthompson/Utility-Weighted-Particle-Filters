@@ -19,7 +19,6 @@ import pandas as pd
 import logging
 logger = logging.getLogger(__file__)
 
-
 class UWPFWP(Experiment):
     """Utility Weighted Particle Filter with People."""
 
@@ -31,13 +30,13 @@ class UWPFWP(Experiment):
         'num_fixed_order_experimental_networks_per_condition': 4,
         'num_random_order_experimental_networks_per_condition': 4,
         'num_practice_networks_per_condition': 4,
-        'payout_color': 'blue',
+        'payout_blue': 'true',
         'cover_story': 'true'
         }
 
     def __init__(self, session=None):
         super(UWPFWP, self).__init__(session)
-        from . import models
+        import models
         self.models = models
         
         # These variables are potentially needed on every invocation 
