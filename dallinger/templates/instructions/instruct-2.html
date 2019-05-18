@@ -40,40 +40,41 @@
         var cover_story, payout_blue
         
         dallinger.getExperimentProperty('cover_story')
-                .done(function (propertiesResp) {cover_story = propertiesResp.cover_story})
+                .done(function (propertiesResp) {
+                    cover_story = propertiesResp.cover_story
+                    dallinger.getExperimentProperty('payout_blue')
+                    .done(function (propertiesResp) {
+                        payout_blue = propertiesResp.payout_blue
+                        localStorage.setItem("cover_story",cover_story);
+                        localStorage.setItem("payout_blue",payout_blue);
+                        
+                        if (cover_story=="true"){
+                            if (payout_blue=="true"){
+                                $('#story-instructions').html('You work for a company looking for water in a desert area. '+
+                                'You will observe areas briefly and decide if the area has more water '+
+                                'or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are '+
+                                'more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b> '+
+                                "Don't try to count the dots — they will appear too briefly for that. "+
+                                'Instead, you should take your best guess.')
+                                $('#image-paragraph').html('In this area, there is more sand than water.')
 
-        dallinger.getExperimentProperty('payout_blue')
-                .done(function (propertiesResp) {payout_blue = propertiesResp.payout_blue})
-
-        localStorage.setItem("cover_story",cover_story);
-        localStorage.setItem("payout_blue",payout_blue);
-        console.log(cover_story,payout_blue)
-        
-        if (cover_story=="true"){
-            if (payout_blue=="true"){
-                $('#story-instructions').html('You work for a company looking for water in a desert area. '+
-                'You will observe areas briefly and decide if the area has more water '+
-                'or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are '+
-                'more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b> '+
-                "Don't try to count the dots — they will appear too briefly for that. "+
-                'Instead, you should take your best guess.')
-                $('#image-paragraph').html('In this area, there is more sand than water.')
-
-            } else{ 
-                $('#story-instructions').html('You work for a company looking for underwater gold. '+
-                'You will observe areas briefly and decide if the area has more water '+
-                'or more gold. An area has more gold if there are more yellow dots than blue, and more water if there are ' +
-                'more blue dots than yellow. <b>Note that the size of the dots does not matter, only the number. </b> '+
-                "Don't bother trying to count the dots — they will appear too briefly for that. " +
-                'Instead, you should take your best guess.')
-                $('#image-paragraph').html('In this area, there is more gold than sand.')
-            }
-        }  // else{
-            //     $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
-            //     'if they contain more blue dots or more yellow dots. '+
-            //     '<b>Note that the size of the dots does not matter, only the number. </b>')
-            //     $('#image-paragraph').html('In this image, there are more yellow dots than blue dots.')
-            // }
+                            } else{ 
+                                $('#story-instructions').html('You work for a company looking for underwater gold. '+
+                                'You will observe areas briefly and decide if the area has more water '+
+                                'or more gold. An area has more gold if there are more yellow dots than blue, and more water if there are ' +
+                                'more blue dots than yellow. <b>Note that the size of the dots does not matter, only the number. </b> '+
+                                "Don't bother trying to count the dots — they will appear too briefly for that. " +
+                                'Instead, you should take your best guess.')
+                                $('#image-paragraph').html('In this area, there is more gold than sand.')
+                            }
+                        }  else{
+                                $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
+                                'if they contain more blue dots or more yellow dots. '+
+                                '<b>Note that the size of the dots does not matter, only the number. </b>')
+                                $('#image-paragraph').html('In this image, there are more yellow dots than blue dots.')
+                            }
+                    })
+                })
 
 
         advance = function(){

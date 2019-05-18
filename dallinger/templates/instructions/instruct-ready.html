@@ -26,11 +26,11 @@
 <script>
     dallinger.getExperimentProperty('num_practice')
                 .done(function (propertiesResp) {num_practice = propertiesResp.num_practice_networks_per_condition})
-    dallinger.getExperimentProperty('num_fixed_order_experimental_networks')
+    dallinger.getExperimentProperty('num_test_fixed')
                 .done(function (propertiesResp) {num_test_fixed = propertiesResp.num_fixed_order_experimental_networks})
-    dallinger.getExperimentProperty('num_random_order_experimental_networks')
+    dallinger.getExperimentProperty('num_test_random')
                 .done(function (propertiesResp) {num_test_random = propertiesResp.num_random_order_experimental_networks})
-    var num_test = num_test_fixed+num_test_random;
+    var num_test = num_fixed_order_experimental_networks+num_test_random;
 
     var cover_story = localStorage.getItem('condition')
     var payout_blue = localStorage.getItem('payout_blue')
