@@ -1,9 +1,3 @@
-"""Replicate Rogers' paradox by simulating evolution with people."""
-
-import random
-import logging
-logger = logging.getLogger(__file__)
-
 from dallinger.experiment import Experiment
 from dallinger.information import Meme
 from dallinger.models import Network
@@ -13,97 +7,216 @@ from dallinger.networks import DiscreteGenerational
 from dallinger.nodes import Agent
 from dallinger.nodes import Environment
 from dallinger.nodes import Source
+from sqlalchemy import and_
+from sqlalchemy.sql.expression import cast
+from sqlalchemy import Integer
+
+import numpy as np
+import random
+import json
+import pandas as pd
+
+import logging
+logger = logging.getLogger(__file__)
 
 
-class RogersExperiment(Experiment):
-    """The experiment class."""
-
-    def __init__(self, session=None):
-        """Call the same function in the super (see experiments.py in dallinger).
-        The models module is imported here because it must be imported at
-        runtime.
-        A few properties are then overwritten.
-        Finally, setup() is called.
-        """
-        super(RogersExperiment, self).__init__(session)
-        from . import models
-        self.models = models
-        self.verbose = False
-        self.experiment_repeats = 10
-        self.practice_repeats = 2
-        self.catch_repeats = 0  # a subset of experiment repeats
-        self.difficulties = [0.4625,0.475,0.4875] * self.experiment_repeats
-        self.practice_difficulty = [0.425,0.4375,0.45] * self.practice_repeats
-        #self.difficulties = ([44,45,46]/80) * self.experiment_repeats
-        #self.practice_difficulty = ([47,48,49]/80) * self.practice_repeats
-        #self.difficulties = [0.525, 0.5625, 0.65] * self.experiment_repeats
-        self.catch_difficulty = 0.80
-        self.min_acceptable_performance = 10 / float(12)
-        self.generation_size = 3
-        self.generations = 1
-        self.bonus_payment = 1.0
-        self.initial_recruitment_size = self.generation_size
-        self.known_classes["trialbonus"] = self.models.TrialBonus
-        self.known_classes["particlefilter"] = self.models.ParticleFilter
-        self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
-        self.bonus_max = 4.3
-
-        if session and not self.networks():
-            self.setup()
-        self.save()
+class UWPFWP(Experiment):
+    """Utility Weighted Particle Filter with People."""
 
     @property
     def public_properties(self):
         return {
-            'experiment_repeats': self.experiment_repeats,
-            'practice_repeats': self.practice_repeats
+        'generation_size': 3, 
+        'generations': 3, 
+        'num_fixed_order_experimental_networks_per_condition': 4,
+        'num_random_order_experimental_networks_per_condition': 4,
+        'num_practice_networks_per_condition': 4,
+        'payout_color': 'blue',
+        'cover_story': 'true'
         }
 
-    def create_conditions(self):
-         # equal number of networks asigned to each condition
-        assert (self.experiment_repeats + self.practice_repeats) % 4 == 0
+    def __init__(self, session=None):
+        super(UWPFWP, self).__init__(session)
+        from . import models
+        self.models = models
         
-        nets_per_condition = int((self.experiment_repeats + self.practice_repeats) / 4)
+        # These variables are potentially needed on every invocation 
+        self.set_params()
+        self.set_known_classes()
+        self.assign_proportions_to_networks()
 
-        self.conditions = list(range(1,5)) * nets_per_condition
+        # These variables are only needed when launching the experiment 
+        if session and not self.networks():
+            self.setup()
+        self.save()
 
-        random.shuffle(self.conditions)
+    def set_known_classes(self):
+        self.known_classes["trialbonus"] = self.models.TrialBonus
+        self.known_classes["particlefilter"] = self.models.ParticleFilter
+        self.known_classes["particle"] = self.models.Particle
+        self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
+        self.known_classes['generativemodel'] = self.models.GenerativeModel
+
+    def set_params(self):
+        self.condition_names = {0:"asocial", 1:"social", 2:"social_with_info"}
+        self.nconditions = len(self.condition_names)
+        self.generation_size = self.initial_recruitment_size = self.public_properties['generation_size']
+        self.generations = self.public_properties['generations']
+        self.num_fixed_order_experimental_networks_per_condition = self.public_properties['num_fixed_order_experimental_networks_per_condition']
+        self.num_random_order_experimental_networks_per_condition = self.public_properties['num_random_order_experimental_networks_per_condition']
+        self.num_experimental_networks_per_condition = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_condition + self.num_random_order_experimental_networks_per_condition
+        self.num_practice_networks_per_condition = self.practice_decisions = self.public_properties['num_practice_networks_per_condition']
+        self.number_of_networks = (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition) * self.nconditions
+        self.min_acceptable_performance = 10 / float(12)    
+        self.bonus_payment = 1.0
+        self.bonus_max = 4.3
+
+    def assign_conditions_to_networks(self):
+        self.conditions = list(self.condition_names.values()) * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
+
+    def assign_proportions_to_networks(self):
+        # proprtions for practice networks
+        self.practice_network_proportions = [.47, .53, .51, .48]
         
+        # proprtions for experimental networks (fixed order and random order)
+        self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
+        self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+
+        # checlk the proportions match the number of networks in total
+        ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
+        
+        self.log("{};{};{}".format(ntrials, self.num_practice_networks_per_condition, self.num_experimental_networks_per_condition), '---->')
+        assert ntrials == self.experimental_decisions + self.practice_decisions
+
+        # concatenate a proprtion scedule for each condition
+        self.proportion_schedule = self.practice_network_proportions + self.fixed_order_experimental_network_proportions + self.random_order_experimental_network_proportions
+
+        # drop onto network conditions
+        self.network_proportions = np.repeat(self.proportion_schedule, self.nconditions)
+
+    def assign_roles_to_networks(self):
+        self.role_schedule = (['practice'] * self.num_practice_networks_per_condition) + (['experiment'] * self.num_experimental_networks_per_condition)
+
+        self.roles = np.repeat(self.role_schedule, self.nconditions)
+
+    def assign_decision_indices_to_networks(self):
+        self.decision_indices = np.repeat(list(range(self.practice_decisions + self.experimental_decisions)), self.nconditions).astype(int)
         
     def setup(self):
         """First time setup."""
-        super(RogersExperiment, self).setup()
+        for _ in range(self.number_of_networks):
+            network = self.create_network()
+            self.session.add(network)
+            self.session.commit()
+        
+        self.assign_conditions_to_networks()
+        self.assign_decision_indices_to_networks()
+        self.assign_roles_to_networks()
 
-        self.create_conditions()
+        df = pd.DataFrame(dict(roles = self.roles, conditions = self.conditions, decision_indices = self.decision_indices, network_proportions = self.network_proportions))
 
-        for net in random.sample(self.networks(role="experiment"),
-                                 self.catch_repeats):
-            net.role = "catch"
+        logging.info("-->> data:\n{}".format(df.sort_values(['conditions', 'decision_indices', 'roles', 'network_proportions'])))
         
         for i, net in enumerate(self.networks()):
             net.max_size = net.max_size + 1  # make room for environment node.
-            env = self.models.RogersEnvironment(network=net)
-            env.create_state(proportion=self.color_proportion_for_network(net))
-            net.property1 = self.conditions[i]
-            # logger.info("--->>> nodes: {}".format(net.nodes()))
-
-    def color_proportion_for_network(self, net):
-        if net.role == "practice":
-            return random.choice(self.practice_difficulty)
-        if net.role == "catch":
-            return self.catch_difficulty
-        if net.role == "experiment":
-            return self.difficulties[self.networks(role="experiment").index(net)]
+            net.role = self.roles[i]
+            net.condition = self.conditions[i]
+            net.decision_index = self.decision_indices[i]
+            datasource = self.models.GenerativeModel(network=net)
+            datasource.create_state(proportion=self.network_proportions[i])
 
     def create_network(self):
         """Create a new network."""
         return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
 
+    def get_network_for_participant(self, participant):
+        """Find a network for a participant."""
+        key = "--->> Participant: {}".format(participant.id)
+
+        # Grab all the nodes previously created by this participant
+        participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
+
+        if not participant_nodes:
+            nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all() # network.property4 = condtion
+            return random.choice(nets)
+
+        # What condition is this participant in?
+        self.log("--->> participant nodes: {}".format(participant_nodes))
+        participant_condition = participant_nodes[0].property5 # node.property5 = condition
+
+        self.log('--->>> completed desicions, nets: {}'.format(type(participant_condition)))
+
+        # which networks has this participant already completed?
+        networks_participated_in = [node.network_id for node in participant_nodes]
+        
+        # How many decisions has the particiapnt already made?
+        completed_decisions = len(networks_participated_in)
+
+        if completed_decisions == self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition:
+            return None
+
+        nfixed = self.num_practice_networks_per_condition + self.num_fixed_order_experimental_networks_per_condition
+
+        # If the participant must still follow the fixed network order
+        if completed_decisions < nfixed:
+            nets = Network.query.filter(and_(Network.property4 == repr(completed_decisions), Network.property5 == participant_condition)).filter_by(full = False).all()
+            
+            # conditionsnets = Network.query.filter(Network.property5 == participant_condition).all()
+            
+            # decisionnets = Network.query.filter(Network.property4 == repr(completed_decisions)).all()
+
+            # logging.info("--->> nets: {}".format(nets))
+
+            chosen_network = random.choice(nets)
+
+        # If it is time to sample a network at random
+        else:
+            # find networks which match the participant's condition and werent' fixed order nets
+            matched_condition_experimental_networks = Network.query.filter(and_(cast(Network.property4, Integer) >= nfixed, Network.property5 == participant_condition)).filter_by(full = False).all()
+            
+            # subset further to networks not already participated in (because here decision index doesnt guide use)
+            availible_options =  [net for net in matched_condition_experimental_networks if net.id not in networks_participated_in]
+            # logging.info("--->> nfixed: {}; completed: {}".format(nfixed, completed_decisions))
+            # self.log("--->> matched networks: {}".format(matched_condition_experimental_networks))
+            # self.log("--->> availbile networks: {}".format(availible_options))
+            
+            # choose randomly among this set
+            chosen_network = random.choice(availible_options)
+
+        return chosen_network
+
+
     def create_node(self, network, participant):
         """Make a new node for participants."""
-        if len([i for i in participant.infos() if i.type == "meme"]) >= (self.experiment_repeats + self.practice_repeats):
+        if len([i for i in participant.infos() if i.type == "meme"]) >= (self.practice_decisions + self.experimental_decisions):
             raise Exception
-        return self.models.RogersAgent(network=network,participant=participant)
+        
+        return self.models.Particle(network=network,participant=participant)
+
+    def add_node_to_network(self, node, network):
+        """Add participant's node to a network."""
+        network.add_node(node)
+        node.receive()
+
+        if isinstance(node, self.models.Particle):
+            node.proportion = self.proportion_schedule[network.decision_index]
+
+        datasource = network.nodes(type=Environment)[0]
+        datasource.connect(whom=node)
+        datasource.transmit(to_whom=node)
+
+        if node.generation > 0:
+            agent_model = self.models.Particle
+            prev_agents = agent_model.query\
+                .filter_by(failed=False,
+                           network_id=network.id,
+                           generation=node.generation - 1)\
+                .all()
+            parent = random.choice(prev_agents)
+            parent.connect(whom=node)
+            parent.transmit(what=Meme, to_whom=node)
+
+        node.receive()
 
     def recruit(self):
         """Recruit participants if necessary."""
@@ -143,7 +256,7 @@ class RogersExperiment(Experiment):
     #     """Check a participants data."""
     #     nodes = Node.query.filter_by(participant_id=participant.id).all()
 
-    #     if len(nodes) != self.experiment_repeats + self.practice_repeats:
+    #     if len(nodes) != self.num_networks + self.num_practice_networks_per_condition:
     #         print("Error: Participant has {} nodes. Data check failed"
     #               .format(len(nodes)))
     #         return False
@@ -164,25 +277,3 @@ class RogersExperiment(Experiment):
     #                Data check failed")
     #         return False
     #     return True
-
-    def add_node_to_network(self, node, network):
-        """Add participant's node to a network."""
-        network.add_node(node)
-        node.receive()
-
-        environment = network.nodes(type=Environment)[0]
-        environment.connect(whom=node)
-        environment.transmit(to_whom=node)
-
-        if node.generation > 0:
-            agent_model = self.models.RogersAgent
-            prev_agents = agent_model.query\
-                .filter_by(failed=False,
-                           network_id=network.id,
-                           generation=node.generation - 1)\
-                .all()
-            parent = random.choice(prev_agents)
-            parent.connect(whom=node) # TODO: DiscreteGenerational network also connects nodes. why doesn't this line create a second vector in the database?
-            parent.transmit(what=Meme, to_whom=node)
-
-        node.receive()

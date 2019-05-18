@@ -5,7 +5,7 @@ import json
 import logging
 logger = logging.getLogger(__file__)
 
-from sqlalchemy import Float, Integer
+from sqlalchemy import Float, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.ext.declarative import declared_attr
@@ -45,6 +45,36 @@ class ParticleFilter(Network):
         """The source that seeds the first generation."""
         return self.property3.lower() != "false"
 
+    @hybrid_property
+    def decision_index(self):
+        """Make property4 decision_index."""
+        return int(self.property4)
+
+    @decision_index.setter
+    def decision_index(self, decision_index):
+        """Make decision_index settable."""
+        self.property4 = repr(decision_index)
+
+    @decision_index.expression
+    def decision_index(self):
+        """Make decision_index queryable."""
+        return cast(self.property4, Integer)
+
+    @hybrid_property
+    def condition(self):
+        """Make property5 condition."""
+        return self.property5
+
+    @condition.setter
+    def condition(self, condition):
+        """Make condition settable."""
+        self.property5 = condition
+
+    @condition.expression
+    def condition(cls):
+        """Make condition queryable."""
+        return cls.property5
+
     def add_node(self, node):
         """Link to the agent from a parent based on the parent's fitness"""
         num_agents = len(self.nodes(type=Agent))
@@ -53,7 +83,7 @@ class ParticleFilter(Network):
         
         node.generation = curr_generation
 
-        logger.info("--->>> add_node gen: {}".format(curr_generation))
+        # logger.info("--->>> add_node gen: {}".format(curr_generation))
 
         if curr_generation == 0 and self.initial_source:
             parent = self._select_oldest_source()
@@ -73,11 +103,25 @@ class ParticleFilter(Network):
         previous_generation = node_type.query.filter_by(failed=False, network_id=self.id, generation=(generation)).all()
         return random.choice(previous_generation)
 
-
-class RogersAgent(Agent):
+class Particle(Agent):
     """The Rogers Agent."""
 
     __mapper_args__ = {"polymorphic_identity": "rogers_agent"}
+
+    @hybrid_property
+    def role(self):
+        """Convert property1 to genertion."""
+        return str(self.property1)
+
+    @role.setter
+    def role(self, role):
+        """Make role settable."""
+        self.property1 = repr(role)
+
+    @role.expression
+    def role(self):
+        """Make role queryable."""
+        return cast(self.property1, str)
 
     @hybrid_property
     def generation(self):
@@ -95,18 +139,18 @@ class RogersAgent(Agent):
         return cast(self.property2, Integer)
 
     @hybrid_property
-    def score(self):
-        """Convert property3 to score."""
+    def decision_index(self):
+        """Convert property3 to decision_index."""
         return int(self.property3)
 
-    @score.setter
-    def score(self, score):
-        """Mark score settable."""
-        self.property3 = repr(score)
+    @decision_index.setter
+    def decision_index(self, decision_index):
+        """Mark decision_index settable."""
+        self.property3 = repr(decision_index)
 
-    @score.expression
-    def score(self):
-        """Make score queryable."""
+    @decision_index.expression
+    def decision_index(self):
+        """Make decision_index queryable."""
         return cast(self.property3, Integer)
 
     @hybrid_property
@@ -127,26 +171,25 @@ class RogersAgent(Agent):
     @hybrid_property
     def condition(self):
         """Make property5 condition."""
-        return float(self.property5)
+        return self.property5
 
     @condition.setter
     def condition(self, condition):
         """Make condition settable."""
-        self.property5 = repr(condition)
+        self.property5 = condition
 
     @condition.expression
-    def condition(self):
+    def condition(cls):
         """Make condition queryable."""
-        return cast(self.property5, Float)
+        return cls.property5
 
-    def assign_condition(self):
-        self.condition = self.network.property1
 
     def __init__(self, contents=None, details = None, network = None, participant = None):
-        super(RogersAgent, self).__init__(network, participant)
-        logger.info("--->> Agent Init Called")
-        # self.network = network
-        self.assign_condition()
+        super(Particle, self).__init__(network, participant)
+        self.condition = self.network.property5
+        self.role = self.network.role
+        self.decision_index = self.network.decision_index
+        # self.proportion = self.network.proportion
 
 class TrialBonus(Info):
     """An Info that represents a parametrisable technology with a utility function."""
@@ -231,22 +274,16 @@ class ComprehensionTest(Info):
 
 
 
-class RogersEnvironment(Environment):
-    """The Rogers environment."""
-
-    __mapper_args__ = {"polymorphic_identity": "rogers_environment"}
+class GenerativeModel(Environment):
+    """The Data-generating Environment."""
+    
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
 
     def create_state(self, proportion):
         """Create an environmental state."""
-        if random.random() < 0.5:
-            proportion = 1 - proportion
         State(origin=self, contents=proportion)
-
-    def step(self):
-        """Prompt the environment to change."""
-        current_state = max(self.infos(type=State),
-                            key=attrgetter('creation_time'))
-        current_contents = float(current_state.contents)
-        new_contents = 1 - current_contents
-        info_out = State(origin=self, contents=new_contents)
-        transformations.Mutation(info_in=current_state, info_out=info_out)
