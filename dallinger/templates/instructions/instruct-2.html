@@ -8,8 +8,8 @@
 
         <p id='story-instructions'>
         </p>
-
-        <p>Here is an example of what you might see:</p> &nbsp;
+        
+        <p id =>Here is an example of what you might see:</p> &nbsp;
         <div class="center_div">
             <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
         </div>
@@ -47,7 +47,8 @@
 
         localStorage.setItem("cover_story",cover_story);
         localStorage.setItem("payout_blue",payout_blue);
-
+        console.log(cover_story,payout_blue)
+        
         if (cover_story=="true"){
             if (payout_blue=="true"){
                 $('#story-instructions').html('You work for a company looking for water in a desert area. '+
@@ -56,7 +57,7 @@
                 'more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b> '+
                 "Don't try to count the dots — they will appear too briefly for that. "+
                 'Instead, you should take your best guess.')
-                $('#story-instructions').html('In this area, there is more sand than water.')
+                $('#image-paragraph').html('In this area, there is more sand than water.')
 
             } else{ 
                 $('#story-instructions').html('You work for a company looking for underwater gold. '+
@@ -65,14 +66,14 @@
                 'more blue dots than yellow. <b>Note that the size of the dots does not matter, only the number. </b> '+
                 "Don't bother trying to count the dots — they will appear too briefly for that. " +
                 'Instead, you should take your best guess.')
-                $('#story-instructions').html('In this area, there is more gold than sand.')
+                $('#image-paragraph').html('In this area, there is more gold than sand.')
             }
-        } else{
-                $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
-                'if they contain more blue dots or more yellow dots. '+
-                '<b>Note that the size of the dots does not matter, only the number. </b>')
-                $('#story-instructions').html('In this image, there are more yellow dots than blue dots.')
-            }
+        }  // else{
+            //     $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
+            //     'if they contain more blue dots or more yellow dots. '+
+            //     '<b>Note that the size of the dots does not matter, only the number. </b>')
+            //     $('#image-paragraph').html('In this image, there are more yellow dots than blue dots.')
+            // }
 
 
         advance = function(){
