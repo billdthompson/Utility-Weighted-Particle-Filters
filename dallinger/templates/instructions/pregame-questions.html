@@ -8,7 +8,7 @@
 {% block body %}
 <font size="+1">
     <div class="main_div" id="questions-div">
-        <h1>Questions</h1>
+        <h1>Pre-experiment quiz</h1>
         
         <div class="main_div">
             <form>
@@ -56,19 +56,19 @@
                   <br>
                   <br>
 
-
                   <div class="row question" id='question-4'>
                   </div>
 
+
                   <div class="row question" id='question-5'>
-                  </div>
+                </div>
                   
                   <br>
                   <hr>
+                </div>
 	            {% endblock %}
             </form>
-        </div>
-        <di class="instructionsnav">
+        <div class="instructionsnav">
             <div class="row">
                 <div class="col-xs-2">
                 </div>
@@ -79,6 +79,7 @@
                 </div>
             </div>
       </div>
+    </div>
 
 <!-- Instructions Div - pass the experiment -->
 <div class="instructions" id="instructions-div-success" style="visibility:hidden">
@@ -88,27 +89,34 @@
     <br>
     <br>
     </p>
-    <div align="center"><button type="button" class="btn btn-success btn-lg" id="instructions-next" onClick="beginExperiment()">Start experiment&raquo;</button></div>
+    <div align="center"><button type="button" class="btn btn-success btn-lg" id="instructions-next" onClick="beginExperiment()">Begin experiment&raquo;</button></div>
 </div>
 
 <!-- Instructions Div -->
 <div class="instructions" id="instructions-div-failure" style="visibility:hidden">
-    
-    <span id="instructions-text-2"><font size="+1"></font></span>
+
+    <h1>Try again</h1><br>
+    <h3>Here is some important information to help you get the highest bonus possible:</h3><br>
+
+    <span id="instructions-text-2" style='font-size:19px;'></span>
     <br>
     <hr>
-    <span id="instructions-text-3"><font size="+1"></font></span>
+    <span id="instructions-text-3" style='font-size:19px;'></span>
     <br>
     <hr>
-    <span id="instructions-text-4"><font size="+1"</font></span>
+    <span id="instructions-text-4" style='font-size:19px;'></span>
     <br>
     <hr>
-    <span id="instructions-text-5"><font size="+1"></font></span>
+    <div id='question-5-wrapper'>
+    <span id="instructions-text-5" style='font-size:19px;'></span>
     <br>
     <hr>
-    <span id="instructions-text-6"><font size="+1"></font></span>
+    </div>
+    <div id='question-6-wrapper'>
+    <span id="instructions-text-6" style='font-size:19px;'></span>
     <br>
     <hr>
+    </div>
     <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>
 
     </div>
@@ -133,6 +141,8 @@
   if (cover_story==false){
     // without cover
     if (condition=='asocial'){
+      $('#question-5-wrapper').css('display','none')
+      $('#question-6-wrapper').css('display','none')
       //asocial
       if (payout_blue==true){
         // Asocial, without cover, payout blue
@@ -249,6 +259,7 @@
         'viewing an image with the same number of blue dots and yellow dots.')
         $('#instructions-text-6').html('5). This participant was also paid every yellow dot in the image.')
     } else{
+      $('#question-6-wrapper').css('display','none')
       //social without info
       if (payout_blue==true){
         //social without info, no cover, payout blue
@@ -312,6 +323,8 @@
     // with cover story
     $('#dot-type-question').html('Does the bonus for a certain type of dot pay if your decision is wrong?')
     if (condition=='asocial'){
+      $('#question-5-wrapper').css('display','none')
+      $('#question-6-wrapper').css('display','none')
       //asocial
       if (payout_blue==true){
         // with cover, asocial, payout blue
@@ -437,6 +450,7 @@
         $('#instructions-text-6').html('5). This participant was also paid every gold dot in the area.')
       }
     } else{
+      $('#question-6-wrapper').css('display','none')
       // social without info
       if (payout_blue==true){
         // with cover, social without info, payout blue
