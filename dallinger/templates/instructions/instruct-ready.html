@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div class="main_div">
+    <div class="main_div" id='ready-div' style='visibility: hidden;'>
         <h1>Instructions</h1>
 
         <hr>
@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
-                    <button type="button" class="btn btn-success btn-lg" onClick="dallinger.goToPage('instructions/pregame-questions');">
+                        <button type="button" class="btn btn-success btn-lg" onClick="advance();">
                     Begin</button>
                 </div>
             </div>
@@ -24,6 +24,10 @@
 
 {% block scripts %}
 <script>
+    function advance(){
+        dallinger.goToPage('instructions/pregame-questions')
+    }
+
     var num_practice, num_test_fixed,num_test_random
 
     dallinger.getExperimentProperty('num_practice_networks_per_condition')
@@ -34,6 +38,8 @@
                         num_test_fixed = propertiesResp.num_fixed_order_experimental_networks_per_condition
                         dallinger.getExperimentProperty('num_random_order_experimental_networks_per_condition')
                             .done(function (propertiesResp) {
+                                num_practice = parseInt(num_practice)
+                                num_test_fixed = parseInt(num_test_fixed)
                                 num_test_random = propertiesResp.num_random_order_experimental_networks_per_condition
                                 var num_test = num_test_fixed+num_test_random;
                                 var cover_story = localStorage.getItem('condition')
@@ -47,25 +53,26 @@
                                 var max_bonus = num_test*(0.45)
                                 var max_bonus = max_bonus.toFixed(2)
                                 var base_pay = 0.25;
-
+                                
+                                $('#ready-div').css('visibility','visible')
                                 if (cover_story==true){
                                     if (payout_blue==true){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                         'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                        ' The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                        '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
                                         '<p>Each round is different from the others - just because there was more water in one '+
                                         'area does not mean there will be more on the next round.</p>')
                                     } else{
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                         'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                        ' The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                        '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
                                         '<p>Each round is different from the others - just because there was more gold in one '+
                                         'area does not mean there will be more on the next round.</p>')
                                     }
                                     } else{
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                         'Depending on how many images you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                        ' The first '+ String(num_practice) + ' images for practice and will not count towards your bonus.</p>' +
+                                        '. The first '+ String(num_practice) + ' images for practice and will not count towards your bonus.</p>' +
                                         '<p>Each round is different from the others - just because there were ' +
                                         'more blue dots on one round does not mean there will be more on the next round.</p>')
                                     }

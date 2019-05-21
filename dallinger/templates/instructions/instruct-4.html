@@ -35,9 +35,9 @@
     <script>
 
         var condition=localStorage.getItem("condition"); 
-        var generation_num= localStorage.getItem("generation"); 
-        var cover_story = localStorage.getItem("cover_story"); 
-        var payout_blue = localStorage.getItem("payout_blue"); 
+        var generation_num= parseInt(localStorage.getItem("generation")); 
+        var cover_story = localStorage.getItem("cover_story")=='true'; 
+        var payout_blue = localStorage.getItem("payout_blue")=='true'; 
         
         
         if (condition=='social'){

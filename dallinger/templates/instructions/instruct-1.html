@@ -3,43 +3,42 @@
 {% block body %}
     <div class="main_div">
         <h1>Welcome</h1>
-
         <hr>
-
-        <p>Welcome to the experiment!</p>
-
+        <p id='welcome_message'>Welcome to the experiment!</p>
         <hr>
-
         <div>
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
 
-                    <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                    <button type="button" class="btn btn-primary btn-lg" id ="instruct1_button" onClick="advance();">
                     Next</button>
                 </div>
             </div>
         </div>
+        <p id='loading_message' style='visibility:hidden;text-align:center;'>Loading the experiment ...</p>
     </div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         create_agent = function() {
-          
           dallinger.createAgent()
             
             .done(function (resp) {
-                localStorage.setItem("node_id",resp.node.id);
-                localStorage.setItem("generation",resp.node.property2);
+
+                localStorage.setItem("node_id",parseInt(resp.node.id));
+                var generation = parseInt(resp.node.property2)
+                localStorage.setItem("generation",generation);
                 localStorage.setItem("condition",resp.node.property5);
-                localStorage.setItem("prop_blue",resp.node.property4);
+                var prop_blue = parseFloat(resp.node.property4)
+                localStorage.setItem("prop_blue",prop_blue);
                 localStorage.setItem("trial_type",resp.node.property1);
-                localStorage.setItem("network_id",resp.node.network_id);
+                var network_id = parseInt(resp.node.network_id)
+                localStorage.setItem("network_id",network_id);
                 var nextpage = 'instructions/instruct-2'
                 
                 dallinger.goToPage(nextpage)
-
             })
             
             .fail(function () {
@@ -48,9 +47,9 @@
         };
 
         advance = function (){
-
+            $('#instruct1_button').addClass('disabled')
+            $('#loading_message').css('visibility','visible')
             $(document).ready(function () {
-
                 dallinger.createParticipant()
                 .done(function () {
                     create_agent()

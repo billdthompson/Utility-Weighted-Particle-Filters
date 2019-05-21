@@ -1,14 +1,23 @@
-
 //
 var trial = 0;
-is_practice = true;
+var total_pay=0.25;
+var a;
 
+var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
+var condition = localStorage.getItem('condition'); // string
+var payout_blue = localStorage.getItem('payout_blue')=='true' // string, true/false
+var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
+var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 
-var cover_story = localStorage.getItem('cover_story');
-var condition = localStorage.getItem('condition');
-var payout_blue = localStorage.getItem('payout_blue')
-var num_practice_trials = localStorage.getItem('num_practice')
-var num_test_trials = localStorage.getItem('num_test')
+var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
+var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
+var proportion_blue = parseFloat(localStorage.getItem("prop_blue")); //string/float
+var network_id = parseInt(localStorage.getItem("network_id")); //string/int
+var generation_seed = generation;
+var network_id_seed = network_id;
+var yellow_left = localStorage.getItem('yellow_left')=='true'
+
+var is_practice = true;
 
 function random(seed) {
   var x = Math.sin(seed) * 10000;
@@ -16,11 +25,13 @@ function random(seed) {
 }
 
 
+
 if (cover_story==false){
   // without story
   var yellowStr = 'Yellow';
   var blueStr = 'Blue'
-  $('#instructions').html('Are there more yellow dots or more blue dots?')
+  var instructionsText = 'Are there more yellow dots or more blue dots?'
+  $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
   $('#more-yellow').html('Yellow')
   if (condition=='social_with_info'){
@@ -40,7 +51,8 @@ if (cover_story==false){
       // with story, payout blue
       var yellowStr = 'Sand';
       var blueStr = 'Water'
-      $('#instructions').html('Are there more sand dots or more yellow dots?')
+      var instructionsText = 'Are there more sand dots or more yellow dots?'
+      $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Sand')
       if (condition=='social'){
@@ -54,7 +66,8 @@ if (cover_story==false){
       // with story, payout yellow
       var yellowStr = 'Gold';
       var blueStr = 'Water'
-      $('#instructions').html('Are there more gold dots or more yellow dots?')
+      var instructionsText = 'Are there more gold dots or more water dots?'
+      $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Gold')
       if (condition=='social'){
@@ -77,25 +90,15 @@ $('#total_earnings').html('Total earnings: $0.25')
 create_agent = function() {
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
-  if (trial == 0){
-    my_node_id = localStorage.getItem("node_id");
-    generation = localStorage.getItem("generation");
-    proportion_blue = localStorage.getItem("prop_blue");
-    is_practice = localStorage.getItem("trial_type")=='practice';
-    network_id = localStorage.getItem("network_id");
-    generation_seed = generation;
-    network_id_seed = network_id;
-    get_received_infos();
-  }
-  else {
+  if (trial != 0){
     // console.log("Calling createAgent")
     dallinger.createAgent()
     .done(function (resp) {
-      my_node_id = resp.node.id;
-      generation = resp.node.property2;
-      is_practice = resp.node.property1=='practice';
-      proportion_blue = resp.node.property4;
-      network_id = resp.node.network_id;
+      my_node_id = parseInt(resp.node.id);
+      generation = parseInt(resp.node.property2);
+      is_practice = resp.node.property1=="'practice'";
+      proportion_blue = parseFloat(resp.node.property4);
+      network_id = parseInt(resp.node.network_id);
       generation_seed = generation;
       network_id_seed = network_id;
       get_received_infos();
@@ -103,6 +106,9 @@ create_agent = function() {
     .fail(function (resp) {
       dallinger.goToPage('questionnaire');
     });
+  }
+  else {
+    get_received_infos();
   }
 };
 
@@ -120,7 +126,7 @@ get_received_infos = function() {
 
     trial = trial + 1;
     $("#trial-number").html(trial);
-    $("#total-trial-number").html(num_practice_trials + num_experiment_trials);
+    $("#total-trial-number").html(num_practice_trials + num_test_trials);
     $(".center_div").css("display", "block");
     $("#instructions").show()
     if (is_practice) {
@@ -129,7 +135,7 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    if (generation==0 || condition=='asocial'){
+    if (generation=='0' || condition=='asocial'){
       var learning_strategy = "asocial";
     } else{
       var learning_strategy = "social";
@@ -137,8 +143,10 @@ get_received_infos = function() {
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
+
       $("#instructions").text(instructionsText);
       regenerateDisplay(proportion_blue);
+      //console.log(proportion_blue)
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
@@ -149,6 +157,7 @@ get_received_infos = function() {
       $("#response-form").hide();
       $("#more-yellow").show();
       $("#more-blue").show();
+      meme = 'none'
     }
 
     // // Show the participant the hint.
@@ -175,9 +184,10 @@ get_received_infos = function() {
   });
 };
 
-function presentDisplay (argument) {
+function presentDisplay () {
   for (var i = dots.length - 1; i >= 0; i--) {
     dots[i].show();
+
   }
   setTimeout(function() {
     for (var i = dots.length - 1; i >= 0; i--) {
@@ -249,16 +259,16 @@ function getBlueDots(propBlue){
 }
 
 function randi(min, max) {
-  generation_seed = generation_seed + 1;
-  network_id_seed = network_id_seed + 1;
+  generation_seed = generation_seed + 0.05;
+  network_id_seed = network_id_seed + 0.05;
   random_number = (random(generation_seed)+random(network_id_seed))/2
   return Math.floor(random_number * (max - min + 1)) + min;
 
 }
 
 function shuffle(o){
-  generation_seed = generation_seed + 1;
-  network_id_seed = network_id_seed + 1;
+  generation_seed = generation_seed + 0.05;
+  network_id_seed = network_id_seed + 0.05;
   random_number = (random(generation_seed)+random(network_id_seed))/2
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
@@ -271,7 +281,6 @@ function correctStr(){
     return 'yellow'
   }
 }
-
 
 
 report = function (color) {
@@ -295,10 +304,11 @@ report = function (color) {
                   condition:condition,
                   generation: generation,
                   network_id:network_id,
-                  running_total_bonus:total_pay,
+                  running_total_pay:total_pay,
                   current_bonus: accuracy_b+condition_b,
                   social_info: meme,
-                  participant_id: dallinger.identity.participantId}
+                  participant_id: dallinger.identity.participantId,
+                  yellow_left: yellow_left}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -349,7 +359,7 @@ function getBonusAmount(truth,response,isBluePayout){
 
   if (cover_story==true){
     if (isBluePayout){
-      var dotStr = 'This area has <span>' + numYellow + '</span> water dots'
+      var dotStr = 'This area has <span>' + numBlue + '</span> water dots'
       var condition_bonus = round((numBlue/2)*0.01,2);
     } else{
       var dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
@@ -357,7 +367,7 @@ function getBonusAmount(truth,response,isBluePayout){
     }
   } else{
     if (isBluePayout){
-      var dotStr = 'This image has <span>' + numYellow + '</span> blue dots'
+      var dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
       var condition_bonus = round((numBlue/2)*0.01,2);
     } else{
       var dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
@@ -371,27 +381,52 @@ function getBonusAmount(truth,response,isBluePayout){
 
 function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
 
-  if (no_story==true){
-    $(".outcome").html("<div class='titleOutcome'>"+
+  if (cover_story==false){
+    if (payout_blue==true){
+      $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Image bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dots bonus: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total image earnings: </p>" +
       "</div>")
 
+    } else{
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'numDots'></p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dots bonus: </p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total image earnings: </p>" +
+      "</div>")
+    }
+
   } else{
-    $(".outcome").html("<div class='titleOutcome'>"+
+    if (payout_blue==true){
+      $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus: </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
       "</div>")
+    } else{
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'numDots'></p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus: </p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "</div>")
+      }
     }
 
 
