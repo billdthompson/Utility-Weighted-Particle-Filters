@@ -108,7 +108,8 @@ create_agent = function() {
     });
   }
   else {
-    get_received_infos();
+    // first trial
+    display_practice_info()
   }
 };
 
@@ -479,13 +480,14 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
-        "Earnings from these rounds will be added to your final pay </p> ")
+        "Earnings from these rounds will be added to your final pay.</p> ")
+      $('#topResult').css('font-size','19px')
 
       $('#continue_button').click(function(){
-      $(".outcome").css("display", "none");
-      $(".button-wrapper").css("display", "none");
-      $(".outcome").html("")
-      $("#instructions").html("")
+        $(".outcome").css("display", "none");
+        $(".button-wrapper").css("display", "none");
+        $(".outcome").html("")
+        $("#instructions").html("")
       create_agent();
       });
     } else{
@@ -497,3 +499,26 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
     }
   });
 };
+
+function display_practice_info(){
+  $(".outcome").html("")
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('width','300px')
+      $(".outcome").css("display", "block");
+      $(".button-wrapper").css("text-align", "right");
+      $(".button-wrapper").css("display", "block");
+      $('.outcome').css('text-align','center')
+      $(".center_div").css("display", "none");
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
+        "Earnings from these rounds will not be added to your final pay.</p> ")
+      $('#topResult').css('font-size','19px')
+      $('#continue_button').click(function(){
+          $(".outcome").css("display", "none");
+          $(".button-wrapper").css("display", "none");
+          $(".outcome").html("")
+          $("#instructions").html("")
+          get_received_infos();
+      });
+
+}
