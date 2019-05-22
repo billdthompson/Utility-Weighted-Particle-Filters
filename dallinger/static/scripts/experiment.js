@@ -128,6 +128,7 @@ create_agent = function() {
       generation_seed = generation;
       network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
+      network_string = '/network/' + String(network_id)
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
         get_received_infos();
