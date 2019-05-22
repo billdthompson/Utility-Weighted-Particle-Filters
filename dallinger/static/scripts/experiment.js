@@ -9,6 +9,7 @@ var payout_blue = localStorage.getItem('payout_blue')=='true' // string, true/fa
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
+var net_decision_index = parseInt(localStorage.getItem('net_decision_index'));
 
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
@@ -127,8 +128,10 @@ create_agent = function() {
       generation_seed = generation;
       network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
-      console.log(trial,decision_index)
-      get_received_infos();
+      dallinger.get(network_string).done(function(netresp) {
+        net_decision_index = parseInt(netresp.network.property4);
+        get_received_infos();
+      });
     })
     .fail(function (resp) {
       dallinger.goToPage('questionnaire');
@@ -136,7 +139,6 @@ create_agent = function() {
   }
   else {
     // first trial
-    console.log(trial,decision_index)
     display_practice_info()
   }
 };
@@ -285,15 +287,15 @@ function getBlueDots(propBlue){
 
 function randi(min, max) {
   generation_seed = generation_seed + 0.05;
-  network_id_seed = network_id_seed + 0.05;
-  random_number = (random_generation(generation_seed)+random_network(network_id_seed))/2
+  net_decision_index = net_decision_index + 0.05;
+  random_number = (generation_random(generation_seed)+network_random(net_decision_index))/2
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o){
   generation_seed = generation_seed + 0.05;
-  network_id_seed = network_id_seed + 0.05;
-  random_number = (random_generation (generation_seed)+random_network(network_id_seed))/2
+  net_decision_index = net_decision_index + 0.05;
+  random_number = (generation_random(generation_seed)+network_random(net_decision_index))/2
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -334,8 +336,9 @@ report = function (color) {
                   current_bonus: accuracy_b+condition_b,
                   social_info: meme,
                   participant_id: dallinger.identity.participantId,
-                  yellow_left: yellow_left,
-                  yellow_first:yellow_first}
+                  yello_button_left: yellow_left,
+                  yellow_text_left:yellow_first,
+                  net_decision_index: net_decision_index}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),

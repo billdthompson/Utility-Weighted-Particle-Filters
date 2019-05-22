@@ -38,8 +38,13 @@
                 localStorage.setItem("network_id",network_id);
                 var nextpage = 'instructions/instruct-2'
                 localStorage.setItem("decision_index",parseInt(resp.node.property3));
-                
-                dallinger.goToPage(nextpage)
+
+                var network_string = '/network/' + String(network_id)
+                dallinger.get(network_string).done(function(netresp) {
+                    var net_decision_index = parseInt(netresp.network.property4);
+                    localStorage.setItem("net_decision_index",net_decision_index);
+                    dallinger.goToPage(nextpage) 
+                })
             })
             
             .fail(function () {
