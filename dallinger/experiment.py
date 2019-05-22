@@ -244,6 +244,7 @@ class UWPFWP(Experiment):
 			for node in participant_nodes:
 				node.fail()
 
+		# TODO: is recruiter being called twice?
 		self.log("--**fail participant**-->>")
 		self.recruiter.recruit(n=1)
 
