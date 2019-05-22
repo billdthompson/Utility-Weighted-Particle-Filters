@@ -24,13 +24,19 @@ function random(seed) {
   return x - Math.floor(x);
 }
 
+var yellow_first=Math.random()<=0.5; 
 
 
 if (cover_story==false){
   // without story
   var yellowStr = 'Yellow';
   var blueStr = 'Blue'
-  var instructionsText = 'Are there more yellow dots or more blue dots?'
+  if (yellow_first==true){
+    var instructionsText = 'Are there more yellow dots or more blue dots?';
+  } else{
+    var instructionsText = 'Are there more blue dots or more yellow dots?'
+  }
+
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
   $('#more-yellow').html('Yellow')
@@ -51,7 +57,11 @@ if (cover_story==false){
       // with story, payout blue
       var yellowStr = 'Sand';
       var blueStr = 'Water'
-      var instructionsText = 'Are there more sand dots or more yellow dots?'
+      if (yellow_first==true){
+        var instructionsText = 'Are there more sand dots or more water dots?'
+      } else{
+        var instructionsText = 'Are there more water dots or more sand dots?'
+      }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Sand')
@@ -66,7 +76,11 @@ if (cover_story==false){
       // with story, payout yellow
       var yellowStr = 'Gold';
       var blueStr = 'Water'
-      var instructionsText = 'Are there more gold dots or more water dots?'
+      if (yellow_first==true){
+        var instructionsText = 'Are there more gold dots or more water dots?'
+      } else{
+        var instructionsText = 'Are there more water dots or more gold dots?'
+      }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Gold')
@@ -79,6 +93,7 @@ if (cover_story==false){
       }
     }
 }
+$('#instructions').css('font-size','19px')
 
 function round(num, places) {
   var multiplier = Math.pow(10, places);
@@ -203,8 +218,8 @@ function presentDisplay () {
 
 function regenerateDisplay (propBlue) {
   // Display parameters
-  width = 650;
-  height = 350;
+  width = 700;
+  height = 300;
   numDots = 100;
   dots = [];
   blueDots = Math.round(propBlue * numDots);
@@ -309,7 +324,8 @@ report = function (color) {
                   current_bonus: accuracy_b+condition_b,
                   social_info: meme,
                   participant_id: dallinger.identity.participantId,
-                  yellow_left: yellow_left}
+                  yellow_left: yellow_left,
+                  yellow_first:yellow_first}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),

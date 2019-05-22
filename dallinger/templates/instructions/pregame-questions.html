@@ -126,6 +126,9 @@
 {% block scripts %}
   <script type="text/javascript">
 
+  var num_failed = 0;
+  var max_num_failed = 3;
+
   var cover_story = localStorage.getItem('cover_story')=='true';
   var generation = parseInt(localStorage.getItem('generation'));
   var payout_blue = localStorage.getItem('payout_blue')=='true';
@@ -569,8 +572,15 @@
         else {
           // console.log("failed")
           // console.log(resp)
-          $("#questions-div").hide()
-          $("#instructions-div-failure").attr("style", "visibility:visible")
+          num_failed+=1
+          if (num_failed>=max_num_failed){
+            spinner.unfreeze();  
+            dallinger.allowExit();        
+            dallinger.goToPage('questionnaire')
+          } else{
+            $("#questions-div").hide()
+            $("#instructions-div-failure").attr("style", "visibility:visible")
+          }
         }
       }
 
