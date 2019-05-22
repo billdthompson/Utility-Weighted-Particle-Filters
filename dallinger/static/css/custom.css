@@ -42,6 +42,6 @@ body {
   outline: none;
 }
 
-
-
-
+.center_div {
+  display:none;
+}

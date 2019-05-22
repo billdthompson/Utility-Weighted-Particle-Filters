@@ -37,6 +37,7 @@
                 var network_id = parseInt(resp.node.network_id)
                 localStorage.setItem("network_id",network_id);
                 var nextpage = 'instructions/instruct-2'
+                localStorage.setItem("decision_index",parseInt(resp.node.property3));
                 
                 dallinger.goToPage(nextpage)
             })
