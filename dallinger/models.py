@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
-from dallinger.models import Info, Network
+from dallinger.models import Info, Network, Participant
 
 class ParticleFilter(Network):
     """Discrete fixed size generations with random transmission"""
