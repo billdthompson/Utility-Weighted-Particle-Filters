@@ -6620,6 +6620,10 @@ button.close {
     word-break: normal
 }
 
+.center_div {
+    display:none;
+  }
+
 .text-hide {
     font: 0/0 a;
     color: transparent;

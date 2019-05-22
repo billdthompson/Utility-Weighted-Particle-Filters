@@ -8,6 +8,8 @@ var condition = localStorage.getItem('condition'); // string
 var payout_blue = localStorage.getItem('payout_blue')=='true' // string, true/false
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
+var decision_index = parseInt(localStorage.getItem('decision_index')) //int
+
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
@@ -19,13 +21,19 @@ var yellow_left = localStorage.getItem('yellow_left')=='true'
 
 var is_practice = true;
 
-function random(seed) {
+function generation_random(seed) {
   var x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 }
 
-var yellow_first=Math.random()<=0.5; 
+function network_random(seed) {
+  var x = Math.sin(seed) * 12000;
+  return x - Math.floor(x);
+}
 
+var yellow_first=Math.random()<=0.5;
+$(".center_div").css("display", "none");
+$("#total-trial-number").html(num_practice_trials + num_test_trials);
 
 if (cover_story==false){
   // without story
@@ -103,12 +111,14 @@ function round(num, places) {
 $('#total_earnings').html('Total earnings: $0.25')
 
 create_agent = function() {
+  trial = trial + 1;
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
-  if (trial != 0){
+  if (trial != 1){
     // console.log("Calling createAgent")
     dallinger.createAgent()
     .done(function (resp) {
+      $("#trial-number").html(trial);
       my_node_id = parseInt(resp.node.id);
       generation = parseInt(resp.node.property2);
       is_practice = resp.node.property1=="'practice'";
@@ -116,6 +126,8 @@ create_agent = function() {
       network_id = parseInt(resp.node.network_id);
       generation_seed = generation;
       network_id_seed = network_id;
+      decision_index = parseFloat(resp.node.property3)
+      console.log(trial,decision_index)
       get_received_infos();
     })
     .fail(function (resp) {
@@ -124,6 +136,7 @@ create_agent = function() {
   }
   else {
     // first trial
+    console.log(trial,decision_index)
     display_practice_info()
   }
 };
@@ -139,10 +152,6 @@ get_received_infos = function() {
         meme = infos[i].contents;
       }
     }
-
-    trial = trial + 1;
-    $("#trial-number").html(trial);
-    $("#total-trial-number").html(num_practice_trials + num_test_trials);
     $(".center_div").css("display", "block");
     $("#instructions").show()
     if (is_practice) {
@@ -218,15 +227,15 @@ function presentDisplay () {
 
 function regenerateDisplay (propBlue) {
   // Display parameters
-  width = 700;
-  height = 300;
+  width = 625;
+  height = 350;
   numDots = 100;
   dots = [];
   blueDots = Math.round(propBlue * numDots);
   yellowDots = numDots - blueDots;
   sizes = [];
-  rMin = 10; // The dots' minimum radius.
-  rMax = 20;
+  rMin = 8; // The dots' minimum radius.
+  rMax = 18;
   horizontalOffset = (window.innerWidth - width) / 2;
 
   paper = Raphael(horizontalOffset, 300, width, height);
@@ -277,15 +286,14 @@ function getBlueDots(propBlue){
 function randi(min, max) {
   generation_seed = generation_seed + 0.05;
   network_id_seed = network_id_seed + 0.05;
-  random_number = (random(generation_seed)+random(network_id_seed))/2
+  random_number = (random_generation(generation_seed)+random_network(network_id_seed))/2
   return Math.floor(random_number * (max - min + 1)) + min;
-
 }
 
 function shuffle(o){
   generation_seed = generation_seed + 0.05;
   network_id_seed = network_id_seed + 0.05;
-  random_number = (random(generation_seed)+random(network_id_seed))/2
+  random_number = (random_generation (generation_seed)+random_network(network_id_seed))/2
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -314,12 +322,14 @@ report = function (color) {
   }
 
   var contents = {choice:color,
+                  trial_num:trial,
                   is_practice:is_practice,
                   payout_blue:payout_blue,
                   proportionBlue:proportion_blue,
                   condition:condition,
                   generation: generation,
                   network_id:network_id,
+                  node_id: my_node_id,
                   running_total_pay:total_pay,
                   current_bonus: accuracy_b+condition_b,
                   social_info: meme,
@@ -524,7 +534,6 @@ function display_practice_info(){
       $(".button-wrapper").css("text-align", "right");
       $(".button-wrapper").css("display", "block");
       $('.outcome').css('text-align','center')
-      $(".center_div").css("display", "none");
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
         "Earnings from these rounds will not be added to your final pay.</p> ")
