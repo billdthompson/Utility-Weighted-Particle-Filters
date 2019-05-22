@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div class="main_div">
+    <div class="main_div" id='read_div' style='visibility: hidden;'>
         <h1>Instructions</h1>
 
         <hr>
@@ -34,12 +34,13 @@
     {% block scripts %}
     <script>
         var condition = localStorage.getItem("condition");      
-        var generation = localStorage.getItem("generation");     
-        var cover_story = localStorage.getItem("cover_story");    
-        var payout_blue = localStorage.getItem("payout_blue");    
+        var generation = parseInt(localStorage.getItem("generation"));     
+        var cover_story = localStorage.getItem("cover_story")=='true';    
+        var payout_blue = localStorage.getItem("payout_blue")=='true';
 
-        if (cover_story=="true"){
-            if (payout_blue=="true"){
+        $('#read_div').css('visibility','visible')
+        if (cover_story==true){
+            if (payout_blue==true){
                 $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
                 'containing more water or more sand. </p>' +
@@ -56,7 +57,7 @@
                 'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
             }
         } else{
-            if (payout_blue=="true"){
+            if (payout_blue==true){
                 $('#story-instructions').html('<p>You have already been paid $0.25. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
                 'containing more blue or more yellow dots. </p>' +
@@ -72,7 +73,6 @@
                 'regardless of whether you are correct in judging the image as containing more yellow or blue dots.</p>')
             }
         }
-
 
         if (condition=='asocial' || generation==0){
             advance = function(){

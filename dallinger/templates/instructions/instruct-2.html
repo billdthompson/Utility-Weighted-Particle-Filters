@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div class="main_div">
+    <div class="main_div" id='instruct-2-div' style='visibility:hidden;'>
         <h1>Instructions</h1>
 
         <hr>
@@ -47,6 +47,7 @@
                         payout_blue = propertiesResp.payout_blue
                         localStorage.setItem("cover_story",cover_story);
                         localStorage.setItem("payout_blue",payout_blue);
+                        $('#instruct-2-div').css('visibility','visible')
                         
                         if (cover_story=="true"){
                             if (payout_blue=="true"){
