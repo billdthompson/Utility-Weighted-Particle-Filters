@@ -1,9 +1,0 @@
-*~
-*.pyc
-\#*
-.Rhistory
-*.DS_Store
-*.c
-*.so
-*.pyx
-*/build/*

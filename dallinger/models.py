@@ -270,8 +270,6 @@ class ComprehensionTest(Info):
         self.passed = self.evaluate_answers()
         self.contents = contents
 
-
-
 class GenerativeModel(Environment):
     """The Data-generating Environment."""
     
