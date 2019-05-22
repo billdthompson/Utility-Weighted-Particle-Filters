@@ -188,7 +188,6 @@ class Particle(Agent):
         super(Particle, self).__init__(network, participant)
         self.condition = self.network.property5
         self.role = self.network.role
-        self.decision_index = self.network.decision_index
         # self.proportion = self.network.proportion
 
 class TrialBonus(Info):
