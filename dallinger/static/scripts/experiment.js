@@ -112,6 +112,8 @@ function round(num, places) {
 $('#total_earnings').html('Total earnings: $0.25')
 
 create_agent = function() {
+  console.log("------")
+  console.log("      ")
   trial = trial + 1;
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
@@ -129,8 +131,10 @@ create_agent = function() {
       network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
       network_string = '/network/' + String(network_id)
+      console.log("** Inside create_agent -- node properties: ", my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index, )
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
+        console.log("** Inside get net -- net decision_index: ", net_decision_index)
         get_received_infos();
       });
     })
@@ -145,6 +149,7 @@ create_agent = function() {
 };
 
 get_received_infos = function() {
+  console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
