@@ -151,13 +151,14 @@ create_agent = function() {
 get_received_infos = function() {
   console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
+    console.log("Finished call to dallinger.getReceivedInfos; Response: ", resp)
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
       if (infos[i].type == "state") {
         state = infos[i].contents;
       }
       if (infos[i].type == "meme") {
-        meme = infos[i].contents;
+        meme = JSON.parse(infos[i].contents);
       }
     }
     $(".center_div").css("display", "block");
@@ -199,19 +200,18 @@ get_received_infos = function() {
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
 
-      meme = info.contents;
-
-      if (meme === "blue") {
+      if (meme["choice"] === "blue") {
         $("#stimulus").attr("src", blue_filepath);
-      } else if (meme === "yellow") {
+      } else if (meme["choice"] === "yellow") {
         $("#stimulus").attr("src", yellow_filepath);
       }
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
-        $("#more-blue").removeClass('disabled');
-        $("#more-yellow").removeClass('disabled');
-        lock = false;
+        // $("#more-blue").removeClass('disabled');
+        // $("#more-yellow").removeClass('disabled');
+        regenerateDisplay(proportion_blue);
+        presentDisplay();
       }, 2000);
     }
   });
