@@ -8,3 +8,4 @@ data*/*
 analysis/*
 .DS_Store
 Pipfile*
+../data-cache/*
