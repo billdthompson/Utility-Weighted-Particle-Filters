@@ -199,6 +199,9 @@ get_received_infos = function() {
 
       $("#more-blue").addClass('disabled');
       $("#more-yellow").addClass('disabled');
+      $("#more-blue").hide();
+      $("#more-yellow").hide();
+      $("#instructions").hide();
 
       if (meme["choice"] === "blue") {
         $("#stimulus").attr("src", blue_filepath);
@@ -208,11 +211,16 @@ get_received_infos = function() {
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
+        $("#instructions").text(instructionsText);
+        $("#instructions").show();
+        $("#more-blue").show();
+        $("#more-yellow").show();
+
         // $("#more-blue").removeClass('disabled');
         // $("#more-yellow").removeClass('disabled');
         regenerateDisplay(proportion_blue);
         presentDisplay();
-      }, 2000);
+      }, 4000);
     }
   });
 };

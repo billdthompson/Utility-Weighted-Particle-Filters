@@ -57,7 +57,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {1:"social"} # 0:"asocial",  2:"social_with_info"
+		self.condition_names = {2:"social_with_info"} # 0:"asocial",  2:"social_with_info", 1:"social"
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
