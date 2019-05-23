@@ -95,11 +95,9 @@ class ParticleFilter(Network):
             parent.transmit(to_whom=node)
 
     def _select_oldest_source(self):
-        logger.info("--->>> createnet nodes: {}".format(self.nodes()))
         return min(self.nodes(type=Environment), key=attrgetter("creation_time"))
 
     def _sample_previous_generation(self, node_type, generation):
-        logger.info("--->>> gen: {}".format(generation))
         previous_generation = node_type.query.filter_by(failed=False, network_id=self.id, generation=(generation)).all()
         return random.choice(previous_generation)
 

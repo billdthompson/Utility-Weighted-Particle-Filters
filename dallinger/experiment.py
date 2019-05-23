@@ -27,9 +27,9 @@ class UWPFWP(Experiment):
 		return {
 		'generation_size': 2, 
 		'generations': 2, 
-		'num_fixed_order_experimental_networks_per_condition': 2,
-		'num_random_order_experimental_networks_per_condition': 2,
-		'num_practice_networks_per_condition': 2,
+		'num_fixed_order_experimental_networks_per_condition': 1,
+		'num_random_order_experimental_networks_per_condition': 1,
+		'num_practice_networks_per_condition': 1,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -57,7 +57,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {0:"asocial", 1:"social", 2:"social_with_info"}
+		self.condition_names = {1:"social"} # 0:"asocial",  2:"social_with_info"
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -66,6 +66,7 @@ class UWPFWP(Experiment):
 		self.num_experimental_networks_per_condition = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_condition + self.num_random_order_experimental_networks_per_condition
 		self.num_practice_networks_per_condition = self.practice_decisions = self.public_properties['num_practice_networks_per_condition']
 		self.number_of_networks = (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition) * self.nconditions
+		self.nodes_per_generation = self.generation_size * self.nconditions * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
 		self.initial_recruitment_size = self.nconditions * self.generation_size
 		self.min_acceptable_performance = 10 / float(12)    
 		self.bonus_payment = 1.0
@@ -76,11 +77,11 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.47, .53]#, .51, .48]
+		self.practice_network_proportions = [.47]#, .53, .51, .48]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48, .52]#, .51, .49]
-		self.random_order_experimental_network_proportions = [.48, .52]#, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
+		self.random_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
@@ -129,38 +130,49 @@ class UWPFWP(Experiment):
 		"""Create a new network."""
 		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
 
-	def get_network_for_participant(self, participant):
-		"""Find a network for a participant."""
-		key = "--->> Participant: {}".format(participant.id)
+	def sample_network_for_new_participant(self, participant):
+		"""Obtain a netwokr for a participant who has not yet been assigned to a condition"""
+		nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all()
 
-		# Grab all the nodes previously created by this participant
-		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
+		# Establish largest generation attested in nodes table (property2 = generation)
+		maximum_generation_among_nodes = self.session.query(func.max(self.models.Particle.property2)).scalar()
 
-		if not participant_nodes:
-			nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all() # network.property4 = decision_index
+		# count nodes showing generation
+		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter_by(failed = False).scalar()
 
-			# self.session.query(Network.property4 == repr(0), func.count(Network.id))
+		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
+		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
 
-			# counts = self.session.query(Participant.network_id, func.count(Participant.network_id)).group_by(Participat.network_id).all()
+		# 1: count unique participant ids in all nodes
+		# 2: sum this count by condition by grouping
+		# 3: subset down to just this generation
+		# 4: don't count failed nodes
+		condition_counts = self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.condition) \
+				.group_by(self.models.Particle.condition) \
+				.filter(self.models.Particle.property2 == current_generation) \
+				.filter_by(failed = False)\
+				.all()
 
-			# self.session.query(func.count(self.models.Particle.participant_id),self.models.Particle.participant_id, self.models.Particle.network_id).group_by(Table.column1, Table.column2).all()
-
-			# counts = self.session.query(self.models.Particle.participant_id, func.count(self.models.Particle.participant_id)).all()
-
-			counts = self.session.query(func.count(self.models.Particle.participant_id).label('count'), self.models.Particle.network_id).group_by(self.models.Particle.network_id).all()
-			self.log("{}".format(counts),"--**groupby network id counts-->>")
-
-			if not counts:
-				return random.choice(nets)
-
+		# if this is the first Particle node in the experiment, all decions_index = 0 networks are availible
+		# property4 = decision_index
+		if not condition_counts:
 			return random.choice(nets)
 
+		condition_counts = dict([c[::-1] for c in condition_counts])
 
+		# filter out any networks who already have enough nodes in this generation
+		availible_conditions = list(filter(lambda c: condition_counts[c] < self.generation_size, condition_counts.keys())) + list(filter(lambda k: k not in condition_counts, self.condition_names.values()))
+		self.log("{}".format(condition_counts),"--**groupby network id condition_counts-->>")
+		self.log("{}".format(availible_conditions),"--**availible conditions-->>")
+
+		nets = [net for net in nets if net.condition in availible_conditions]
+		return random.choice(nets)
+
+	def sample_network_for_existing_participant(self, participant, participant_nodes):
+		"""Obtain a netwokr for a participant who has already been assigned to a condition by completeing earlier rounds"""
+		
 		# What condition is this participant in?
-		self.log("--->> participant nodes: {}".format(participant_nodes))
 		participant_condition = participant_nodes[0].property5 # node.property5 = condition
-
-		self.log('--->>> completed desicions, nets: {}'.format(type(participant_condition)))
 
 		# which networks has this participant already completed?
 		networks_participated_in = [node.network_id for node in participant_nodes]
@@ -168,6 +180,8 @@ class UWPFWP(Experiment):
 		# How many decisions has the particiapnt already made?
 		completed_decisions = len(networks_participated_in)
 
+		# When the participant has completed all networks in their condition, their experiment is over
+		# returning None throws an error to the fronted which directs to questionnaire and completion
 		if completed_decisions == self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition:
 			return None
 
@@ -175,10 +189,8 @@ class UWPFWP(Experiment):
 
 		# If the participant must still follow the fixed network order
 		if completed_decisions < nfixed:
-			nets = Network.query.filter(and_(Network.property4 == repr(completed_decisions), Network.property5 == participant_condition)).filter_by(full = False).all()
-			
-
-			chosen_network = random.choice(nets)
+			# find the network that is next in the participant's schedule
+			return Network.query.filter(and_(Network.property4 == repr(completed_decisions), Network.property5 == participant_condition)).filter_by(full = False).one()
 
 		# If it is time to sample a network at random
 		else:
@@ -186,13 +198,20 @@ class UWPFWP(Experiment):
 			matched_condition_experimental_networks = Network.query.filter(and_(cast(Network.property4, Integer) >= nfixed, Network.property5 == participant_condition)).filter_by(full = False).all()
 			
 			# subset further to networks not already participated in (because here decision index doesnt guide use)
-			availible_options =  [net for net in matched_condition_experimental_networks if net.id not in networks_participated_in]
+			availible_options = [net for net in matched_condition_experimental_networks if net.id not in networks_participated_in]
 			
 			# choose randomly among this set
 			chosen_network = random.choice(availible_options)
 
 		return chosen_network
 
+	def get_network_for_participant(self, participant):
+		"""Find a network for a participant."""
+		key = "--->> Participant: {}; ".format(participant.id)
+		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
+		chosen_network = self.sample_network_for_new_participant(participant) if not participant_nodes else self.sample_network_for_existing_participant(participant, participant_nodes)
+		self.log("Assigned to network: {}".format(chosen_network.id), key)
+		return chosen_network
 
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
