@@ -25,11 +25,11 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size': 1, 
-		'generations': 3, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
+		'generation_size': 2, 
+		'generations': 2, 
+		'num_fixed_order_experimental_networks_per_condition': 2,
+		'num_random_order_experimental_networks_per_condition': 2,
+		'num_practice_networks_per_condition': 2,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -137,8 +137,24 @@ class UWPFWP(Experiment):
 		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
 
 		if not participant_nodes:
-			nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all() # network.property4 = condtion
+			nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all() # network.property4 = decision_index
+
+			# self.session.query(Network.property4 == repr(0), func.count(Network.id))
+
+			# counts = self.session.query(Participant.network_id, func.count(Participant.network_id)).group_by(Participat.network_id).all()
+
+			# self.session.query(func.count(self.models.Particle.participant_id),self.models.Particle.participant_id, self.models.Particle.network_id).group_by(Table.column1, Table.column2).all()
+
+			# counts = self.session.query(self.models.Particle.participant_id, func.count(self.models.Particle.participant_id)).all()
+
+			counts = self.session.query(func.count(self.models.Particle.participant_id).label('count'), self.models.Particle.network_id).group_by(self.models.Particle.network_id).all()
+			self.log("{}".format(counts),"--**groupby network id counts-->>")
+
+			if not counts:
+				return random.choice(nets)
+
 			return random.choice(nets)
+
 
 		# What condition is this participant in?
 		self.log("--->> participant nodes: {}".format(participant_nodes))
@@ -224,7 +240,7 @@ class UWPFWP(Experiment):
 			self.recruiter.close_recruitment()
 		elif end_of_generation:
 			self.log("generation finished, recruiting another")
-			self.recruiter.recruit(n=self.generation_size)
+			self.recruiter.recruit(n=(self.generation_size * self.nconditions))
 
 	def bonus(self, participant):
 		"""Calculate a participants bonus."""
