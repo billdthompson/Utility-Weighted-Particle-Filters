@@ -76,11 +76,11 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.47, .53, .51, .48]
+		self.practice_network_proportions = [.47, .53]#, .51, .48]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
-		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.48, .52]#, .51, .49]
+		self.random_order_experimental_network_proportions = [.48, .52]#, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
@@ -195,7 +195,7 @@ class UWPFWP(Experiment):
 			
 			# keep track of how which order the participant is doing neteworks
 			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
-			node.decision_index = completed_decisions + 1
+			node.decision_index = completed_decisions
 
 		datasource = network.nodes(type=Environment)[0]
 		datasource.connect(whom=node)
@@ -243,10 +243,8 @@ class UWPFWP(Experiment):
 		if participant_nodes:
 			for node in participant_nodes:
 				node.fail()
-
-		# TODO: is recruiter being called twice?
 		self.log("--**fail participant**-->>")
-		self.recruiter.recruit(n=1)
+		
 
 	def attention_check(self, participant=None):
 		"""Check a participant paid attention."""
