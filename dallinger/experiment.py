@@ -227,7 +227,6 @@ class UWPFWP(Experiment):
 
 		if isinstance(node, self.models.Particle):
 			node.proportion = self.proportion_schedule[network.decision_index]
-			
 			# keep track of how which order the participant is doing neteworks
 			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions

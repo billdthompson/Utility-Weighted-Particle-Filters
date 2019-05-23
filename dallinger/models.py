@@ -87,12 +87,9 @@ class ParticleFilter(Network):
 
         if curr_generation == 0 and self.initial_source:
             parent = self._select_oldest_source()
-        else:
-            parent = self._sample_previous_generation(node_type=type(node), generation=curr_generation - 1)
-
-        if parent is not None:
-            parent.connect(whom=node)
-            parent.transmit(to_whom=node)
+            if parent is not None:
+                parent.connect(whom=node)
+                parent.transmit(to_whom=node)
 
     def _select_oldest_source(self):
         return min(self.nodes(type=Environment), key=attrgetter("creation_time"))
