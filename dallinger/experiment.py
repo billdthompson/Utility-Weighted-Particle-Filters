@@ -243,10 +243,8 @@ class UWPFWP(Experiment):
 		if participant_nodes:
 			for node in participant_nodes:
 				node.fail()
-
-		# TODO: is recruiter being called twice?
 		self.log("--**fail participant**-->>")
-		self.recruiter.recruit(n=1)
+		
 
 	def attention_check(self, participant=None):
 		"""Check a participant paid attention."""
