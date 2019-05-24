@@ -32,12 +32,12 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size': 40, 
-		'generations': 1, 
+		'generation_size':3, 
+		'generations': 3, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
 		'num_practice_networks_per_condition': 4,
-		'payout_blue': 'false',
+		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
 
@@ -64,7 +64,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {0:"asocial"} #2:"social_with_info", 1:"social"}
+		self.condition_names = {0:"asocial", 2:"social_with_info", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -75,8 +75,6 @@ class UWPFWP(Experiment):
 		self.number_of_networks = (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition) * self.nconditions
 		self.nodes_per_generation = self.generation_size * self.nconditions * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
 		self.initial_recruitment_size = self.nconditions * self.generation_size
-		self.min_acceptable_performance = 10 / float(12)    
-		self.bonus_payment = 1.0
 		self.bonus_max = 3.70
 
 	def assign_conditions_to_networks(self):
@@ -84,7 +82,7 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.47, .53, .51, .48]
+		self.practice_network_proportions = [.53, .46, .47, .54]
 		
 		# proprtions for experimental networks (fixed order and random order)
 		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
@@ -120,10 +118,6 @@ class UWPFWP(Experiment):
 		self.assign_conditions_to_networks()
 		self.assign_decision_indices_to_networks()
 		self.assign_roles_to_networks()
-
-		# df = pd.DataFrame(dict(roles = self.roles, conditions = self.conditions, decision_indices = self.decision_indices, network_proportions = self.network_proportions))
-
-		# logging.info("-->> data:\n{}".format(df.sort_values(['conditions', 'decision_indices', 'roles', 'network_proportions'])))
 		
 		for i, net in enumerate(self.networks()):
 			net.max_size = net.max_size + 1  # make room for environment node.

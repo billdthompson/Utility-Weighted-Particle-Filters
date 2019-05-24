@@ -15,8 +15,7 @@ contact_email_on_error = wdt@princeton.edu
 ad_group = UWSPF
 organization_name = University of California, Berkeley
 browser_exclude_rule = MSIE, mobile, tablet
-assign_qualifications = true
-qualification_blacklist = UWSPF
+assign_qualifications = false
 
 [Database]
 database_url = postgresql://postgres@localhost/dallinger
@@ -24,8 +23,8 @@ database_size = standard-2
 
 [Server]
 dyno_type = standard-2x
-num_dynos_web = 2
-num_dynos_worker = 1
+num_dynos_web = 3
+num_dynos_worker = 2
 host = 0.0.0.0
 notification_url = None
 clock_on = false
