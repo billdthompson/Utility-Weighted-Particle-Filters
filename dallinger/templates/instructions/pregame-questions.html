@@ -99,16 +99,12 @@
     <span id="instructions-text-2" style='font-size:19px;'></span>
     <br>
     <hr>
-    <div id='question-3-wrapper'>
     <span id="instructions-text-3" style='font-size:19px;'></span>
     <br>
     <hr>
-    </div>
-    <div id='question-4-wrapper'>
     <span id="instructions-text-4" style='font-size:19px;'></span>
     <br>
     <hr>
-   </div>
     <div id='question-5-wrapper'>
     <span id="instructions-text-5" style='font-size:19px;'></span>
     <br>
@@ -140,11 +136,7 @@
   if (generation==0 || condition=='asocial'){
     condition='asocial'
   }
-  
-  var no_utility=false;
-  if (condition.includes('no_utility')){
-    no_utility=true;
-  }
+
 
 
   if (cover_story==false){
@@ -154,6 +146,7 @@
       $('#question-6-wrapper').css('display','none')
       //asocial
       if (payout_blue==true){
+        // Asocial, without cover, payout blue
         $('#q1').html('<option value="1">Judge whether there are more blue dots or more yellow dots</option>'+
                               '<option value="2">Judge how many yellow dots are in the image</option>'+
                               '<option value="3">Judge how many blue dots are in the image</option>'+
@@ -170,7 +163,6 @@
         $('#instructions-text-4').html('3). You will get this bonus for blue dots regardless of whether your decision is correct.')
         $('#instructions-text-5').css('display','none')
         $('#instructions-text-6').css('display','none')
-        }
 
       } else{
         // Asocial, without cover, payout yellow
