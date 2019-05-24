@@ -26,7 +26,6 @@
 	                    </div>
 	                </div>
                   <br>
-                  <br>
 	                <div class="row question" id='question-2'>
 	                    <div class="col-md-8" id = 'question-text-2'>
 	                        Which color of dots give you a bonus?
@@ -37,7 +36,6 @@
 	                        </select>
 	                    </div>
                   </div>
-                  <br>
                   <br>
                   <div class="row question" id='question-3'>
 	                    <div class="col-md-8" id='dot-type-question'>
@@ -54,9 +52,9 @@
 	                    </div>
                   </div>
                   <br>
-                  <br>
 
                   <div class="row question" id='question-4'>
+
                   </div>
 
 
@@ -205,7 +203,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
                   'Was this participant also paid for blue dots?'+
               '</div><br>'+
@@ -223,7 +221,7 @@
         $('#instructions-text-4').html('3). You will get this bonus for blue dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
         'viewing an image with the same number of blue dots and yellow dots.')
-        $('#instructions-text-6').html('5). This participant was also paid every blue dot in the image.')
+        $('#instructions-text-6').html('5). This participant was also paid for every blue dot in the image.')
       } else
       // social with info, no cover story, payout yellow
       $('#q1').html('<option value="1">Judge whether there are more blue dots or more yellow dots</option>'+
@@ -242,7 +240,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
                   'Was this participant also paid for yellow dots?'+
               '</div><br>'+
@@ -260,7 +258,7 @@
         $('#instructions-text-4').html('3). You will get this bonus for yellow dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
         'viewing an image with the same number of blue dots and yellow dots.')
-        $('#instructions-text-6').html('5). This participant was also paid every yellow dot in the image.')
+        $('#instructions-text-6').html('5). This participant was also paid for every yellow dot in the image.')
     } else{
       $('#question-6-wrapper').css('display','none')
       //social without info
@@ -282,7 +280,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').css('display','none')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+
@@ -310,7 +308,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').css('display','none')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+
@@ -392,7 +390,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an area with the same number of water and sand dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
                   'Was this participant also paid for water dots?'+
               '</div><br>'+
@@ -410,7 +408,7 @@
         $('#instructions-text-4').html('3). You will get this bonus for water dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decision made by another participant '+
         'viewing an area with the same number of water dots and sand dots.')
-        $('#instructions-text-6').html('5). This participant was also paid every water dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every water dot in the area.')
 
       } else{
         // with cover, social with info, payout yellow
@@ -432,7 +430,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an area with the same number of gold and water dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
                   'Was this participant also paid for gold dots?'+
               '</div><br>'+
@@ -450,7 +448,7 @@
         $('#instructions-text-4').html('3). You will get this bonus for gold dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decision made by another participant '+
         'viewing an area with the same number of gold dots and water dots.')
-        $('#instructions-text-6').html('5). This participant was also paid every gold dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every gold dot in the area.')
       }
     } else{
       $('#question-6-wrapper').css('display','none')
@@ -475,7 +473,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an area with the same number of water and sand dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').css('display','none')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+
@@ -506,7 +504,7 @@
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>Another participant's decision on an area with the same number of gold and water dots.</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div>')
+                          '</select></div><br><br>')
         $('#question-5').css('display','none')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+

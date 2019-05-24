@@ -78,8 +78,8 @@ if (cover_story==false){
         var yellow_filepath = '/static/images/more_sand.jpg'
         var blue_filepath = '/static/images/more_water.jpg'
       } else{
-        var yellow_filepath = '/static/images/more_sand_with_info.jpg'
-        var blue_filepath = '/static/images/more_water_with_info.jpg'
+        var yellow_filepath = '/static/images/more_sand_with_info_base_blue.jpg'
+        var blue_filepath = '/static/images/more_water_with_info_base_blue.jpg'
       }
     } else{
       // with story, payout yellow
@@ -97,8 +97,8 @@ if (cover_story==false){
         var yellow_filepath = '/static/images/more_gold.jpg'
         var blue_filepath = '/static/images/more_water.jpg'
       } else{
-        var yellow_filepath = '/static/images/more_gold_with_info.jpg'
-        var blue_filepath = '/static/images/more_water_with_info.jpg'
+        var yellow_filepath = '/static/images/more_gold_with_info_base_yellow.jpg'
+        var blue_filepath = '/static/images/more_water_with_info_base_yellow.jpg'
       }
     }
 }

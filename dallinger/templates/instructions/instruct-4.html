@@ -41,11 +41,11 @@
         
         
         if (condition=='social'){
-            if (cover_story=='false'){
+            if (cover_story==false){
                 $('#story-instructions').html('To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see.')
             } else{
-                if (payout_blue=='true'){
+                if (payout_blue==true){
                     $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of water and sand dots as the one you will see.')
                 } else{
@@ -55,8 +55,8 @@
         }
 
         } else if (condition=='social_with_info'){
-            if (cover_story=='false'){
-                if (payout_blue=='true'){
+            if (cover_story==false){
+                if (payout_blue==true){
                     $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for blue dots but not yellow dots.')
                 } else{
@@ -64,7 +64,7 @@
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for yellow dots but not blue dots.')
                 }
             } else{
-                if (payout_blue=='true'){
+                if (payout_blue==true){
                     $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of water and sand dots as the one you will see. This participant was also paid for water but not sand in each area.')
                 } else{
