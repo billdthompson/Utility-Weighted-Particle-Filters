@@ -149,7 +149,7 @@ create_agent = function() {
 };
 
 get_received_infos = function() {
-  console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
+  // console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
     console.log("Finished call to dallinger.getReceivedInfos; Response: ", resp)
     infos = resp.infos;

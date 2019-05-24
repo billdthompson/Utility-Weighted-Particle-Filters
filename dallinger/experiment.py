@@ -14,7 +14,7 @@ from sqlalchemy import Integer
 import numpy as np
 import random
 import json
-import pandas as pd
+# import pandas as pd
 
 import logging
 logger = logging.getLogger(__file__)
@@ -25,11 +25,11 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size': 2, 
-		'generations': 2, 
-		'num_fixed_order_experimental_networks_per_condition': 1,
-		'num_random_order_experimental_networks_per_condition': 1,
-		'num_practice_networks_per_condition': 1,
+		'generation_size': 3, 
+		'generations': 3, 
+		'num_fixed_order_experimental_networks_per_condition': 4,
+		'num_random_order_experimental_networks_per_condition': 4,
+		'num_practice_networks_per_condition': 4,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -57,7 +57,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info"} # 0:"asocial",  2:"social_with_info", 1:"social"
+		self.condition_names = {0:"asocial", 2:"social_with_info", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -70,23 +70,23 @@ class UWPFWP(Experiment):
 		self.initial_recruitment_size = self.nconditions * self.generation_size
 		self.min_acceptable_performance = 10 / float(12)    
 		self.bonus_payment = 1.0
-		self.bonus_max = 4.3
+		self.bonus_max = 3.70
 
 	def assign_conditions_to_networks(self):
 		self.conditions = list(self.condition_names.values()) * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.47]#, .53, .51, .48]
+		self.practice_network_proportions = [.46, .53, .47, .54]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
-		self.random_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.49, .52, .51, .48]
+		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
 		
-		self.log("{};{};{}".format(ntrials, self.num_practice_networks_per_condition, self.num_experimental_networks_per_condition), '---->')
+		# self.log("{};{};{}".format(ntrials, self.num_practice_networks_per_condition, self.num_experimental_networks_per_condition), '---->')
 		assert ntrials == self.experimental_decisions + self.practice_decisions
 
 		# concatenate a proprtion scedule for each condition
@@ -114,9 +114,9 @@ class UWPFWP(Experiment):
 		self.assign_decision_indices_to_networks()
 		self.assign_roles_to_networks()
 
-		df = pd.DataFrame(dict(roles = self.roles, conditions = self.conditions, decision_indices = self.decision_indices, network_proportions = self.network_proportions))
+		# df = pd.DataFrame(dict(roles = self.roles, conditions = self.conditions, decision_indices = self.decision_indices, network_proportions = self.network_proportions))
 
-		logging.info("-->> data:\n{}".format(df.sort_values(['conditions', 'decision_indices', 'roles', 'network_proportions'])))
+		# logging.info("-->> data:\n{}".format(df.sort_values(['conditions', 'decision_indices', 'roles', 'network_proportions'])))
 		
 		for i, net in enumerate(self.networks()):
 			net.max_size = net.max_size + 1  # make room for environment node.
@@ -143,6 +143,7 @@ class UWPFWP(Experiment):
 		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
 		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
 
+		# Goal: select a condition that does not already have a full generation of workers 
 		# 1: count unique participant ids in all nodes
 		# 2: sum this count by condition by grouping
 		# 3: subset down to just this generation
@@ -162,8 +163,8 @@ class UWPFWP(Experiment):
 
 		# filter out any networks who already have enough nodes in this generation
 		availible_conditions = list(filter(lambda c: condition_counts[c] < self.generation_size, condition_counts.keys())) + list(filter(lambda k: k not in condition_counts, self.condition_names.values()))
-		self.log("{}".format(condition_counts),"--**groupby network id condition_counts-->>")
-		self.log("{}".format(availible_conditions),"--**availible conditions-->>")
+		# self.log("{}".format(condition_counts),"--**groupby network id condition_counts-->>")
+		# self.log("{}".format(availible_conditions),"--**availible conditions-->>")
 
 		nets = [net for net in nets if net.condition in availible_conditions]
 		return random.choice(nets)
@@ -210,7 +211,12 @@ class UWPFWP(Experiment):
 		key = "--->> Participant: {}; ".format(participant.id)
 		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
 		chosen_network = self.sample_network_for_new_participant(participant) if not participant_nodes else self.sample_network_for_existing_participant(participant, participant_nodes)
-		self.log("Assigned to network: {}".format(chosen_network.id), key)
+		if chosen_network is not None:
+			self.log("Assigned to network: {}".format(chosen_network.id), key)
+
+		else:
+			self.log("Requested a network but was assigned None. Participant already created {} nodes.".format(len(nodes)), key)
+
 		return chosen_network
 
 	def create_node(self, network, participant):
@@ -263,7 +269,17 @@ class UWPFWP(Experiment):
 	def bonus(self, participant):
 		"""Calculate a participants bonus."""
 		infos = participant.infos()
-		totalbonus = sum([float(info.property1) for info in infos if info.type == "trialbonus"])
+		
+		# self.log("{}".format(infos), "--**bonus infos-->>")
+
+		totalbonus = 0
+
+		for info in infos:
+			if info.type == "meme":
+				contents = json.loads(info.contents)
+				if contents["is_practice"] == False:
+					totalbonus += contents["current_bonus"]
+
 		if totalbonus > self.bonus_max:
 			totalbonus = self.bonus_max
 		return totalbonus
@@ -287,7 +303,12 @@ class UWPFWP(Experiment):
 		if not infos:
 			return False
 		
-		return np.any([info.passed for info in infos if info.type == 'comprehensiontest'])
+		passed =  np.any([info.passed for info in infos if info.type == 'comprehensiontest'])
+
+		if not passed:
+			self.log("failed", "--** attentioncheck for participant: {} ** -->>".format(participant.id))
+
+		return passed
 
 	def data_check(self, participant):
 		"""Check a participants data."""
