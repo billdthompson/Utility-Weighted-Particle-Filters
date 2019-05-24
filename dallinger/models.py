@@ -214,7 +214,7 @@ class TrialBonus(Info):
         return cast(self.property1, float)
 
     def parse_data(self, contents):
-        self.bonus = json.loads(contents)["bonus"]
+        self.bonus = json.loads(contents)["current_bonus"]
 
     def __init__(self, origin, contents=None, details = None, initialparametrisation = None):
         self.origin = origin

@@ -112,8 +112,8 @@ function round(num, places) {
 $('#total_earnings').html('Total earnings: $0.25')
 
 create_agent = function() {
-  console.log("------")
-  console.log("      ")
+  // console.log("------")
+  // console.log("      ")
   trial = trial + 1;
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
@@ -131,10 +131,10 @@ create_agent = function() {
       network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
       network_string = '/network/' + String(network_id)
-      console.log("** Inside create_agent -- node properties for the next trial will be: ", resp.node.property5, resp.node.property1,  my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index)
+      // console.log("** Inside create_agent -- node properties for the next trial will be: ", resp.node.property5, resp.node.property1,  my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index)
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
-        console.log("** Inside get net -- net decision_index: ", net_decision_index)
+        // console.log("** Inside get net -- net decision_index: ", net_decision_index)
         get_received_infos();
       });
     })
@@ -149,9 +149,9 @@ create_agent = function() {
 };
 
 get_received_infos = function() {
-  console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
+  // console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
-    console.log("Finished call to dallinger.getReceivedInfos; Response: ", resp)
+    // console.log("Finished call to dallinger.getReceivedInfos; Response: ", resp)
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
       if (infos[i].type == "state") {
@@ -329,7 +329,7 @@ report = function (color) {
   $("#more-yellow").addClass('disabled');
   $("#reproduction").val("");
   true_color = correctStr()
-  bonuses=getBonusAmount(true_color,color,condition)
+  bonuses=getBonusAmount(true_color,color,payout_blue)
   accuracy_b = bonuses[0]
   condition_b = bonuses[1]
   dotStr = bonuses[2]
@@ -402,22 +402,23 @@ function getBonusAmount(truth,response,isBluePayout){
   var numYellow = 100-numBlue;
 
   if (cover_story==true){
-    if (isBluePayout){
-      var dotStr = 'This area has <span>' + numBlue + '</span> water dots'
-      var condition_bonus = round((numBlue/2)*0.01,2);
+    if (isBluePayout==true){
+      dotStr = 'This area has <span>' + numBlue + '</span> water dots'
+      condition_bonus = round((numBlue/2)*0.01,2);
     } else{
-      var dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
-      var condition_bonus = round((numYellow/2)*0.01,2);
+      dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
+      condition_bonus = round((numYellow/2)*0.01,2);
     }
   } else{
-    if (isBluePayout){
-      var dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
-      var condition_bonus = round((numBlue/2)*0.01,2);
+    if (isBluePayout==true){
+      dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
+      condition_bonus = round((numBlue/2)*0.01,2);
     } else{
-      var dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
-      var condition_bonus = round((numYellow/2)*0.01,2);
+      dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
+      condition_bonus = round((numYellow/2)*0.01,2);
     }
   }
+
     return [accuracy_bonus,condition_bonus,dotStr]
   }
 

@@ -4,14 +4,14 @@ auto_recruit = true
 
 [MTurk]
 title = Psychology Experiment: Judge Blue and Yellow Dots
-description = Judge whether there are more blue or yellow dots [Max Bonus: $4.15]
+description = Judge whether there are more blue or yellow dots [Bonus up to: $3.60]
 keywords = Psychology, decision, dots, game
-base_payment = .5
+base_payment = .25
 lifetime = 24
-duration = 0.3
+duration = 0.5
 us_only = true
 approve_requirement = 95
-contact_email_on_error = billdthompson@berkeley.edu
+contact_email_on_error = wdt@princeton.edu
 ad_group = UWSPF
 organization_name = University of California, Berkeley
 browser_exclude_rule = MSIE, mobile, tablet
