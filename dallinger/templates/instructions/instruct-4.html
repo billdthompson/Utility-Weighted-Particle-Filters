@@ -38,6 +38,7 @@
         var generation_num= parseInt(localStorage.getItem("generation")); 
         var cover_story = localStorage.getItem("cover_story")=='true'; 
         var payout_blue = localStorage.getItem("payout_blue")=='true'; 
+        var no_utility = false;
         
         
         if (condition=='social' || condition=='social_no_utility'){
@@ -59,6 +60,7 @@
                 if (payout_blue==true){
                     $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for blue dots but not yellow dots.')
+
                 } else{
                     $('#story-instructions').html('To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for yellow dots but not blue dots.')
