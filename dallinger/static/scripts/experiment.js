@@ -350,7 +350,7 @@ report = function (color) {
                   current_bonus: accuracy_b+condition_b,
                   social_info: meme,
                   participant_id: dallinger.identity.participantId,
-                  yello_button_left: yellow_left,
+                  yellow_button_left: yellow_left,
                   yellow_text_left:yellow_first,
                   net_decision_index: net_decision_index}
 

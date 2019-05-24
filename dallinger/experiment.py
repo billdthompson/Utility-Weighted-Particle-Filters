@@ -27,9 +27,9 @@ class UWPFWP(Experiment):
 		return {
 		'generation_size': 2, 
 		'generations': 2, 
-		'num_fixed_order_experimental_networks_per_condition': 1,
-		'num_random_order_experimental_networks_per_condition': 1,
-		'num_practice_networks_per_condition': 1,
+		'num_fixed_order_experimental_networks_per_condition': 4,
+		'num_random_order_experimental_networks_per_condition': 4,
+		'num_practice_networks_per_condition': 4,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -77,11 +77,11 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.47]#, .53, .51, .48]
+		self.practice_network_proportions = [.47, .53, .51, .48]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
-		self.random_order_experimental_network_proportions = [.48]#, .52]#, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
+		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)

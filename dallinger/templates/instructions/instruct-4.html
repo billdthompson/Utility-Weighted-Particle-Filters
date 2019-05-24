@@ -40,7 +40,7 @@
         var payout_blue = localStorage.getItem("payout_blue")=='true'; 
         
         
-        if (condition=='social'){
+        if (condition=='social' || condition=='social_no_utility'){
             if (cover_story==false){
                 $('#story-instructions').html('To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see.')

@@ -37,6 +37,8 @@
         var generation = parseInt(localStorage.getItem("generation"));     
         var cover_story = localStorage.getItem("cover_story")=='true';    
         var payout_blue = localStorage.getItem("payout_blue")=='true';
+        
+        $('#story-instructions').hide()
 
         $('#read_div').css('visibility','visible')
         if (cover_story==true){
@@ -44,7 +46,7 @@
                 $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
                 'containing more water or more sand. </p>' +
-                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every water deposit (blue dot) '+
+                '<p id="utility-information">In addition to this accuracy bonus, you will be paid $0.005 for every water deposit (blue dot) '+
                 'in the area, regardless of the size of the deposit. Because the water will always be collected, you will get this bonus '+
                 'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
 
@@ -52,7 +54,7 @@
                 $('#story-instructions').html('<p>You have already been paid $0.25 as a salary. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the area as '+
                 'containing more gold or more water. </p>' +
-                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (yellow dot) '+
+                '<p id="utility-information">In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (yellow dot) '+
                 'in the area, regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus '+
                 'regardless of whether you are correct in judging the area as containing more water or more sand.</p>')
             }
@@ -61,20 +63,28 @@
                 $('#story-instructions').html('<p>You have already been paid $0.25. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
                 'containing more blue or more yellow dots. </p>' +
-                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every blue dot '+
+                '<p id="utility-information">In addition to this accuracy bonus, you will be paid $0.005 for every blue dot '+
                 'in the image, regardless of the size of the dot. You will get this bonus '+
                 'regardless of whether you are correct in judging the image as containing more blue or yellow dots.</p>')
             } else{
                 $('#story-instructions').html('<p>You have already been paid $0.25. '+
                 'On each round, you will get a $0.20 bonus if you are correct in judging the image as '+
                 'containing more yellow or more blue dots. </p>' +
-                '<p>In addition to this accuracy bonus, you will be paid $0.005 for every yellow dot '+
+                '<p id="utility-information">In addition to this accuracy bonus, you will be paid $0.005 for every yellow dot '+
                 'in the image, regardless of the size of the dot. You will get this bonus '+
                 'regardless of whether you are correct in judging the image as containing more yellow or blue dots.</p>')
             }
         }
 
-        if (condition=='asocial' || generation==0){
+        if (condition.includes('no_utility')){
+            $('#utility-information').html('')
+            $('#utility-information').hide()
+            $('#story-instructions').show()
+        } else {
+            $('#story-instructions').show()
+        }
+
+        if (condition=='asocial' || condition=='asocial_no_utility' || generation==0){
             advance = function(){
             var nextpage = 'instructions/instruct-ready'
             dallinger.goToPage(nextpage)
