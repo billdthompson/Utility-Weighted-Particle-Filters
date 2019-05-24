@@ -20,17 +20,24 @@ import logging
 logger = logging.getLogger(__file__)
 
 class UWPFWP(Experiment):
-	"""Utility Weighted Particle Filter with People."""
+	"""Utility Weighted Particle Filter with People.
+	
+	qualification_blacklist = UWSPF
+	assign_qualifications = true
+	ad_group = UWSPF
+
+
+	"""
 
 	@property
 	def public_properties(self):
 		return {
-		'generation_size': 3, 
-		'generations': 3, 
+		'generation_size': 40, 
+		'generations': 1, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
 		'num_practice_networks_per_condition': 4,
-		'payout_blue': 'true',
+		'payout_blue': 'false',
 		'cover_story': 'true'
 		}
 
@@ -38,6 +45,7 @@ class UWPFWP(Experiment):
 		super(UWPFWP, self).__init__(session)
 		import models
 		self.models = models
+		self.known_classes["particlefilter"] = self.models.ParticleFilter
 		
 		# These variables are potentially needed on every invocation 
 		self.set_params()
@@ -51,13 +59,12 @@ class UWPFWP(Experiment):
 
 	def set_known_classes(self):
 		self.known_classes["trialbonus"] = self.models.TrialBonus
-		self.known_classes["particlefilter"] = self.models.ParticleFilter
 		self.known_classes["particle"] = self.models.Particle
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {0:"asocial", 2:"social_with_info", 1:"social"}
+		self.condition_names = {0:"asocial"} #2:"social_with_info", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
