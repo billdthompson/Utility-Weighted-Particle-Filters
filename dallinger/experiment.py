@@ -32,8 +32,8 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size': 2, 
-		'generations': 2, 
+		'generation_size': 40, 
+		'generations': 1, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
 		'num_practice_networks_per_condition': 4,
@@ -222,7 +222,7 @@ class UWPFWP(Experiment):
 			self.log("Assigned to network: {}".format(chosen_network.id), key)
 
 		else:
-			self.log("Requested a network but was assigned None. Participant already created {} nodes.".format(len(nodes)), key)
+			self.log("Requested a network but was assigned None. Participant already created {} nodes.".format(len(participant_nodes)), key)
 
 		return chosen_network
 
