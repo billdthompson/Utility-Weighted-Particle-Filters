@@ -83,8 +83,6 @@ class ParticleFilter(Network):
         
         node.generation = curr_generation
 
-        # logger.info("--->>> add_node gen: {}".format(curr_generation))
-
         if curr_generation == 0 and self.initial_source:
             parent = self._select_oldest_source()
             if parent is not None:

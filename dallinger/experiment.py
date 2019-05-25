@@ -25,6 +25,7 @@ class UWPFWP(Experiment):
 	qualification_blacklist = UWSPF
 	assign_qualifications = true
 	ad_group = UWSPF
+	approve_requirement = 95
 
 
 	"""
@@ -32,11 +33,11 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':3, 
+		'generation_size':2, 
 		'generations': 3, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
+		'num_fixed_order_experimental_networks_per_condition': 1,
+		'num_random_order_experimental_networks_per_condition': 1,
+		'num_practice_networks_per_condition': 1,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -64,7 +65,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {0:"asocial", 2:"social_with_info", 1:"social"}
+		self.condition_names = {2:"social_with_info", 1:"social"} #0:"asocial", 
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -82,11 +83,11 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.53, .46, .47, .54]
+		self.practice_network_proportions = [.53]#, .46, .47, .54]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
-		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.48]#, .52, .51, .49]
+		self.random_order_experimental_network_proportions = [.48]#, .52, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
@@ -138,11 +139,19 @@ class UWPFWP(Experiment):
 		# Establish largest generation attested in nodes table (property2 = generation)
 		maximum_generation_among_nodes = self.session.query(func.max(self.models.Particle.property2)).scalar()
 
+		self.log("{}".format(maximum_generation_among_nodes), "--**maxgen**-->>")
+
 		# count nodes showing generation
-		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter_by(failed = False).scalar()
+		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter(self.models.Particle.property2 == maximum_generation_among_nodes).filter_by(failed = False).scalar()
+
+		self.log("{}".format(number_of_nodes_with_maximum_generation), "--**num nodes with maxgenmaxgen**-->>")
 
 		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
 		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
+
+		self.log("{}".format(self.nodes_per_generation), "--**nodespergen**-->>")
+
+		self.log("{}".format(current_generation), "--**currentgen**-->>")
 
 		# Goal: select a condition that does not already have a full generation of workers 
 		# 1: count unique participant ids in all nodes
@@ -154,6 +163,8 @@ class UWPFWP(Experiment):
 				.filter(self.models.Particle.property2 == current_generation) \
 				.filter_by(failed = False)\
 				.all()
+
+		self.log("{}".format(condition_counts), "--**condition counts**-->>")
 
 		# if this is the first Particle node in the experiment, all decions_index = 0 networks are availible
 		# property4 = decision_index
@@ -261,10 +272,10 @@ class UWPFWP(Experiment):
 		end_of_generation = num_approved % (self.generation_size * self.nconditions) == 0
 		complete = num_approved >= (self.generations * self.generation_size * self.nconditions)
 		if complete:
-			self.log("All networks full: closing recruitment", "-----")
+			self.log("All networks full: closing recruitment", "--** end recruit **-->>")
 			self.recruiter.close_recruitment()
 		elif end_of_generation:
-			self.log("generation finished, recruiting another")
+			self.log("generation finished, recruiting another", "--** recruit **-->>")
 			self.recruiter.recruit(n=(self.generation_size * self.nconditions))
 
 	def bonus(self, participant):
