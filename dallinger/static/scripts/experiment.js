@@ -136,11 +136,26 @@ create_agent = function() {
         net_decision_index = parseInt(netresp.network.property4);
         // console.log("** Inside get net -- net decision_index: ", net_decision_index)
         get_received_infos();
-      });
+      })
+      .fail(function (rejection) {
+        // A 403 is our signal that it's time to go to the questionnaire
+        if (rejection.status === 403) {
+            dallinger.allowExit();
+            dallinger.goToPage('questionnaire');
+          } else {
+            dallinger.error(rejection);
+          }
+      }); 
     })
-    .fail(function (resp) {
-      dallinger.goToPage('questionnaire');
-    });
+    .fail(function (rejection) {
+        // A 403 is our signal that it's time to go to the questionnaire
+        if (rejection.status === 403) {
+            dallinger.allowExit();
+            dallinger.goToPage('questionnaire');
+          } else {
+            dallinger.error(rejection);
+          }
+      }); 
   }
   else {
     // first trial
@@ -222,7 +237,16 @@ get_received_infos = function() {
         presentDisplay();
       }, 4000);
     }
-  });
+  })
+  .fail(function (rejection) {
+      // A 403 is our signal that it's time to go to the questionnaire
+      if (rejection.status === 403) {
+          dallinger.allowExit();
+          dallinger.goToPage('questionnaire');
+        } else {
+          dallinger.error(rejection);
+        }
+  }); 
 };
 
 function presentDisplay () {
@@ -363,7 +387,16 @@ report = function (color) {
       $("#instructions").html("")
       $("#instructions").hide()
       updateResponseHTML(true_color,color,condition,dotStr,accuracy_b,condition_b)
-  });
+  })
+  .fail(function (rejection) {
+      // A 403 is our signal that it's time to go to the questionnaire
+      if (rejection.status === 403) {
+          dallinger.allowExit();
+          dallinger.goToPage('questionnaire');
+        } else {
+          dallinger.error(rejection);
+        }
+    }); 
 };
 
 $(document).ready(function() {
