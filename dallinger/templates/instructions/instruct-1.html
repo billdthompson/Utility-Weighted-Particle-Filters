@@ -16,7 +16,9 @@
                 </div>
             </div>
         </div>
-        <p id='loading_message' style='visibility:hidden;text-align:center;'>Loading the experiment ...</p>
+        <p id='loading_message' style='visibility:hidden;text-align:center;'><b>Loading the experiment...</b></p>
+        <br>
+        <p id='loading_message_2' style='visibility:hidden;text-align:center;'>This may take a few seconds (no more than around 30 seconds). If this message displays for more than 45 seconds, please return the HIT</p>
     </div>
 {% endblock %}
 
@@ -42,25 +44,46 @@
                 console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
 
                 var network_string = '/network/' + String(network_id)
-                dallinger.get(network_string).done(function(netresp) {
-                    var net_decision_index = parseInt(netresp.network.property4);
-                    localStorage.setItem("net_decision_index",net_decision_index);
-                    dallinger.goToPage(nextpage) 
+                dallinger.get(network_string)
+                    .done(function(netresp) {
+                        var net_decision_index = parseInt(netresp.network.property4);
+                        localStorage.setItem("net_decision_index",net_decision_index);
+                        dallinger.goToPage(nextpage) 
+                    })
+                    .fail(function (rejection) {
+                        // A 403 is our signal that it's time to go to the questionnaire
+                        if (rejection.status === 403) {
+                            dallinger.allowExit();
+                            dallinger.goToPage('questionnaire');
+                          } else {
+                            dallinger.error(rejection);
+                          }
+                        
+                      }) 
                 })
-            })
-            
-            .fail(function () {
-              dallinger.goToPage('questionnaire');
-            });
-        };
+            .fail(function (rejection) {
+                // A 403 is our signal that it's time to go to the questionnaire
+                if (rejection.status === 403) {
+                    dallinger.allowExit();
+                    dallinger.goToPage('questionnaire');
+                  } else {
+                    dallinger.error(rejection);
+                  }
+                
+              }); 
+        };    
 
         advance = function (){
             $('#instruct1_button').addClass('disabled')
+            $('#instruct1_button').hide()
             $('#loading_message').css('visibility','visible')
+            $('#loading_message_2').css('visibility','visible')
             $(document).ready(function () {
                 dallinger.createParticipant()
                 .done(function () {
-                    create_agent()
+
+                    setTimeout(create_agent(), 3000);
+                    
                 });
             })
         }

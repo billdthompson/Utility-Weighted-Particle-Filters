@@ -14,7 +14,7 @@ from sqlalchemy import Integer
 import numpy as np
 import random
 import json
-# import pandas as pd
+# import pysnooper
 
 import logging
 logger = logging.getLogger(__file__)
@@ -25,7 +25,8 @@ class UWPFWP(Experiment):
 	qualification_blacklist = UWSPF
 	assign_qualifications = true
 	ad_group = UWSPF
-
+	approve_requirement = 95
+	group_name = UWSPF
 
 	"""
 
@@ -33,10 +34,17 @@ class UWPFWP(Experiment):
 	def public_properties(self):
 		return {
 		'generation_size':2, 
+<<<<<<< HEAD
 		'generations': 3, 
 		'num_fixed_order_experimental_networks_per_condition': 1,
 		'num_random_order_experimental_networks_per_condition': 1,
 		'num_practice_networks_per_condition': 1,
+=======
+		'generations': 2, 
+		'num_fixed_order_experimental_networks_per_condition': 4,
+		'num_random_order_experimental_networks_per_condition': 4,
+		'num_practice_networks_per_condition': 4,
+>>>>>>> bd13005a416a3fb95f81e5ceaeae00c1b1001f05
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -46,10 +54,10 @@ class UWPFWP(Experiment):
 		import models
 		self.models = models
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
+		self.set_known_classes()
 		
 		# These variables are potentially needed on every invocation 
 		self.set_params()
-		self.set_known_classes()
 		self.assign_proportions_to_networks()
 
 		# These variables are only needed when launching the experiment 
@@ -57,14 +65,20 @@ class UWPFWP(Experiment):
 			self.setup()
 		self.save()
 
+	# @pysnooper.snoop()
 	def set_known_classes(self):
 		self.known_classes["trialbonus"] = self.models.TrialBonus
 		self.known_classes["particle"] = self.models.Particle
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
+		self.known_classes["particlefilter"] = self.models.ParticleFilter
 
 	def set_params(self):
+<<<<<<< HEAD
 		self.condition_names = {2:"social_with_info", 1:"social"} # {0:"asocial", 2:"social_with_info", 1:"social"}
+=======
+		self.condition_names = {2:"social_with_info",  1:"social"} # 0:"asocial",
+>>>>>>> bd13005a416a3fb95f81e5ceaeae00c1b1001f05
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -131,6 +145,7 @@ class UWPFWP(Experiment):
 		"""Create a new network."""
 		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
 
+	# @pysnooper.snoop()
 	def sample_network_for_new_participant(self, participant):
 		"""Obtain a netwokr for a participant who has not yet been assigned to a condition"""
 		nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all()
@@ -138,11 +153,19 @@ class UWPFWP(Experiment):
 		# Establish largest generation attested in nodes table (property2 = generation)
 		maximum_generation_among_nodes = self.session.query(func.max(self.models.Particle.property2)).scalar()
 
+		self.log("{}".format(maximum_generation_among_nodes), "--**maxgen**-->>")
+
 		# count nodes showing generation
-		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter_by(failed = False).scalar()
+		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter(self.models.Particle.property2 == maximum_generation_among_nodes).filter_by(failed = False).scalar()
+
+		# self.log("{}".format(number_of_nodes_with_maximum_generation), "--**num nodes with maxgenmaxgen**-->>")
 
 		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
 		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
+
+		self.log("{}".format(self.nodes_per_generation), "--**nodespergen**-->>")
+
+		self.log("{}".format(current_generation), "--**currentgen**-->>")
 
 		# Goal: select a condition that does not already have a full generation of workers 
 		# 1: count unique participant ids in all nodes
@@ -154,6 +177,8 @@ class UWPFWP(Experiment):
 				.filter(self.models.Particle.property2 == current_generation) \
 				.filter_by(failed = False)\
 				.all()
+
+		self.log("{}".format(condition_counts), "--**condition counts**-->>")
 
 		# if this is the first Particle node in the experiment, all decions_index = 0 networks are availible
 		# property4 = decision_index
@@ -192,6 +217,7 @@ class UWPFWP(Experiment):
 		# If the participant must still follow the fixed network order
 		if completed_decisions < nfixed:
 			# find the network that is next in the participant's schedule
+			# match on completed decsions b/c decision_index counts from zero but completed_decisions count from one
 			return Network.query.filter(and_(Network.property4 == repr(completed_decisions), Network.property5 == participant_condition)).filter_by(full = False).one()
 
 		# If it is time to sample a network at random
@@ -207,11 +233,16 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
+	# @pysnooper.snoop()
 	def get_network_for_participant(self, participant):
 		"""Find a network for a participant."""
 		key = "--->> Participant: {}; ".format(participant.id)
 		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
-		chosen_network = self.sample_network_for_new_participant(participant) if not participant_nodes else self.sample_network_for_existing_participant(participant, participant_nodes)
+		if not participant_nodes:
+			chosen_network = self.sample_network_for_new_participant(participant)
+		else:
+			chosen_network = self.sample_network_for_existing_participant(participant, participant_nodes)
+
 		if chosen_network is not None:
 			self.log("Assigned to network: {}".format(chosen_network.id), key)
 
@@ -220,6 +251,7 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
+	# @pysnooper.snoop()
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
 		if len([i for i in participant.infos() if i.type == "meme"]) >= (self.practice_decisions + self.experimental_decisions):
@@ -238,9 +270,9 @@ class UWPFWP(Experiment):
 			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
 
-		datasource = network.nodes(type=Environment)[0]
-		datasource.connect(whom=node)
-		datasource.transmit(to_whom=node)
+		# datasource = network.nodes(type=Environment)[0]
+		# datasource.connect(whom=node)
+		# datasource.transmit(to_whom=node)
 
 		if node.generation > 0:
 			agent_model = self.models.Particle
@@ -258,13 +290,21 @@ class UWPFWP(Experiment):
 	def recruit(self):
 		"""Recruit participants if necessary."""
 		num_approved = len(Participant.query.filter_by(status="approved").all())
+
+		self.log("num_approved: {}".format(num_approved), "--** recruit called **-->>")
+
 		end_of_generation = num_approved % (self.generation_size * self.nconditions) == 0
+
+		self.log("end_of_generation: {}".format(end_of_generation), "--** recruit called **-->>")
+
+		self.log("completion threshold: {}; met? {}".format(self.generations * self.generation_size * self.nconditions, num_approved >= (self.generations * self.generation_size * self.nconditions)), "--** recruit called **-->>")
+
 		complete = num_approved >= (self.generations * self.generation_size * self.nconditions)
 		if complete:
-			self.log("All networks full: closing recruitment", "-----")
+			self.log("All networks full: closing recruitment", "--** end recruit **-->>")
 			self.recruiter.close_recruitment()
 		elif end_of_generation:
-			self.log("generation finished, recruiting another")
+			self.log("generation finished, recruiting another", "--** recruit **-->>")
 			self.recruiter.recruit(n=(self.generation_size * self.nconditions))
 
 	def bonus(self, participant):
@@ -330,3 +370,12 @@ class UWPFWP(Experiment):
 			return False
 
 		return True
+
+	def is_complete(self):
+		"""Determine whether the experiment is complete"""
+		node_count = self.session.query(func.count(self.models.Particle.id.label('count'))).filter_by(failed = False).scalar()
+
+		participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
+
+		return True if (node_count == (self.nodes_per_generation * self.generations) & (participant_count == (self.generation_size * self.generations * self.nconditions))) else False
+
