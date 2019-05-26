@@ -130,7 +130,7 @@ create_agent = function() {
       generation_seed = generation;
       network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
-      network_string = '/network/' + String(network_id)
+      network_string = '/network/' + String(network_id) + "/getnet/"
       // console.log("** Inside create_agent -- node properties for the next trial will be: ", resp.node.property5, resp.node.property1,  my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index)
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);

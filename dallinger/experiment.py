@@ -10,11 +10,13 @@ from dallinger.nodes import Source
 from sqlalchemy import and_, func
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
+from dallinger import db
+from flask import Blueprint, Response
 
 import numpy as np
 import random
 import json
-import pysnooper
+# import pysnooper
 
 import logging
 logger = logging.getLogger(__file__)
@@ -24,7 +26,6 @@ class UWPFWP(Experiment):
 	
 	qualification_blacklist = UWSPF
 	assign_qualifications = true
-	ad_group = UWSPF
 	approve_requirement = 95
 	group_name = UWSPF
 
@@ -33,11 +34,11 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':10, 
+		'generation_size':11, 
 		'generations': 3, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
+		'num_fixed_order_experimental_networks_per_condition': 1,
+		'num_random_order_experimental_networks_per_condition': 1,
+		'num_practice_networks_per_condition': 1,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -67,7 +68,7 @@ class UWPFWP(Experiment):
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info", 1:"social"} # {0:"asocial", 2:"social_with_info", 1:"social"}
+		self.condition_names = {2:"social_with_info"} # {0:"asocial", 2:"social_with_info", 1:"social"} 1:"social"
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -134,7 +135,7 @@ class UWPFWP(Experiment):
 		"""Create a new network."""
 		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def sample_network_for_new_participant(self, participant):
 		"""Obtain a netwokr for a participant who has not yet been assigned to a condition"""
 		nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all()
@@ -367,4 +368,33 @@ class UWPFWP(Experiment):
 		participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
 
 		return True if (node_count == (self.nodes_per_generation * self.generations) & (participant_count == (self.generation_size * self.generations * self.nconditions))) else False
+
+	# @pysnooper.snoop()
+	def getnet(self, network_id):
+		net = Network.query.filter_by(id = network_id).one()
+		return net.__json__()
+
+
+
+extra_routes = Blueprint(
+	'extra_routes',
+	__name__,
+	template_folder='templates',
+	static_folder='static')
+
+@extra_routes.route("/network/<network_id>/getnet/", methods=["GET"])
+def getnet(network_id):
+	try:
+		exp = UWPFWP(db.session)
+
+		net = exp.getnet(network_id)
+
+		# exp.log("{}".format(net), "--**explog**--:>")
+		# exp.log("{}".format(json.dumps(net)), "--**explog**--:>")
+
+		return Response(json.dumps({"network":{"property4":net["property4"]}}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error fetching network info')
+		return Response(status=403, mimetype='application/json')
 
