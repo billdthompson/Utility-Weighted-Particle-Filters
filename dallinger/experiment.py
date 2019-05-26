@@ -32,11 +32,11 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':3, 
+		'generation_size':2, 
 		'generations': 3, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
+		'num_fixed_order_experimental_networks_per_condition': 1,
+		'num_random_order_experimental_networks_per_condition': 1,
+		'num_practice_networks_per_condition': 1,
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -64,7 +64,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 
 	def set_params(self):
-		self.condition_names = {0:"asocial", 2:"social_with_info", 1:"social"}
+		self.condition_names = {2:"social_with_info", 1:"social"} # {0:"asocial", 2:"social_with_info", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -82,11 +82,11 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		self.practice_network_proportions = [.53, .46, .47, .54]
+		self.practice_network_proportions = [.53]#, .46, .47, .54]
 		
 		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
-		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+		self.fixed_order_experimental_network_proportions = [.48]#, .52, .51, .49]
+		self.random_order_experimental_network_proportions = [.48]#, .52, .51, .49]
 
 		# checlk the proportions match the number of networks in total
 		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
