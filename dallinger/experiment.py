@@ -14,7 +14,7 @@ from sqlalchemy import Integer
 import numpy as np
 import random
 import json
-# import pysnooper
+import pysnooper
 
 import logging
 logger = logging.getLogger(__file__)
@@ -33,8 +33,8 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
-		'generations': 2, 
+		'generation_size':10, 
+		'generations': 3, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
 		'num_practice_networks_per_condition': 4,
@@ -134,7 +134,7 @@ class UWPFWP(Experiment):
 		"""Create a new network."""
 		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def sample_network_for_new_participant(self, participant):
 		"""Obtain a netwokr for a participant who has not yet been assigned to a condition"""
 		nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all()

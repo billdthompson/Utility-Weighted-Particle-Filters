@@ -1,5 +1,5 @@
 [Experiment]
-mode = live
+mode = sandbox
 auto_recruit = true
 loglevel = 0
 
