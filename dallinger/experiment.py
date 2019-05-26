@@ -34,17 +34,10 @@ class UWPFWP(Experiment):
 	def public_properties(self):
 		return {
 		'generation_size':2, 
-<<<<<<< HEAD
 		'generations': 3, 
 		'num_fixed_order_experimental_networks_per_condition': 1,
 		'num_random_order_experimental_networks_per_condition': 1,
 		'num_practice_networks_per_condition': 1,
-=======
-		'generations': 2, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
->>>>>>> bd13005a416a3fb95f81e5ceaeae00c1b1001f05
 		'payout_blue': 'true',
 		'cover_story': 'true'
 		}
@@ -74,11 +67,7 @@ class UWPFWP(Experiment):
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
 
 	def set_params(self):
-<<<<<<< HEAD
 		self.condition_names = {2:"social_with_info", 1:"social"} # {0:"asocial", 2:"social_with_info", 1:"social"}
-=======
-		self.condition_names = {2:"social_with_info",  1:"social"} # 0:"asocial",
->>>>>>> bd13005a416a3fb95f81e5ceaeae00c1b1001f05
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
