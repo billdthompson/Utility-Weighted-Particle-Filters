@@ -121,12 +121,12 @@ if (cover_story==false){
 }
 if (learning_strategy=='social'){
   if (constrained==true){
-    instructionsText += ' Chose a member of a previous experimental round to endorse.'
+    instructionsText += ' Each button represents the choice of another participant viewing an area with the same number of water and sand dots. There is no difference between clicking on two buttons with the same decision.'
     $('#instructions').html(instructionsText)
-  } else{
-    instructionsText += " Numbers in parenthesis indicate a random set of participants' choices in a previous experimental round."
+  } /*else{
+    instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of water and sand dots."
     $('#instructions').html(instructionsText)
-  }
+  }*/
 }
 $('#instructions').css('font-size','19px')
 
@@ -514,8 +514,8 @@ function getBonusAmount(truth,response,isBluePayout){
                 $(this).css('background-color','#428BC9')
               })
             } else{
-              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + ')')
-              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + ')')
+              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + ' votes)')
+              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + ' votes)')
             }
            
             $(".chose-yellow").click(function() {
