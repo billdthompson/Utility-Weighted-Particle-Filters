@@ -16,6 +16,7 @@ from flask import Blueprint, Response
 import numpy as np
 import random
 import json
+import pysnooper
 # import pysnooper
 
 import logging
@@ -259,7 +260,7 @@ class UWPFWP(Experiment):
 		
 		return self.models.Particle(network=network,participant=participant)
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def add_node_to_network(self, node, network):
 		"""Add participant's node to a network."""
 		network.add_node(node)
@@ -433,7 +434,7 @@ def getparticles(network_id, generation):
 	if generation == 0:
 		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def f(network_id, generation):
 		# get an exp instance
 		exp = UWPFWP(db.session)
@@ -462,6 +463,8 @@ def getparticles(network_id, generation):
 
 		# make the node objects accessible via node_id
 		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
+
+		choices = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids]
 
 		# make a list of whether each parent node chose blue or not
 		chose_blue = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] == "blue" for node_id in all_parent_node_ids]

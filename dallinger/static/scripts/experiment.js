@@ -1,4 +1,5 @@
 //
+var n_generation_size, k_chose_blue,choice_array;
 var trial = 0;
 var total_pay=0.25;
 var a;
@@ -23,6 +24,17 @@ var network_id_seed = network_id;
 var yellow_left = localStorage.getItem('yellow_left')=='true'
 
 var is_practice = true;
+
+if (generation=='0' || condition=='asocial'){
+  var learning_strategy = "asocial";
+} else{
+  var learning_strategy = "social";
+}
+
+function sampleWithoutReplacement(bucket) {
+  var randomIndex = Math.floor(Math.random()*bucket.length);
+  return bucket.splice(randomIndex, 1)[0];
+}
 
 function generation_random(seed) {
   var x = Math.sin(seed) * 10000;
@@ -103,6 +115,10 @@ if (cover_story==false){
         var blue_filepath = '/static/images/more_water_with_info_base_yellow.jpg'
       }
     }
+}
+if (learning_strategy=='social'){
+  instructionsText += ' Chose a member of a previous experimental round to endorse.'
+  $('#instructions').html(instructionsText)
 }
 $('#instructions').css('font-size','19px')
 
@@ -203,22 +219,15 @@ get_received_infos = function() {
       $("#more-yellow").addClass('disabled');
 
       presentDisplay();
-
-      $("#stimulus-stage").show();
-      $("#response-form").hide();
-      $("#more-yellow").show();
-      $("#more-blue").show();
+  
       meme = 'none'
     }
 
     // // Show the participant the hint.
     if (learning_strategy === "social") {
+      $("#instructions").hide()
+      $("#button-div").hide()
 
-      $("#more-blue").addClass('disabled');
-      $("#more-yellow").addClass('disabled');
-      $("#more-blue").hide();
-      $("#more-yellow").hide();
-      $("#instructions").hide();
 
       if (meme["choice"] === "blue") {
         $("#stimulus").attr("src", blue_filepath);
@@ -229,10 +238,6 @@ get_received_infos = function() {
       setTimeout(function() {
         $("#stimulus").hide();
         $("#instructions").text(instructionsText);
-        $("#instructions").show();
-        $("#more-blue").show();
-        $("#more-yellow").show();
-
         // $("#more-blue").removeClass('disabled');
         // $("#more-yellow").removeClass('disabled');
         regenerateDisplay(proportion_blue);
@@ -259,9 +264,14 @@ function presentDisplay () {
   setTimeout(function() {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
+    } 
+    if (learning_strategy=='asocial'){
+      $("#more-blue").removeClass('disabled');
+      $("#more-yellow").removeClass('disabled');
+    } else{
+      $("#instructions").show()
+      $("#button-div").show()
     }
-    $("#more-blue").removeClass('disabled');
-    $("#more-yellow").removeClass('disabled');
     // console.log("clearing paper")
     paper.clear();
   }, 1000);
@@ -402,12 +412,12 @@ report = function (color) {
 };
 
 $(document).ready(function() {
-  $("#more-yellow").click(function() {
+  $(".chose-yellow").click(function() {
     // console.log("Reported more yellow.");
     report("yellow");
   });
 
-  $("#more-blue").click(function() {
+  $(".chose-blue").click(function() {
     // console.log("Reported more blue.");
     report("blue");
     
@@ -601,6 +611,35 @@ function display_practice_info(){
           .done(function (particlesResponse) {
             n_generation_size = parseInt(particlesResponse.n)
             k_chose_blue = parseInt(particlesResponse.k)
+            console.log(k_chose_blue)
+            k_chose_yellow = n_generation_size-k_chose_blue
+            if (learning_strategy=='social'){
+              blue_array = Array(k_chose_blue).fill('b')
+              yellow_array = Array(k_chose_yellow).fill('y')
+              choice_array = blue_array.concat(yellow_array)
+              button_div_str = ''
+              for (i=0;i<n_generation_size;i++){
+                curr_sample = sampleWithoutReplacement(choice_array)
+                console.log(curr_sample)
+                if (curr_sample=='b'){
+                  button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
+                } else if (curr_sample=='y'){
+                  button_div_str += ' <button type="button" class="btn btn-primary chose-yellow">'+yellowStr+'</button>'
+                }
+              }
+              $('#button-div').html(button_div_str)
+
+              $(".chose-yellow").click(function() {
+                // console.log("Reported more yellow.");
+                report("yellow");
+              });
+              $(".chose-blue").click(function() {
+                // console.log("Reported more blue.");
+                report("blue");
+                
+              });
+            }
+
             console.log(particlesResponse)
             get_received_infos();
           })
