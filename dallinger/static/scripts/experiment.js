@@ -23,6 +23,9 @@ var generation_seed = generation;
 var network_id_seed = network_id;
 var yellow_left = localStorage.getItem('yellow_left')=='true'
 
+
+var constrained = localStorage.getItem('constrained')=='true'
+
 var is_practice = true;
 
 if (generation=='0' || condition=='asocial'){
@@ -117,8 +120,13 @@ if (cover_story==false){
     }
 }
 if (learning_strategy=='social'){
-  instructionsText += ' Chose a member of a previous experimental round to endorse.'
-  $('#instructions').html(instructionsText)
+  if (constrained==true){
+    instructionsText += ' Chose a member of a previous experimental round to endorse.'
+    $('#instructions').html(instructionsText)
+  } else{
+    instructionsText += " Numbers in parenthesis indicate a random set of participants' choices in a previous experimental round."
+    $('#instructions').html(instructionsText)
+  }
 }
 $('#instructions').css('font-size','19px')
 
@@ -153,7 +161,7 @@ create_agent = function() {
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
         // console.log("** Inside get net -- net decision_index: ", net_decision_index)
-        get_received_infos();
+        get_social_info();
       })
       .fail(function (rejection) {
         // A 403 is our signal that it's time to go to the questionnaire
@@ -469,6 +477,74 @@ function getBonusAmount(truth,response,isBluePayout){
 
 
 
+  function get_social_info(){
+    dallinger.get("/particles/" + network_id +  "/" + generation + "/")
+        .done(function (particlesResponse) {
+          n_generation_size = parseInt(particlesResponse.n)
+          k_chose_blue = parseInt(particlesResponse.k)
+          k_chose_yellow = n_generation_size-k_chose_blue
+          if (learning_strategy=='social'){
+            if (constrained==true){
+              blue_array = Array(k_chose_blue).fill('b')
+              yellow_array = Array(k_chose_yellow).fill('y')
+              choice_array = blue_array.concat(yellow_array)
+              button_div_str = ''
+              for (i=0;i<n_generation_size;i++){
+                curr_sample = sampleWithoutReplacement(choice_array)
+                console.log(curr_sample)
+                if (curr_sample=='b'){
+                  button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
+                } else if (curr_sample=='y'){
+                  button_div_str += ' <button type="button" class="btn btn-primary chose-yellow">'+yellowStr+'</button>'
+                }
+              }
+              $('#button-div').html(button_div_str)
+              $('.chose-yellow').css('background-color','#F0AD4E')
+              $('.chose-yellow').css('border-color','#eea236')
+              $('.chose-blue').css('background-color','#428BC9')
+              $('.chose-yellow').hover(function(){
+                $(this).css('background-color','#ED9C27')
+              }, function(){
+                $(this).css('background-color','#F0AD4E')
+              })
+  
+              $('.chose-blue').hover(function(){
+                $(this).css('background-color','#3176B1')
+              }, function(){
+                $(this).css('background-color','#428BC9')
+              })
+            } else{
+              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + ')')
+              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + ')')
+            }
+           
+            $(".chose-yellow").click(function() {
+              // console.log("Reported more yellow.");
+              report("yellow");
+            });
+            $(".chose-blue").click(function() {
+              // console.log("Reported more blue.");
+              report("blue");
+              
+            });
+          }
+
+          console.log(particlesResponse)
+          get_received_infos();
+        })
+        .fail(function (rejection) {
+          // A 403 is our signal that it's time to go to the questionnaire
+          if (rejection.status === 403) {
+              dallinger.allowExit();
+              dallinger.goToPage('questionnaire');
+            } else {
+              dallinger.error(rejection);
+            }
+        }); 
+  }  
+
+
+
 function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
 
   if (cover_story==false){
@@ -606,52 +682,9 @@ function display_practice_info(){
           $(".button-wrapper").css("display", "none");
           $(".outcome").html("")
           $("#instructions").html("")
+          get_social_info();
 
-          dallinger.get("/particles/" + network_id +  "/" + generation + "/")
-          .done(function (particlesResponse) {
-            n_generation_size = parseInt(particlesResponse.n)
-            k_chose_blue = parseInt(particlesResponse.k)
-            console.log(k_chose_blue)
-            k_chose_yellow = n_generation_size-k_chose_blue
-            if (learning_strategy=='social'){
-              blue_array = Array(k_chose_blue).fill('b')
-              yellow_array = Array(k_chose_yellow).fill('y')
-              choice_array = blue_array.concat(yellow_array)
-              button_div_str = ''
-              for (i=0;i<n_generation_size;i++){
-                curr_sample = sampleWithoutReplacement(choice_array)
-                console.log(curr_sample)
-                if (curr_sample=='b'){
-                  button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
-                } else if (curr_sample=='y'){
-                  button_div_str += ' <button type="button" class="btn btn-primary chose-yellow">'+yellowStr+'</button>'
-                }
-              }
-              $('#button-div').html(button_div_str)
-
-              $(".chose-yellow").click(function() {
-                // console.log("Reported more yellow.");
-                report("yellow");
-              });
-              $(".chose-blue").click(function() {
-                // console.log("Reported more blue.");
-                report("blue");
-                
-              });
-            }
-
-            console.log(particlesResponse)
-            get_received_infos();
-          })
-          .fail(function (rejection) {
-            // A 403 is our signal that it's time to go to the questionnaire
-            if (rejection.status === 403) {
-                dallinger.allowExit();
-                dallinger.goToPage('questionnaire');
-              } else {
-                dallinger.error(rejection);
-              }
-          }); 
       });
+
 
 }

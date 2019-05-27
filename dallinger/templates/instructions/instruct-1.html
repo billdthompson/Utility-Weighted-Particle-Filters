@@ -24,6 +24,7 @@
 
 {% block scripts %}
     <script type="text/javascript">
+        var constrained=false;
         create_agent = function() {
           dallinger.createAgent()
             
@@ -40,6 +41,7 @@
                 localStorage.setItem("network_id",network_id);
                 var nextpage = 'instructions/instruct-2'
                 localStorage.setItem("decision_index",parseInt(resp.node.property3));
+                localStorage.setItem("constrained",constrained);
 
                 console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
 
