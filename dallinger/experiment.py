@@ -252,10 +252,11 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
-		if len([i for i in participant.infos() if i.type == "meme"]) >= (self.practice_decisions + self.experimental_decisions):
+		memes = [i for i in participant.infos() if i.type == "meme"]
+		if len(memes) >= (self.practice_decisions + self.experimental_decisions):
 			raise Exception
 		
 		return self.models.Particle(network=network,participant=participant)
