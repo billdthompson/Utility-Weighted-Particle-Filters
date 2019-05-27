@@ -49,8 +49,24 @@
                         console.log("netresponse: ", netresp)
                         var net_decision_index = parseInt(netresp.network.property4);
                         localStorage.setItem("net_decision_index",net_decision_index);
-                        dallinger.goToPage(nextpage) 
-                    })
+
+                            dallinger.get("/particles/" + network_id +  "/" + generation + "/")
+                                .done(function (particlesResponse) {
+                                    var n_generation_size = parseInt(particlesResponse.n)
+                                    var k_chose_blue = parseInt(particlesResponse.k)
+                                    dallinger.goToPage(nextpage)
+                                }) 
+                                .fail(function (rejection) {
+                                    // A 403 is our signal that it's time to go to the questionnaire
+                                    if (rejection.status === 403) {
+                                        dallinger.allowExit();
+                                        dallinger.goToPage('questionnaire');
+                                      } else {
+                                        dallinger.error(rejection);
+                                      }
+                                    
+                                    })
+                                }) 
                     .fail(function (rejection) {
                         // A 403 is our signal that it's time to go to the questionnaire
                         if (rejection.status === 403) {

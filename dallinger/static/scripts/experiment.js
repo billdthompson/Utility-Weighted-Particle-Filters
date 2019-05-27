@@ -2,6 +2,8 @@
 var trial = 0;
 var total_pay=0.25;
 var a;
+var n_generation_size; // how many people per generation?
+var k_chose_blue; // in this generation, how many recieved "blue" as their social information?
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var condition = localStorage.getItem('condition'); // string
@@ -594,7 +596,23 @@ function display_practice_info(){
           $(".button-wrapper").css("display", "none");
           $(".outcome").html("")
           $("#instructions").html("")
-          get_received_infos();
+
+          dallinger.get("/particles/" + network_id +  "/" + generation + "/")
+          .done(function (particlesResponse) {
+            n_generation_size = parseInt(particlesResponse.n)
+            k_chose_blue = parseInt(particlesResponse.k)
+            console.log(particlesResponse)
+            get_received_infos();
+          })
+          .fail(function (rejection) {
+            // A 403 is our signal that it's time to go to the questionnaire
+            if (rejection.status === 403) {
+                dallinger.allowExit();
+                dallinger.goToPage('questionnaire');
+              } else {
+                dallinger.error(rejection);
+              }
+          }); 
       });
 
 }

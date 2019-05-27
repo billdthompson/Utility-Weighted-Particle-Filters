@@ -34,7 +34,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':11, 
+		'generation_size':2, 
 		'generations': 3, 
 		'num_fixed_order_experimental_networks_per_condition': 1,
 		'num_random_order_experimental_networks_per_condition': 1,
@@ -66,6 +66,7 @@ class UWPFWP(Experiment):
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
+		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
 
 	def set_params(self):
 		self.condition_names = {2:"social_with_info"} # {0:"asocial", 2:"social_with_info", 1:"social"} 1:"social"
@@ -119,6 +120,7 @@ class UWPFWP(Experiment):
 			self.session.add(network)
 			self.session.commit()
 		
+		self.sample_parents()
 		self.assign_conditions_to_networks()
 		self.assign_decision_indices_to_networks()
 		self.assign_roles_to_networks()
@@ -134,6 +136,14 @@ class UWPFWP(Experiment):
 	def create_network(self):
 		"""Create a new network."""
 		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
+
+	# @pysnooper.snoop()
+	def sample_parents(self):
+		"""Sample parent assignments for all gens & networks pre-hoc. 
+		   This is possible b/c transmission dynamics is random sampling.
+		"""
+		for network in self.networks():
+			self.models.NetworkParentSamples(network = network)
 
 	# @pysnooper.snoop()
 	def sample_network_for_new_participant(self, participant):
@@ -249,6 +259,7 @@ class UWPFWP(Experiment):
 		
 		return self.models.Particle(network=network,participant=participant)
 
+	# @pysnooper.snoop()
 	def add_node_to_network(self, node, network):
 		"""Add participant's node to a network."""
 		network.add_node(node)
@@ -260,18 +271,41 @@ class UWPFWP(Experiment):
 			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
 
-		# datasource = network.nodes(type=Environment)[0]
-		# datasource.connect(whom=node)
-		# datasource.transmit(to_whom=node)
-
 		if node.generation > 0:
-			agent_model = self.models.Particle
-			prev_agents = agent_model.query\
-				.filter_by(failed=False,
-						   network_id=network.id,
-						   generation=node.generation - 1)\
-				.all()
-			parent = random.choice(prev_agents)
+
+			# grab pre-sampled parent schedule for this network
+			parentschedule = self.models.NetworkParentSamples.query.filter_by(network_id = network.id).one()
+
+			details = parentschedule.details
+			
+			# isolaterab the parent indices for this generation
+			parent_index_lookup = json.loads(parentschedule.details)[str(node.generation)]
+
+			# list all nodes from the previous generation
+			# and sort the node_ids
+			all_nodes_previous_generation = self.models.Particle.query.filter(self.models.Particle.property2 == repr(int(node.generation) - 1)).filter_by(network_id = network.id, failed = False).all()
+			previous_generation_node_ids_sorted = [previous_node.id for previous_node in all_nodes_previous_generation]
+			previous_generation_node_ids_sorted.sort()
+
+			# list all the nodes in the current generation so far
+			# and sort the node_ids
+			all_nodes_this_generation_so_far = self.models.Particle.query.filter(self.models.Particle.property2 == repr(int(node.generation))).filter_by(network_id = network.id, failed = False).all()
+			current_generation_node_ids_sorted = [existing_node.id for existing_node in all_nodes_this_generation_so_far]
+			current_generation_node_ids_sorted.sort()
+
+			# make a lookup table that takes a numerical index and returns a node_id for nodes at the previous generation 
+			previous_generation_node_id_lookup = dict(zip(list(range(len(all_nodes_previous_generation))), previous_generation_node_ids_sorted))
+			
+			# make a lookup table that takes a node_id and returns a numerical index for nodes at the current generation
+			current_node_order_lookup = dict(zip(current_generation_node_ids_sorted, list(range(len(all_nodes_this_generation_so_far)))))
+
+			# find the pre-sampled numerical index of the parent for the current node
+			parent_index = parent_index_lookup[repr(current_node_order_lookup[node.id])]
+
+			# and lookup the node_id of the previous-generation node at that numerical index
+			parent_id = previous_generation_node_id_lookup[parent_index]
+
+			parent = self.models.Particle.query.filter_by(network_id = network.id, id = parent_id).one()
 			parent.connect(whom=node)
 			parent.transmit(what=Meme, to_whom=node)
 
@@ -326,7 +360,6 @@ class UWPFWP(Experiment):
 				node.fail()
 		self.log("--**fail participant**-->>")
 		
-
 	def attention_check(self, participant=None):
 		"""Check a participant paid attention."""
 		infos = participant.infos()
@@ -372,9 +405,7 @@ class UWPFWP(Experiment):
 	# @pysnooper.snoop()
 	def getnet(self, network_id):
 		net = Network.query.filter_by(id = network_id).one()
-		return net.__json__()
-
-
+		return net
 
 extra_routes = Blueprint(
 	'extra_routes',
@@ -389,12 +420,68 @@ def getnet(network_id):
 
 		net = exp.getnet(network_id)
 
-		# exp.log("{}".format(net), "--**explog**--:>")
-		# exp.log("{}".format(json.dumps(net)), "--**explog**--:>")
-
-		return Response(json.dumps({"network":{"property4":net["property4"]}}), status=200, mimetype="application/json")
+		return Response(json.dumps({"network":{"property4":net.__json__()["property4"]}}), status=200, mimetype="application/json")
 
 	except Exception:
 		db.logger.exception('Error fetching network info')
 		return Response(status=403, mimetype='application/json')
+
+@extra_routes.route("/particles/<int:network_id>/<int:generation>/", methods=["GET"])
+def getparticles(network_id, generation):
+	logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+
+	if generation == 0:
+		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
+
+	# @pysnooper.snoop()
+	def f(network_id, generation):
+		# get an exp instance
+		exp = UWPFWP(db.session)
+
+		# get the network for this id
+		net = exp.getnet(network_id)
+
+		# get all nodes from the previous generation
+		previous_generation_nodes = list(filter(lambda node: node.generation == (generation - 1), net.nodes(failed = False, type = exp.models.Particle)))
+
+		# find the pre-sampled parentschedule for this network
+		parentschedule = exp.models.NetworkParentSamples.query.filter_by(network_id = network_id).one()
+
+		# isolate the numerical indicies of the parents sampled for the current generation
+		all_parents_indices = json.loads(parentschedule.details)[str(generation)].values()
+
+		# line up the node_ids from the previous gen in order
+		previous_generation_node_ids_sorted = [previous_node.id for previous_node in previous_generation_nodes]
+		previous_generation_node_ids_sorted.sort()
+		
+		# and make a lookup table so we can retrieve a speicifc node_id from a numerical parent_index
+		previous_generation_node_id_lookup = dict(zip(list(range(len(previous_generation_nodes))), previous_generation_node_ids_sorted))
+
+		# retreive the relevant node_ids for all sapled parents
+		all_parent_node_ids = [previous_generation_node_id_lookup[index] for index in all_parents_indices]
+
+		# make the node objects accessible via node_id
+		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
+
+		# make a list of whether each parent node chose blue or not
+		chose_blue = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] == "blue" for node_id in all_parent_node_ids]
+
+		# count the number who did choose blue
+		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
+		k = sum(chose_blue)
+
+		# count the generation size and check it liens up with the exp
+		n = len(previous_generation_nodes)
+		assert n == exp.generation_size
+
+		return Response(json.dumps({"k":k, "n":n}), status=200, mimetype="application/json")
+
+	try:
+		return f(network_id, generation)
+
+	except Exception:
+		db.logger.exception('Error fetching network info')
+		return Response(status=403, mimetype='application/json')
+
+
 

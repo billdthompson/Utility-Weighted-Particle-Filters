@@ -13,7 +13,9 @@ from sqlalchemy.ext.declarative import declared_attr
 from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
-from dallinger.models import Info, Network, Participant
+from dallinger.models import Info, Network, Participant, Node
+
+# import pysnooper
 
 class ParticleFilter(Network):
     """Discrete fixed size generations with random transmission"""
@@ -182,6 +184,30 @@ class Particle(Agent):
         self.condition = self.network.property5
         self.role = self.network.role
         # self.proportion = self.network.proportion
+
+class NetworkParentSamples(Node):
+    """The participant."""
+
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
+
+    # @pysnooper.snoop()
+    def sample_parents(self):
+        N = self.network.generations
+        n = self.network.generation_size
+        parents = {}
+        for g in range(1, N):
+            parents[g] = dict(zip(list(range(n)), random.choices(list(range(n)), k = n)))
+        return parents
+
+    def __init__(self, network, details = None):
+        super(NetworkParentSamples, self).__init__(network)
+        self.details = json.dumps(self.sample_parents())
+
 
 class TrialBonus(Info):
     """An Info that represents a parametrisable technology with a utility function."""
