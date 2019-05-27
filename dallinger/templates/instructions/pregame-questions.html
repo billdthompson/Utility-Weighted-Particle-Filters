@@ -60,6 +60,9 @@
 
                   <div class="row question" id='question-5'>
                 </div>
+
+                <div class="row question" id='question-6'>
+                  </div>
                   
                   <br>
                   <hr>
@@ -115,6 +118,11 @@
     <br>
     <hr>
     </div>
+    <div id='question-7-wrapper'>
+        <span id="instructions-text-7" style='font-size:19px;'></span>
+        <br>
+        <hr>
+        </div>
     <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>
 
     </div>
@@ -131,10 +139,12 @@
   var generation = parseInt(localStorage.getItem('generation'));
   var payout_blue = localStorage.getItem('payout_blue')=='true';
   var condition = localStorage.getItem('condition')
+  var constrained = localStorage.getItem('constrained')=='true'
 
   // hacky but gets the job done
   if (generation==0 || condition=='asocial'){
     condition='asocial'
+    $('#question-7-wrapper').css('display','none')
   }
 
 
@@ -201,7 +211,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
+                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -238,7 +248,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
+                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -278,7 +288,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
+                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -306,7 +316,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots.</option>"+
+                              "<option value='1'>Another participant's decision on an image with the same number of blue and yellow dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -388,7 +398,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an area with the same number of water and sand dots.</option>"+
+                              "<option value='1'>Another participant's decision on an area with the same number of water and sand dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -428,7 +438,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an area with the same number of gold and water dots.</option>"+
+                              "<option value='1'>Another participant's decision on an area with the same number of gold and water dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -471,7 +481,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an area with the same number of water and sand dots.</option>"+
+                              "<option value='1'>Another participant's decision on an area with the same number of water and sand dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -502,7 +512,7 @@
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>Another participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>Another participant's decision on an area with the same number of gold and water dots.</option>"+
+                              "<option value='1'>Another participant's decision on an area with the same number of gold and water dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -519,6 +529,74 @@
     }
   }
 
+if (condition.includes('no_utility')){
+  if (condition!='asocial'){
+    if (constrained==true){
+      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+	                        'After viewing an area, what information will you get?'+
+	                    '</div><br>'+
+	                    '<div class="col-md-4">'+
+	                        '<select id="q4" name="q4">'+
+                              "<option value='2'>A random set of others' decisions in a different area</option>"+
+                              "<option value='1'>A random set of others' decisions in an area with the same number of water and sand dots</option>"+
+                              '<option value="3">No other information</option>'+
+                              '<option value="5" SELECTED>None of these options</option>'+
+                          '</select></div><br><br>')
+                          $('#instructions-text-7').html('5). After viewing an area, you will view the decisions made by a random set of participants '+
+        'viewing an area with the same number of gold dots and water dots. Each of these decisions will be represented as a button - so, if seven people '+
+        'in this group thought there were more sand dots, there would be seven sand buttons in total.')
+
+    } else{
+      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+	                        'After viewing an area, what information will be added to each button?'+
+	                    '</div><br><br>'+
+	                    '<div class="col-md-4">'+
+	                        '<select id="q4" name="q4">'+
+                              "<option value='2'>A random set of others' decisions in a different area</option>"+
+                              "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+                              '<option value="3">No other information</option>'+
+                              '<option value="5" SELECTED>None of these options</option>'+
+                          '</select></div><br><br>')
+                          $('#instructions-text-7').html('5). After viewing an area, you will view the decisions made by a random set of participants '+
+        'viewing an area with the same number of gold dots and water dots. These decisions will be presented as numbers of votes on each button.')
+
+    }
+  }
+} else{
+  if (condition!='asocial'){
+    if (constrained==true){
+      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+	                        'After viewing an area, what information will you get?'+
+	                    '</div><br>'+
+	                    '<div class="col-md-4">'+
+	                        '<select id="q4" name="q4">'+
+                              "<option value='2'>A random set of others' decisions in a different area</option>"+
+                              "<option value='1'>A random set of others' decisions in an area with the same number of water and sand dots</option>"+
+                              '<option value="3">No other information</option>'+
+                              '<option value="5" SELECTED>None of these options</option>'+
+                          '</select></div><br><br>')
+                          $('#instructions-text-7').html('6). After viewing an area, you will view the decisions made by a random set of participants '+
+        'viewing an area with the same number of gold dots and water dots. Each of these decisions will be represented as a button - so, if seven people '+
+        'thought there were more sand dots, there would be seven sand buttons in total.')
+
+    } else{
+      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+	                        'After viewing an area, what information will be added to each button?'+
+	                    '</div><br><br>'+
+	                    '<div class="col-md-4">'+
+	                        '<select id="q4" name="q4">'+
+                              "<option value='2'>A random set of others' decisions in a different area</option>"+
+                              "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+                              '<option value="3">No other information</option>'+
+                              '<option value="5" SELECTED>None of these options</option>'+
+                          '</select></div><br><br>')
+                          $('#instructions-text-7').html('6). After viewing an area, you will view the decisions made by a random set of participants '+
+        'viewing an area with the same number of gold dots and water dots. These decisions will be presented as numbers of votes on each button.')
+    }
+  }
+}
+
+  
 
       beginExperiment = function () {
         var yellow_left = Math.random()<=0.5;
