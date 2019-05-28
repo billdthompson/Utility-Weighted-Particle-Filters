@@ -44,12 +44,12 @@
                 localStorage.setItem("decision_index",parseInt(resp.node.property3));
                 localStorage.setItem("constrained",constrained);
 
-                console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
+                //console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
 
                 var network_string = '/network/' + String(network_id) + '/getnet/'
                 dallinger.get(network_string)
                     .done(function(netresp) {
-                        console.log("netresponse: ", netresp)
+                        //console.log("netresponse: ", netresp)
                         var net_decision_index = parseInt(netresp.network.property4);
                         localStorage.setItem("net_decision_index",net_decision_index);
 
