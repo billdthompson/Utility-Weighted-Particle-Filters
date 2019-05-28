@@ -16,7 +16,7 @@ from flask import Blueprint, Response
 import numpy as np
 import random
 import json
-import pysnooper
+# import pysnooper
 # import pysnooper
 
 import logging
@@ -70,7 +70,7 @@ class UWPFWP(Experiment):
 		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info"} # {0:"asocial", 2:"social_with_info", 1:"social"} 1:"social"
+		self.condition_names = {2:"social_with_info", 0:"asocial", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -164,7 +164,7 @@ class UWPFWP(Experiment):
 		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
 		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
 
-		self.log("{}".format(self.nodes_per_generation), "--**nodespergen**-->>")
+		# self.log("{}".format(self.nodes_per_generation), "--**nodespergen**-->>")
 
 		self.log("{}".format(current_generation), "--**currentgen**-->>")
 
@@ -255,12 +255,13 @@ class UWPFWP(Experiment):
 	# @pysnooper.snoop()
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
-		if len([i for i in participant.infos() if i.type == "meme"]) >= (self.practice_decisions + self.experimental_decisions):
+		memes = [i for i in participant.infos() if i.type == "meme"]
+		if len(memes) >= (self.practice_decisions + self.experimental_decisions):
 			raise Exception
 		
 		return self.models.Particle(network=network,participant=participant)
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def add_node_to_network(self, node, network):
 		"""Add participant's node to a network."""
 		network.add_node(node)
@@ -434,7 +435,7 @@ def getparticles(network_id, generation):
 	if generation == 0:
 		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def f(network_id, generation):
 		# get an exp instance
 		exp = UWPFWP(db.session)

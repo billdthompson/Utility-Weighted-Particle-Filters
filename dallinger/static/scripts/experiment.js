@@ -491,7 +491,7 @@ function getBonusAmount(truth,response,isBluePayout){
               button_div_str = ''
               for (i=0;i<n_generation_size;i++){
                 curr_sample = sampleWithoutReplacement(choice_array)
-                console.log(curr_sample)
+                // console.log(curr_sample)
                 if (curr_sample=='b'){
                   button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
                 } else if (curr_sample=='y'){
@@ -530,18 +530,18 @@ function getBonusAmount(truth,response,isBluePayout){
               $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + yellow_vote_str)
             }
            
-            $(".chose-yellow").click(function() {
+            $(".chose-yellow").unbind('click').click(function() {
               // console.log("Reported more yellow.");
               report("yellow");
             });
-            $(".chose-blue").click(function() {
+            $(".chose-blue").unbind('click').click(function() {
               // console.log("Reported more blue.");
               report("blue");
               
             });
           }
 
-          console.log(particlesResponse)
+          // console.log(particlesResponse)
           get_received_infos();
         })
         .fail(function (rejection) {
@@ -660,7 +660,7 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
         "Earnings from these rounds will be added to your final pay.</p> ")
       $('#topResult').css('font-size','19px')
 
-      $('#continue_button').click(function(){
+      $('#continue_button').unbind('click').click(function(){
         $(".outcome").css("display", "none");
         $(".button-wrapper").css("display", "none");
         $(".outcome").html("")
@@ -689,7 +689,7 @@ function display_practice_info(){
       "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
         "Earnings from these rounds will not be added to your final pay.</p> ")
       $('#topResult').css('font-size','19px')
-      $('#continue_button').click(function(){
+      $('#continue_button').unbind('click').click(function(){
           $(".outcome").css("display", "none");
           $(".button-wrapper").css("display", "none");
           $(".outcome").html("")

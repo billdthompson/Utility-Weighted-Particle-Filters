@@ -1,11 +1,11 @@
 [Experiment]
-mode = sandbox
+mode = live
 auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Yellow Dots
-description = Judge whether there are more blue or yellow dots [Bonus up to: $3.60]
+title = Psychology Experiment: Judge Blue and Yellow Dots (< 6 mins, Bonus up to: $3.60, no mobile please)
+description = Judge blue and yellow dots
 keywords = Psychology, decision, dots, game
 base_payment = .25
 lifetime = 24
@@ -14,19 +14,19 @@ us_only = true
 contact_email_on_error = wdt@princeton.edu
 organization_name = University of California, Berkeley
 browser_exclude_rule = MSIE, mobile, tablet
-qualification_blacklist = UWSPF
+qualification_blacklist = UWSPFPILOT
 assign_qualifications = true
 approve_requirement = 95
-group_name = UWSPF
+group_name = UWSPFPILOT
 
 [Database]
 database_url = postgresql://postgres@localhost/dallinger
 database_size = standard-2
 
 [Server]
-dyno_type = standard-1x
-num_dynos_web = 1
-num_dynos_worker = 1
+dyno_type = standard-2x
+num_dynos_web = 3
+num_dynos_worker = 3
 host = 0.0.0.0
 notification_url = None
 clock_on = false
