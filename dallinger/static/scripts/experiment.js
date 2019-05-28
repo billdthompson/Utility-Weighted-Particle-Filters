@@ -514,8 +514,20 @@ function getBonusAmount(truth,response,isBluePayout){
                 $(this).css('background-color','#428BC9')
               })
             } else{
-              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + ' votes)')
-              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + ' votes)')
+              
+              if (k_chose_blue==1){
+                blue_vote_str = ' vote)'
+              } else{
+                blue_vote_str = ' votes)'
+              }
+              if (k_chose_yellow==1){
+                yellow_vote_str = ' vote)'
+              } else{
+                yellow_vote_str = ' votes)'
+              }
+
+              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + blue_vote_str)
+              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + yellow_vote_str)
             }
            
             $(".chose-yellow").click(function() {
