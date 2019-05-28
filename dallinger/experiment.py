@@ -69,7 +69,7 @@ class UWPFWP(Experiment):
 		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info", 0:"asocial", 1:"social"}
+		self.condition_names = {2:"social_with_info"}#, 0:"asocial", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
