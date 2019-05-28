@@ -29,7 +29,6 @@ class UWPFWP(Experiment):
 	assign_qualifications = true
 	approve_requirement = 95
 	group_name = UWSPF
-
 	"""
 
 	@property
@@ -486,6 +485,3 @@ def getparticles(network_id, generation):
 	except Exception:
 		db.logger.exception('Error fetching network info')
 		return Response(status=403, mimetype='application/json')
-
-
-

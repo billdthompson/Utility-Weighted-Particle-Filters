@@ -96,8 +96,7 @@
 <!-- Instructions Div -->
 <div class="instructions" id="instructions-div-failure" style="visibility:hidden">
 
-    <h1>Try again</h1><br>
-    <h3>Here is some important information to help you get the highest bonus possible:</h3><br>
+    <div id='h3-thing'><h3>Here is some important information to help you get the highest bonus possible:</h3><br></div>
 
     <span id="instructions-text-2" style='font-size:19px;'></span>
     <br>
@@ -145,6 +144,10 @@
   if (generation==0 || condition=='asocial'){
     condition='asocial'
     $('#question-7-wrapper').css('display','none')
+  }
+
+  if (condition=='social_with_info'){
+    $('#h3-thing').html('')
   }
 
 
@@ -529,7 +532,7 @@
     }
   }
 
-if (condition.includes('no_utility')){
+if (condition=='social'){
   if (condition!='asocial'){
     if (constrained==true){
       $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
@@ -562,7 +565,7 @@ if (condition.includes('no_utility')){
 
     }
   }
-} else{
+} else if (condition=='social_with_info'){
   if (condition!='asocial'){
     if (constrained==true){
       $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+

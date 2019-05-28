@@ -78,7 +78,7 @@
         }
 
         old_html = $('#story-instructions').html()
-        if (condition.includes('no_utility')){
+        if (condition=='social' && generation_num!=0){
             if (constrained==true){
                 old_html = $('#story-instructions').html()
                 new_html = '<p>After viewing an area, you will see a set of buttons showing the decisions of' +
@@ -92,7 +92,7 @@
                 'water and sand dots.</p>'
                 $('#story-instructions').html(old_html+new_html)
             }
-            } else{
+            } else if (condition=='social_with_info' && generation_num!=0){
                 if (constrained==true){
                 new_html = '<p>After viewing an area, you will see a set of buttons showing the decisions of' +
                 ' a random group of participants viewing an area with an equal number of water and sand dots. These participants '+ 
