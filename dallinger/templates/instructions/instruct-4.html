@@ -34,78 +34,104 @@
     {% block scripts %}
     <script>
 
-        var condition=localStorage.getItem("condition"); 
-        var generation_num= parseInt(localStorage.getItem("generation")); 
+        var include_numbers = localStorage.getItem(include_numbers)
+
+        var social_condition = localStorage.getItem("social_condition"); 
+
+        var payout_condition = localStorage.getItem("payout_condition"); 
+        var generation_num = parseInt(localStorage.getItem("generation")); 
         var cover_story = localStorage.getItem("cover_story")=='true'; 
-        var payout_blue = localStorage.getItem("payout_blue")=='true'; 
-        var no_utility = false;
-        var constrained = localStorage.getItem("constrained")=='true';
+
+        if (Math.random()<=0.5){
+            first = 'blue'
+            second = 'yellow'
+        } else{
+            first='yellow'
+            second='blue'
+        }
         
         
-        if (condition=='social' || condition=='social_no_utility'){
-            if (cover_story==false){
+        if (social_condition=='social'){
+            if (cover_story==false || payout_condition=='no-utility'){
                 $('#story-instructions').html('<p>To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
-            'This participant viewed an image with the same number of blue and yellow dots as the one you will see.</p>')
+                'This participant viewed an image with the same number of '+first+' and '+second+' dots as the one you will see.</p>')
             } else{
-                if (payout_blue==true){
+                if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an area with the same number of water and sand dots as the one you will see.</p>')
-                } else{
+                    'This participant viewed an area with the same number of water and sand dots as the one you will see.</p>')
+                } else if (payout_condition=='yellow'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of gold and water dots as the one you will see.</p>')
             }
         }
 
-        } else if (condition=='social_with_info'){
+        } else if (social_condition=='social_with_info'){
             if (cover_story==false){
-                if (payout_blue==true){
+                if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for blue dots but not yellow dots</p>')
-
-                } else{
+                } else if (payout_condition=='yellow'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for yellow dots but not blue dots.</p>')
+            'This participant viewed an image with the same number of yellow and blue dots as the one you will see, and was also paid for yellow dots but not blue dots.</p>')
+                } else if (payout_condition=='no-utility'){
+                    $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
                 }
             } else{
-                if (payout_blue==true){
+                if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of water and sand dots as the one you will see. This participant was also paid for water but not sand in each area.</p>')
-                } else{
+                } else if (payout_condition=='yellow'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of gold and water dots as the one you will see. This participant was also paid for gold but not water in each area.</p>')
+            } else if (payout_condition=='no-utility'){
+                $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
             }
             }
         }
 
         old_html = $('#story-instructions').html()
-        if (condition=='social' && generation_num!=0){
-            if (constrained==true){
-                old_html = $('#story-instructions').html()
-                new_html = '<p>After viewing an area, you will see a set of buttons showing the decisions of' +
-                ' a random group of participants viewing an area with an equal number of water and sand dots. You will then ' +
-                'make your choice by endorsing one of their judgements.</p>'
-                $('#story-instructions').html(old_html+new_html)
-            } else{
-            new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                "there are more water or sand dots. These buttons will also include numbers indicating how many "+
-                'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                'water and sand dots.</p>'
-                $('#story-instructions').html(old_html+new_html)
+        if (include_numbers==true){
+            if (payout_condition=='blue'){
+                if (social_condition=='social' && generation_num!=0){
+                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    "there are more water or sand dots. These buttons will also include numbers indicating how many "+
+                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
+                    'water and sand dots.</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                } else if (condition=='social_with_info' && generation_num!=0){
+                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    "there are more water or sand dots. These buttons will also include numbers indicating how many "+
+                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
+                    'water and sand dots. These participants were also paid for water but not sand dots.</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                }
+            } else if (payout_condition=='yellow'){
+                if (social_condition=='social' && generation_num!=0){
+                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    "there are more gold or water dots. These buttons will also include numbers indicating how many "+
+                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
+                    'gold and water dots.</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                } else if (social_condition=='social_with_info' && generation_num!=0){
+                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    "there are more gold or water dots. These buttons will also include numbers indicating how many "+
+                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
+                    'gold and water dots. These participants were also paid for gold but not water dots.</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                }
+            } else if (payout_condition=='no_utility'){
+                if (social_condition=='social' && generation_num!=0){
+                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    "there are more "+first+" or "+second+" dots. These buttons will also include numbers indicating how many "+
+                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
+                    +first+' and '+second+' dots.</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                } else if (social_condition=='social_with_info' && generation_num!=0){
+                    new_html = '<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>'
+                    $('#story-instructions').html(old_html+new_html)
+                }
             }
-            } else if (condition=='social_with_info' && generation_num!=0){
-                if (constrained==true){
-                new_html = '<p>After viewing an area, you will see a set of buttons showing the decisions of' +
-                ' a random group of participants viewing an area with an equal number of water and sand dots. These participants '+ 
-                'were also paid for water dots but not sand dots. You will then ' +
-                'make your choice by endorsing one of their judgements.</p>'
-                $('#story-instructions').html(old_html+new_html)
-            } else{
-                new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                "there are more water or sand dots. These buttons will also include numbers indicating how many "+
-                'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                'water and sand dots. These participants were also paid for water but not sand dots.</p>'
-                $('#story-instructions').html(old_html+new_html)
-            }
+
         }
 
         advance = function(){

@@ -24,7 +24,7 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        var constrained=false;
+        var include_=true;
         create_agent = function() {
             console.log("starting createagent")
           dallinger.createAgent()
@@ -38,20 +38,14 @@
                 localStorage.setItem("node_id",parseInt(resp.node.id));
                 var generation = parseInt(resp.node.property2)
                 localStorage.setItem("generation",generation);
-                localStorage.setItem("social_condition",'social');
+                localStorage.setItem("social_condition",resp.node.property5);
                 var prop_blue = parseFloat(resp.node.property4)
-                localStorage.setItem("prop_blue",prop_blue);
+                localStorage.setItem("prop_blue",prop_blue);inc
                 localStorage.setItem("trial_type",resp.node.property1);
                 var network_id = parseInt(resp.node.network_id)
                 localStorage.setItem("network_id",network_id);
                 localStorage.setItem("decision_index",parseInt(resp.node.property3));
-                localStorage.setItem("constrained",constrained);
-                console.log('here')
-
-                //var payout_condition = parseInt(resp.node.payout_condition)
-                //localStorage.setItem('payout_condition',payout_condition)
-                //localStorage.setItem('payout_condition',payout_yellow)
-
+                
                 //console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
 
                 var nextpage = 'instructions/instruct-2'

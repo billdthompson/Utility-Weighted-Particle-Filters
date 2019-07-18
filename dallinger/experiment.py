@@ -34,7 +34,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':10, 
+		'generation_size':1, 
 		'generations': 10, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
@@ -69,7 +69,7 @@ class UWPFWP(Experiment):
 		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info"}#, 0:"asocial", 1:"social"}
+		self.condition_names = {2:"social_with_info", 0:"asocial", 1:"social"}
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']

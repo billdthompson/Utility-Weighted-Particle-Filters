@@ -1,14 +1,13 @@
 //
-var n_generation_size, k_chose_blue,choice_array;
+var n_generation_size, k_chose_blue,k_chose_yellow,choice_array;
 var trial = 0;
-var total_pay=0.25;
+var total_points=250;
 var a;
 var n_generation_size; // how many people per generation?
-var k_chose_blue; // in this generation, how many recieved "blue" as their social information?
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
-var condition = localStorage.getItem('condition'); // string
-var payout_blue = localStorage.getItem('payout_blue')=='true' // string, true/false
+var social_condition = localStorage.getItem('social_condition'); // string
+var payout_condition = localStorage.getItem('payout_condition') // string, true/false
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
@@ -25,10 +24,10 @@ var yellow_left = localStorage.getItem('yellow_left')=='true'
 
 
 var constrained = localStorage.getItem('constrained')=='true'
-
+$('#instructions').css('font-size','19px')
 var is_practice = true;
 
-if (generation=='0' || condition=='asocial'){
+if (generation=='0' || social_condition=='asocial'){
   var learning_strategy = "asocial";
 } else{
   var learning_strategy = "social";
@@ -49,41 +48,15 @@ function network_random(seed) {
   return x - Math.floor(x);
 }
 
-var yellow_first=Math.random()<=0.5;
 $(".center_div").css("display", "none");
 $("#total-trial-number").html(num_practice_trials + num_test_trials);
 
-if (cover_story==false){
-  // without story
-  var yellowStr = 'Yellow';
-  var blueStr = 'Blue'
-  if (yellow_first==true){
-    var instructionsText = 'Are there more yellow dots or more blue dots?';
-  } else{
-    var instructionsText = 'Are there more blue dots or more yellow dots?'
-  }
-
-  $('#instructions').html(instructionsText)
-  $('#more-blue').html('Blue')
-  $('#more-yellow').html('Yellow')
-  if (condition=='social_with_info'){
-    if (condition==blue){
-      var yellow_filepath = '/static/images/more_blue_with_info_base_blue.jpg'
-      var blue_filepath = '/static/images/more_yellow_with_info_base_blue.jpg'
-    } else{
-      var yellow_filepath = '/static/images/more_blue_with_info_base_yellow.jpg'
-      var blue_filepath = '/static/images/more_yellow_with_info_base_yellow.jpg'
-    }
-  } else{
-    var yellow_filepath = '/static/images/more_blue.jpg'
-    var blue_filepath = '/static/images/more_yellow.jpg'
-  }
-  } else{
-    if (payout_blue==true){
+if (cover_story==true){
+  if (payout_condition=='blue'){
       // with story, payout blue
       var yellowStr = 'Sand';
       var blueStr = 'Water'
-      if (yellow_first==true){
+      if (yellow_left==true){
         var instructionsText = 'Are there more sand dots or more water dots?'
       } else{
         var instructionsText = 'Are there more water dots or more sand dots?'
@@ -91,18 +64,19 @@ if (cover_story==false){
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Sand')
-      if (condition=='social'){
+      if (social_condition=='social'){
         var yellow_filepath = '/static/images/more_sand.jpg'
         var blue_filepath = '/static/images/more_water.jpg'
-      } else{
+      } else if (social_condition=='social_with_info'){
         var yellow_filepath = '/static/images/more_sand_with_info_base_blue.jpg'
         var blue_filepath = '/static/images/more_water_with_info_base_blue.jpg'
       }
-    } else{
+    }
+  if (payout_condition=='yellow'){
       // with story, payout yellow
       var yellowStr = 'Gold';
       var blueStr = 'Water'
-      if (yellow_first==true){
+      if (yellow_left==true){
         var instructionsText = 'Are there more gold dots or more water dots?'
       } else{
         var instructionsText = 'Are there more water dots or more gold dots?'
@@ -110,32 +84,83 @@ if (cover_story==false){
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-yellow').html('Gold')
-      if (condition=='social'){
+      if (social_condition=='social'){
         var yellow_filepath = '/static/images/more_gold.jpg'
         var blue_filepath = '/static/images/more_water.jpg'
-      } else{
+      } else if (social_condition=='social_with_info'){
         var yellow_filepath = '/static/images/more_gold_with_info_base_yellow.jpg'
         var blue_filepath = '/static/images/more_water_with_info_base_yellow.jpg'
       }
-    }
+  }
+  if (payout_condition=='no-utility'){
+      var yellowStr = 'Yellow';
+      var blueStr = 'Blue'
+      if (yellow_left==true){
+        var instructionsText = 'Are there more yellow dots or more blue dots?'
+      } else{
+        var instructionsText = 'Are there more blue dots or more yellow dots?'
+      } 
+      $('#instructions').html(instructionsText)
+      $('#more-blue').html('Blue')
+      $('#more-yellow').html('Yellow')
+      if (social_condition=='social'){
+          var yellow_filepath = '/static/images/more_yellow.jpg'
+          var blue_filepath = '/static/images/more_blue.jpg'
+        } else if (social_condition=='social_with_info'){
+            // F I G U R E   T H I S   O U T !
+      }
+  }
 }
-if (learning_strategy=='social'){
-  if (constrained==true){
-    instructionsText += ' Each button represents the choice of another participant viewing an area with the same number of water and sand dots. There is no difference between clicking on two buttons with the same decision.'
-    $('#instructions').html(instructionsText)
-  } /*else{
-    instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of water and sand dots."
-    $('#instructions').html(instructionsText)
-  }*/
-}
-$('#instructions').css('font-size','19px')
 
-function round(num, places) {
+if (cover_story==false){
+  // without story
+  var yellowStr = 'Yellow';
+  var blueStr = 'Blue'
+  if (yellow_left==true){
+    var instructionsText = 'Are there more yellow dots or more blue dots?';
+  } else{
+    var instructionsText = 'Are there more blue dots or more yellow dots?'
+  }
+  $('#instructions').html(instructionsText)
+  $('#more-blue').html('Blue')
+  $('#more-yellow').html('Yellow')
+  if (social_condition=='social_with_info'){
+      if (payout_condition=='blue'){
+        var yellow_filepath = '/static/images/more_blue_with_info_base_blue.jpg'
+        var blue_filepath = '/static/images/more_yellow_with_info_base_blue.jpg'
+      } else if (payout_condition=='yellow') {
+        var yellow_filepath = '/static/images/more_blue_with_info_base_yellow.jpg'
+        var blue_filepath = '/static/images/more_yellow_with_info_base_yellow.jpg'
+      } else if (payout_condition='no-utility'){
+        // F I G U R E   T H I S   O U T !
+      }
+    }
+
+  if (social_condition=='social'){
+      var yellow_filepath = '/static/images/more_blue.jpg'
+      var blue_filepath = '/static/images/more_yellow.jpg'
+  }
+}
+
+
+if (learning_strategy=='social'){
+  if (include_numbers==true){
+      if (yellow_left==true){
+          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+yellowStr+" and "+blueStr+" dots."
+          $('#instructions').html(instructionsText)
+      } else{
+          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+blueStr+" and "+yellowStr+" dots."
+          $('#instructions').html(instructionsText)
+      }
+  }
+}
+
+function round(num, places){
   var multiplier = Math.pow(10, places);
   return Math.round(num * multiplier) / multiplier;
 }
 
-$('#total_earnings').html('Total earnings: $0.25')
+$('#total_earnings').html('Total points: '+total_points.toFixed(0))
 
 create_agent = function() {
   // console.log("------")
@@ -373,30 +398,31 @@ report = function (color) {
   $("#more-yellow").addClass('disabled');
   $("#reproduction").val("");
   true_color = correctStr()
-  bonuses=getBonusAmount(true_color,color,payout_blue)
+  bonuses=getBonusAmount(true_color,color)
   accuracy_b = bonuses[0]
   condition_b = bonuses[1]
   dotStr = bonuses[2]
   if (is_practice==false){
-    total_pay += (accuracy_b+condition_b)
+    total_points += (accuracy_b+condition_b)
   }
 
   var contents = {choice:color,
                   trial_num:trial,
                   is_practice:is_practice,
-                  payout_blue:payout_blue,
-                  proportionBlue:proportion_blue,
-                  condition:condition,
+                  payout_condition:payout_condition,
+                  proportion_blue:proportion_blue,
+                  social_condition:social_condition,
                   generation: generation,
                   network_id:network_id,
                   node_id: my_node_id,
-                  running_total_pay:total_pay,
-                  current_bonus: accuracy_b+condition_b,
-                  social_info: meme,
+                  running_total_points:total_points,
+                  current_points_bonus: accuracy_b+condition_b,
+                  pre_stimulus_social_info: meme["choice"],
                   participant_id: dallinger.identity.participantId,
-                  yellow_button_left: yellow_left,
-                  yellow_text_left:yellow_first,
-                  net_decision_index: net_decision_index}
+                  yellow_left: yellow_left,
+                  net_decision_index: net_decision_index,
+                  k_chose_blue: k_chose_blue,
+                  k_chose_yellow: k_chose_yellow}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -406,7 +432,7 @@ report = function (color) {
       $("#more-yellow").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
-      updateResponseHTML(true_color,color,condition,dotStr,accuracy_b,condition_b)
+      updateResponseHTML(true_color,color,dotStr,accuracy_b,condition_b)
   })
   .fail(function (rejection) {
       // A 403 is our signal that it's time to go to the questionnaire
@@ -433,20 +459,20 @@ $(document).ready(function() {
 });
 
 
-function getBonusAmount(truth,response,isBluePayout){
+function getBonusAmount(truth,response){
     // truth is a string: 'yellow' or 'blue'
   // response also a string: 'yellow' or 'blue'
   // isBluePayout is boolean
   
   if (truth == 'yellow'){
     if (response=="yellow"){
-        var accuracy_bonus = 0.2;
+        var accuracy_bonus = 50;
     } else {                                                           
         var accuracy_bonus = 0;
     }
   } else {
       if (response == "blue"){
-          var accuracy_bonus = 0.2;
+          var accuracy_bonus = 50;
       } else {
           var accuracy_bonus = 0;
       }
@@ -455,23 +481,28 @@ function getBonusAmount(truth,response,isBluePayout){
   var numYellow = 100-numBlue;
 
   if (cover_story==true){
-    if (isBluePayout==true){
+    if (payout_condition=='blue'){
       dotStr = 'This area has <span>' + numBlue + '</span> water dots'
-      condition_bonus = round((numBlue/2)*0.01,2);
-    } else{
+      condition_bonus = numBlue;
+    } else if (payout_condition=='yellow'){
       dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
-      condition_bonus = round((numYellow/2)*0.01,2);
+      condition_bonus = numYellow;
+    } else if (payout_condition=='no-utility'){
+      dotStr = ''
+      condition_bonus=0
     }
   } else{
-    if (isBluePayout==true){
+    if (payout_condition=='blue'){
       dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
-      condition_bonus = round((numBlue/2)*0.01,2);
-    } else{
+      condition_bonus = numBlue;
+    } else if (payout_condition=='yellow'){
       dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
-      condition_bonus = round((numYellow/2)*0.01,2);
+      condition_bonus = numYellow;
+    } else if (payout_condition=='no-utility'){
+      dotStr = ''
+      condition_bonus=0
     }
   }
-
     return [accuracy_bonus,condition_bonus,dotStr]
   }
 
@@ -557,53 +588,65 @@ function getBonusAmount(truth,response,isBluePayout){
 
 
 
-function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condition_bonus){
+function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus){
 
   if (cover_story==false){
-    if (payout_blue==true){
+    if (payout_condition=='blue'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dots bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total image earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
       "</div>")
 
-    } else{
+    } else if (payout_condition=='yellow'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dots bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total image earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
+      "</div>")
+    } else if (payout_condition=='no-utility'){
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
       "</div>")
     }
 
   } else{
-    if (payout_blue==true){
+    if (payout_condition=='blue'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
       "</div>")
-    } else{
+    } else if (payout_condition=='yellow'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
       "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
       "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus: </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area earnings: </p>" +
+      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
       "</div>")
+      } else if (payout_condition=='no-utility'){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
+        "</div>")
       }
     }
 
@@ -620,25 +663,29 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
     var true_state = blueStr
   }
   
-  accuracyStr = '$' + accuracy_bonus.toFixed(2)
-  conditionStr = '$' + condition_bonus.toFixed(2)
-  netStr = '$' + (accuracy_bonus+condition_bonus).toFixed(2)
+  accuracyStr = accuracy_bonus.toFixed(0)
+  conditionStr = condition_bonus.toFixed(0)
+  netStr = (accuracy_bonus+condition_bonus).toFixed(0)
 
-  total_str = total_pay.toFixed(2)
-  $('#total_earnings').html('Total earnings: $'+ total_str)
+  total_str = total_points.toFixed(0)
+  $('#total_earnings').html('Total points: '+ total_str)
 
   var p1_html = document.getElementById('topResult');
   var p2_html = document.getElementById('responseResult');
   var p3_html = document.getElementById('accuracy');
-  var p4_html = document.getElementById('numDots');
-  var p5_html = document.getElementById('goodAreaPay');
-  var p6_html = document.getElementById('total');
+  if (payout_condition!='no-utility'){
+    var p4_html = document.getElementById('numDots');
+    var p5_html = document.getElementById('goodAreaPay');
+    var p6_html = document.getElementById('total');
+  }
   p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
   p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
   p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
-  p4_html.innerHTML =  dotStr
-  p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
-  p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+  if (payout_condition!='no-utility'){
+    p4_html.innerHTML =  dotStr
+    p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
+    p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+  }
 
   $('.outcome').css('margin','0 auto')
   $('.outcome').css('width','300px')
@@ -657,7 +704,7 @@ function updateResponseHTML(truth,response,condition,dotStr,accuracy_bonus,condi
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
-        "Earnings from these rounds will be added to your final pay.</p> ")
+        "Points from these rounds will be added to your final pay.</p> ")
       $('#topResult').css('font-size','19px')
 
       $('#continue_button').unbind('click').click(function(){
@@ -687,7 +734,7 @@ function display_practice_info(){
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
-        "Earnings from these rounds will not be added to your final pay.</p> ")
+        "Points from these rounds will not be added to your final pay.</p> ")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
           $(".outcome").css("display", "none");
@@ -695,8 +742,6 @@ function display_practice_info(){
           $(".outcome").html("")
           $("#instructions").html("")
           get_social_info();
-
       });
-
 
 }
