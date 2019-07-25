@@ -9,9 +9,9 @@
         <p id='story-instructions'>
         </p>
         
-        <p id =>Here is an example of what you might see:</p> &nbsp;
+        <p id =>Here is an example of what you might see:</p>
         <div class="centering_div">
-            <img class="stimulus_image" src="/static/images/demo.jpg" width="400" alt=""/>
+            <img class="stimulus_image" src="/static/images/new_demo.png" width="400" alt=""/>
         </div>
         &nbsp;
         <p id ='image-paragraph'></p>
@@ -46,7 +46,13 @@
                     .done(function (propertiesResp) {
                         
                         //payout_condition = propertiesResp.payout_condition
-                        payout_condition = 'blue'
+                        
+                        /*if (Math.random()<=0.5){
+                            payout_condition = 'blue'
+                        } else{
+                            payout_condition = 'yellow'
+                        }*/
+                        payout_condition='yellow'
                         cover_story = true
 
                         localStorage.setItem("cover_story",cover_story);

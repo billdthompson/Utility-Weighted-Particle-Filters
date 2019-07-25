@@ -1,7 +1,7 @@
 //
 var n_generation_size, k_chose_blue,k_chose_yellow,choice_array;
 var trial = 0;
-var total_points=250;
+var total_points = 250;
 var a;
 var n_generation_size; // how many people per generation?
 
@@ -12,6 +12,7 @@ var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
 var net_decision_index = parseInt(localStorage.getItem('net_decision_index'));
+var include_numbers = localStorage.getItem('include_numbers')=='true';
 
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
@@ -48,6 +49,26 @@ function network_random(seed) {
   return x - Math.floor(x);
 }
 
+
+$('#more-yellow').css('background-color','#F0AD4E')
+$('#more-yellow').css('border-color','#eea236')
+$('#more-blue').css('background-color','#23badb')
+$('#more-blue').css('border-color','#18aac9')
+
+
+$('#more-yellow').hover(function(){
+  $(this).css('background-color','#ED9C27')
+}, function(){
+  $(this).css('background-color','#F0AD4E')
+})
+
+$('more-blue').hover(function(){
+  $(this).css('background-color','#0b9fbf')
+}, function(){
+  $(this).css('background-color','#23badb')
+})
+
+
 $(".center_div").css("display", "none");
 $("#total-trial-number").html(num_practice_trials + num_test_trials);
 
@@ -65,11 +86,11 @@ if (cover_story==true){
       $('#more-blue').html('Water')
       $('#more-yellow').html('Sand')
       if (social_condition=='social'){
-        var yellow_filepath = '/static/images/more_sand.jpg'
-        var blue_filepath = '/static/images/more_water.jpg'
+        var yellow_filepath = '/static/images/yellow_base_blue_social.jpg'
+        var blue_filepath = '/static/images/blue_base_blue_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var yellow_filepath = '/static/images/more_sand_with_info_base_blue.jpg'
-        var blue_filepath = '/static/images/more_water_with_info_base_blue.jpg'
+        var yellow_filepath = '/static/images/yellow_base_blue_SWI.jpg'
+        var blue_filepath = '/static/images/blue_base_blue_SWI.jpg'
       }
     }
   if (payout_condition=='yellow'){
@@ -85,11 +106,11 @@ if (cover_story==true){
       $('#more-blue').html('Water')
       $('#more-yellow').html('Gold')
       if (social_condition=='social'){
-        var yellow_filepath = '/static/images/more_gold.jpg'
-        var blue_filepath = '/static/images/more_water.jpg'
+        var yellow_filepath = '/static/images/yellow_base_yellow_social.jpg'
+        var blue_filepath = '/static/images/blue_base_yellow_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var yellow_filepath = '/static/images/more_gold_with_info_base_yellow.jpg'
-        var blue_filepath = '/static/images/more_water_with_info_base_yellow.jpg'
+        var yellow_filepath = '/static/images/yellow_base_yellow_SWI.jpg'
+        var blue_filepath = '/static/images/blue_base_yellow_SWI.jpg'
       }
   }
   if (payout_condition=='no-utility'){
@@ -104,8 +125,8 @@ if (cover_story==true){
       $('#more-blue').html('Blue')
       $('#more-yellow').html('Yellow')
       if (social_condition=='social'){
-          var yellow_filepath = '/static/images/more_yellow.jpg'
-          var blue_filepath = '/static/images/more_blue.jpg'
+          var yellow_filepath = '/static/images/yellow_no_cover.jpg'
+          var blue_filepath = '/static/images/blue_no_cover.jpg'
         } else if (social_condition=='social_with_info'){
             // F I G U R E   T H I S   O U T !
       }
@@ -126,23 +147,24 @@ if (cover_story==false){
   $('#more-yellow').html('Yellow')
   if (social_condition=='social_with_info'){
       if (payout_condition=='blue'){
-        var yellow_filepath = '/static/images/more_blue_with_info_base_blue.jpg'
-        var blue_filepath = '/static/images/more_yellow_with_info_base_blue.jpg'
+        var yellow_filepath = '/static/images/yellow_base_blue_no_cover.jpg'
+        var blue_filepath = '/static/images/blue_base_blue_no_cover.jpg'
       } else if (payout_condition=='yellow') {
-        var yellow_filepath = '/static/images/more_blue_with_info_base_yellow.jpg'
-        var blue_filepath = '/static/images/more_yellow_with_info_base_yellow.jpg'
-      } else if (payout_condition='no-utility'){
+        var yellow_filepath = '/static/images/yellow_base_yellow_no_cover.jpg'
+        var blue_filepath = '/static/images/blue_base_yellow_no_cover.jpg'
+      } else if (payout_condition=='no-utility'){
         // F I G U R E   T H I S   O U T !
       }
     }
 
   if (social_condition=='social'){
-      var yellow_filepath = '/static/images/more_blue.jpg'
-      var blue_filepath = '/static/images/more_yellow.jpg'
+      var yellow_filepath = '/static/images/yellow_no_cover.jpg'
+      var blue_filepath = '/static/images/blue_no_cover.jpg'
   }
 }
 
 
+/*
 if (learning_strategy=='social'){
   if (include_numbers==true){
       if (yellow_left==true){
@@ -154,6 +176,7 @@ if (learning_strategy=='social'){
       }
   }
 }
+*/ 
 
 function round(num, places){
   var multiplier = Math.pow(10, places);
@@ -235,7 +258,7 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    if (generation=='0' || condition=='asocial'){
+    if (generation=='0' || social_condition=='asocial'){
       var learning_strategy = "asocial";
     } else{
       var learning_strategy = "social";
@@ -326,7 +349,8 @@ function regenerateDisplay (propBlue) {
   paper = Raphael(horizontalOffset, 300, width, height);
 
   colors = [];
-  colorsRGB = ["#428bca", "#FBB829"];
+  //colorsRGB = ["#428bca", "#FBB829"];
+  colorsRGB = ["#31d3f7","#f7b831"]
 
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
@@ -410,13 +434,13 @@ report = function (color) {
                   trial_num:trial,
                   is_practice:is_practice,
                   payout_condition:payout_condition,
-                  proportion_blue:proportion_blue,
                   social_condition:social_condition,
+                  proportion_blue:proportion_blue,
                   generation: generation,
                   network_id:network_id,
                   node_id: my_node_id,
-                  running_total_points:total_points,
-                  current_points_bonus: accuracy_b+condition_b,
+                  running_total_bonus:total_points,
+                  current_bonus: accuracy_b+condition_b,
                   pre_stimulus_social_info: meme["choice"],
                   participant_id: dallinger.identity.participantId,
                   yellow_left: yellow_left,
@@ -522,7 +546,6 @@ function getBonusAmount(truth,response){
               button_div_str = ''
               for (i=0;i<n_generation_size;i++){
                 curr_sample = sampleWithoutReplacement(choice_array)
-                // console.log(curr_sample)
                 if (curr_sample=='b'){
                   button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
                 } else if (curr_sample=='y'){

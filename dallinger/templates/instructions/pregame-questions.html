@@ -54,9 +54,7 @@
                   </div>
 
                   <div class="row question" id='question-4'>
-
                   </div>
-
 
                   <div class="row question" id='question-5'>
                   </div>
@@ -64,7 +62,6 @@
                   <div class="row question" id='question-6'>
                   </div>
                   
-                  <br>
                   <hr>
                 </div>
 	            {% endblock %}
@@ -99,36 +96,36 @@
     <div id='h3-thing'><h3>Here is some important information to help you get the highest bonus possible:</h3><br></div>
 
     <div id='question-2-wrapper'>
-    <span id="instructions-text-2" style='font-size:19px;'></span>
+    <span id="instructions-text-2" style='font-size:18px;'></span>
     <br>
-    <hr>
+    <br>
     </div>
     <div id='question-3-wrapper'>
-    <span id="instructions-text-3" style='font-size:19px;'></span>
+    <span id="instructions-text-3" style='font-size:18px;'></span>
     <br>
-    <hr>
+    <br>
     </div>
     <div id='question-4-wrapper'>
-    <span id="instructions-text-4" style='font-size:19px;'></span>
+    <span id="instructions-text-4" style='font-size:18px;'></span>
     <br>
-    <hr>
+    <br>
     </div>
     <div id='question-5-wrapper'>
-    <span id="instructions-text-5" style='font-size:19px;'></span>
+    <span id="instructions-text-5" style='font-size:18px;'></span>
     <br>
-    <hr>
+    <br>
     </div>
     <div id='question-6-wrapper'>
-    <span id="instructions-text-6" style='font-size:19px;'></span>
+    <span id="instructions-text-6" style='font-size:18px;'></span>
     <br>
-    <hr>
+    <br>
     </div>
     <div id='question-7-wrapper'>
-        <span id="instructions-text-7" style='font-size:19px;'></span>
+        <span id="instructions-text-7" style='font-size:18px;'></span>
         <br>
-        <hr>
+        <br>
         </div>
-    <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>
+    <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>&nbsp;
 
     </div>
   </font>
@@ -143,18 +140,20 @@
   var cover_story = localStorage.getItem('cover_story')=='true';
   var generation = parseInt(localStorage.getItem('generation'));
   var payout_condition = localStorage.getItem('payout_condition');
-  var social_condition = localStorage.getItem('condition')
-  var include_numbers = localStorage.getItem('include_numbers')
+  var social_condition = localStorage.getItem('social_condition');
+  var include_numbers = localStorage.getItem('include_numbers')=='true';
 
   // hacky but gets the job done
-  if (generation==0 || condition=='asocial'){
+  if (generation==0 || social_condition=='asocial'){
     social_condition='asocial'
     $('#question-7-wrapper').css('display','none')
   }
 
+  /*
   if (social_condition=='social_with_info'){
     $('#h3-thing').html('')
   }
+  */
 
   if (Math.random()<=0.5){
       first = 'blue'
@@ -230,7 +229,7 @@
           $('#question-5-wrapper').css('display','none')
           $('#question-6-wrapper').css('display','none')
       }
-    } else if (social_condition='social_with_info'){
+    } else if (social_condition=='social_with_info'){
       //social with info
       if (payout_condition=='blue'){
         // social with info, no cover story, payout blue
@@ -260,7 +259,7 @@
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div>')
+                  '</select></div><br><br>')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more blue dots or more yellow dots in the image.')
@@ -297,7 +296,7 @@
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div>')
+                  '</select></div><br><br>')
 
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more yellow dots or more blue dots in the image.')
@@ -473,7 +472,7 @@
               $('#question-5-wrapper').css('display','none')
               $('#question-6-wrapper').css('display','none')
           }
-        } else if (social_condition='social_with_info'){
+        } else if (social_condition=='social_with_info'){
           //social with info
           if (payout_condition=='blue'){
             // social with info, with cover story, payout blue
@@ -503,7 +502,7 @@
                           '<option value="3">No</option>'+
                           "<option value='4'>Sometimes</option>"+
                           '<option value="5" SELECTED>None of these options</option>'+
-                      '</select></div>')
+                      '</select></div><br><br>')
     
             $('#instructions-text-2').html('1). On every round, you must judge '+
             'whether there are more water dots or more sand dots in the area.')
@@ -540,7 +539,7 @@
                           '<option value="3">No</option>'+
                           "<option value='4'>Sometimes</option>"+
                           '<option value="5" SELECTED>None of these options</option>'+
-                      '</select></div>')
+                      '</select></div><br><br>')
     
             $('#instructions-text-2').html('1). On every round, you must judge '+
             'whether there are more gold dots or more water dots in the area.')
@@ -651,75 +650,75 @@
   if (include_numbers==true){
     if (payout_condition=='yellow'){
       if (social_condition=='social'){
-      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+      $('#question-6').html('<div class="col-md-8" id="social-info-update">'+
         'After viewing an area, what information will be added to each button?'+
         '</div><br><br>'+
         '<div class="col-md-4">'+
           '<select id="q4" name="q4">'+
             "<option value='2'>A random set of others' decisions in a different area</option>"+
-            "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+            "<option value='1'>The number of participants choosing each option in an equivalent area</option>"+
             '<option value="3">No other information</option>'+
             '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
       $('#instructions-text-7').html('5). After viewing an area, you will view the decisions made by a random set of participants '+
-      'viewing an area with the same number of gold dots and water dots. These decisions will be presented as numbers of votes on each button.')
+      'viewing an area with the same number of gold dots and water dots.')
     } else if (social_condition=='social_with_info'){
-      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+      $('#question-6').html('<div class="col-md-8" id="social-info-update">'+
         'After viewing an area, what information will you get?'+
         '</div><br>'+
         '<div class="col-md-4">'+
           '<select id="q4" name="q4">'+
             "<option value='2'>A random set of others' decisions in a different area</option>"+
-            "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+            "<option value='1'>The number of participants choosing each option in an equivalent area</option>"+
             '<option value="3">No other information</option>'+
             '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
       $('#instructions-text-7').html('6). After viewing an area, you will view the decisions made by a random set of participants '+
-      'viewing an area with the same number of gold dots and water dots. These participants were also paid for gold but not water dots. These decisions will be presented as numbers of votes on each button.')
+      'viewing an area with the same number of gold dots and water dots. These participants were also paid for gold but not water dots.')
     }
   } else if (payout_condition=='blue'){
       if (social_condition=='social'){
-      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+      $('#question-6').html('<div class="col-md-8" id="social-info-update">'+
         'After viewing an area, what information will be added to each button?'+
         '</div><br><br>'+
         '<div class="col-md-4">'+
           '<select id="q4" name="q4">'+
             "<option value='2'>A random set of others' decisions in a different area</option>"+
-            "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+            "<option value='1'>The number of participants choosing each option in an equivalent area</option>"+
             '<option value="3">No other information</option>'+
             '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
       $('#instructions-text-7').html('5). After viewing an area, you will view the decisions made by a random set of participants '+
-      'viewing an area with the same number of water dots and sand dots. These decisions will be presented as numbers of votes on each button.')
+      'viewing an area with the same number of water dots and sand dots.')
     } else if (social_condition=='social_with_info'){
-      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+      $('#question-6').html('<div class="col-md-8" id="social-info-update">'+
         'After viewing an area, what information will you get?'+
         '</div><br>'+
         '<div class="col-md-4">'+
           '<select id="q4" name="q4">'+
             "<option value='2'>A random set of others' decisions in a different area</option>"+
-            "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+            "<option value='1'>The number of participants choosing each option in an equivalent area</option>"+
             '<option value="3">No other information</option>'+
             '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
       $('#instructions-text-7').html('6). After viewing an area, you will view the decisions made by a random set of participants '+
-      'viewing an area with the same number of water dots and sand dots. These participants were also paid for water but not sand dots. These decisions will be presented as numbers of votes on each button.')
+      'viewing an area with the same number of water dots and sand dots. These participants were also paid for water but not sand dots.')
     }
   }
   else if (payout_condition=='no-utility'){
       if (social_condition=='social'){
-      $('#question-6').html('<br><div class="col-md-8" id="social-info-update">'+
+      $('#question-6').html('<><div class="col-md-8" id="social-info-update">'+
         'After viewing an area, what information will be added to each button?'+
         '</div><br><br>'+
         '<div class="col-md-4">'+
           '<select id="q4" name="q4">'+
             "<option value='2'>A random set of others' decisions in a different area</option>"+
-            "<option value='1'>The number of participants choosing that option in an equivalent area</option>"+
+            "<option value='1'>The number of participants choosing each option in an equivalent area</option>"+
             '<option value="3">No other information</option>'+
             '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
       $('#instructions-text-7').html('5). After viewing an area, you will view the decisions made by a random set of participants '+
-      'viewing an area with the same number of '+first+' dots and '+second+' dots. These decisions will be presented as numbers of votes on each button.')
+      'viewing an area with the same number of '+first+' dots and '+second+' dots.')
     } else if (social_condition=='social_with_info'){
       // makes zero sense
     }

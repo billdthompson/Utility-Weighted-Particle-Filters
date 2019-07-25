@@ -31,14 +31,12 @@
             
             .done(function (resp) {
                 var include_numbers = true;
-                localStorage.setItem(include_numbers,include_numbers)
-
-
+                localStorage.setItem('include_numbers',include_numbers)
 
                 localStorage.setItem("node_id",parseInt(resp.node.id));
                 var generation = parseInt(resp.node.property2)
                 localStorage.setItem("generation",generation);
-                localStorage.setItem("social_condition",'social');
+                localStorage.setItem("social_condition",resp.node.property5);
                 var prop_blue = parseFloat(resp.node.property4)
                 localStorage.setItem("prop_blue",prop_blue);
                 localStorage.setItem("trial_type",resp.node.property1);
@@ -46,7 +44,7 @@
                 localStorage.setItem("network_id",network_id);
                 localStorage.setItem("decision_index",parseInt(resp.node.property3));
                 localStorage.setItem("constrained",constrained);
-                console.log('here')
+                console.log(resp.node.property5)
 
                 //var payout_condition = parseInt(resp.node.payout_condition)
                 //localStorage.setItem('payout_condition',payout_condition)
