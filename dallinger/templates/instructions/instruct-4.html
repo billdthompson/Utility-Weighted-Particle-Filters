@@ -34,7 +34,7 @@
     {% block scripts %}
     <script>
 
-        var include_numbers = localStorage.getItem(include_numbers)
+        var include_numbers = localStorage.getItem('include_numbers')=='true';
 
         var social_condition = localStorage.getItem("social_condition"); 
 
@@ -98,7 +98,7 @@
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
                     'water and sand dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
-                } else if (condition=='social_with_info' && generation_num!=0){
+                } else if (social_condition=='social_with_info' && generation_num!=0){
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more water or sand dots. These buttons will also include numbers indicating how many "+
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
