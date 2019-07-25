@@ -35,7 +35,7 @@ class UWPFWP(Experiment):
 	def public_properties(self):
 		return {
 		'generation_size':1, 
-		'generations': 10, 
+		'generations': 1, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
 		'num_practice_networks_per_condition': 4,
@@ -69,7 +69,7 @@ class UWPFWP(Experiment):
 		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
 
 	def set_params(self):
-		self.condition_names = {2:"social_with_info", 0:"asocial", 1:"social"}
+		self.condition_names = {0:"asocial"} # 2:"social_with_info", 1:"social"
 		self.nconditions = len(self.condition_names)
 		self.generation_size = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
@@ -80,7 +80,7 @@ class UWPFWP(Experiment):
 		self.number_of_networks = (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition) * self.nconditions
 		self.nodes_per_generation = self.generation_size * self.nconditions * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
 		self.initial_recruitment_size = self.nconditions * self.generation_size
-		self.bonus_max = 3.70
+		self.bonus_max = 1.
 
 	def assign_conditions_to_networks(self):
 		self.conditions = list(self.condition_names.values()) * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
@@ -344,7 +344,7 @@ class UWPFWP(Experiment):
 			if info.type == "meme":
 				contents = json.loads(info.contents)
 				if contents["is_practice"] == False:
-					totalbonus += contents["current_bonus"]
+					totalbonus += (contents["current_bonus"] / 1000.)
 
 		if totalbonus > self.bonus_max:
 			totalbonus = self.bonus_max
