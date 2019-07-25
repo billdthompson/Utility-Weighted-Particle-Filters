@@ -87,8 +87,8 @@ class UWPFWP(Experiment):
 
 	def assign_proportions_to_networks(self):
 		# proprtions for practice networks
-		# self.practice_network_proportions = [.53, .46, .47, .54]
-		self.practice_network_proportions = [.30, .46, .47, .54]
+		self.practice_network_proportions = [.53, .46, .47, .54]
+		# self.practice_network_proportions = [.30, .46, .47, .54]
 		
 		# proprtions for experimental networks (fixed order and random order)
 		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]

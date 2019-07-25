@@ -46,7 +46,13 @@
                     .done(function (propertiesResp) {
                         
                         //payout_condition = propertiesResp.payout_condition
-                        payout_condition = 'blue'
+                        
+                        /*if (Math.random()<=0.5){
+                            payout_condition = 'blue'
+                        } else{
+                            payout_condition = 'yellow'
+                        }*/
+                        payout_condition='yellow'
                         cover_story = true
 
                         localStorage.setItem("cover_story",cover_story);
