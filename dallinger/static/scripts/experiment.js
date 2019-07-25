@@ -369,7 +369,7 @@ function regenerateDisplay (propBlue) {
 
     // Check if there is overlap with any other dots
     pass = true;
-    for (i = dots.length - 1; i >= 0; i--) {
+    for (i = dots.length - 1; i >= 0; i--) x{
       distance = Math.sqrt(Math.pow(dots[i].attrs.cx - x, 2) + Math.pow(dots[i].attrs.cy - y, 2));
       if (distance < (sizes[i] + r)) {
         pass = false;
@@ -394,15 +394,15 @@ function getBlueDots(propBlue){
 
 function randi(min, max) {
   generation_seed = generation_seed + 0.05;
-  net_decision_index = net_decision_index + 0.05;
-  random_number = (generation_random(generation_seed)+network_random(net_decision_index))/2
+  network_id_seed = network_id_seed + 0.05;
+  random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o){
   generation_seed = generation_seed + 0.05;
-  net_decision_index = net_decision_index + 0.05;
-  random_number = (generation_random(generation_seed)+network_random(net_decision_index))/2
+  network_id_seed = network_id_seed + 0.05;
+  random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
