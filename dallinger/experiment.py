@@ -34,7 +34,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':1, 
+		'generation_size':60, 
 		'generations': 1, 
 		'num_fixed_order_experimental_networks_per_condition': 4,
 		'num_random_order_experimental_networks_per_condition': 4,
@@ -347,6 +347,8 @@ class UWPFWP(Experiment):
 				if contents["is_practice"] == False:
 					totalbonus += (contents["current_bonus"] / 1000.)
 
+		totalbonus = round(totalbonus, 2)
+
 		if totalbonus > self.bonus_max:
 			totalbonus = self.bonus_max
 		return totalbonus
@@ -402,7 +404,7 @@ class UWPFWP(Experiment):
 
 		participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
 
-		return True if (node_count == (self.nodes_per_generation * self.generations) & (participant_count == (self.generation_size * self.generations * self.nconditions))) else False
+		return True if (node_count >= (self.nodes_per_generation * self.generations) & (participant_count >= (self.generation_size * self.generations * self.nconditions))) else False
 
 	# @pysnooper.snoop()
 	def getnet(self, network_id):

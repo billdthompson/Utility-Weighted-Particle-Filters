@@ -4,8 +4,8 @@ auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Yellow Dots (< 7 mins, Bonus up to: $3.60, no mobile please)
-description = Judge blue and yellow dots
+title = Psychology Experiment: Judge Blue and Yellow Dots (< 5 mins, Bonus up to: $0.80, no mobile please)
+description = Judge dot displays
 keywords = Psychology, decision, dots, game
 base_payment = .25
 lifetime = 24
@@ -25,8 +25,8 @@ database_size = standard-2
 
 [Server]
 dyno_type = standard-2x
-num_dynos_web = 3
-num_dynos_worker = 3
+num_dynos_web = 2
+num_dynos_worker = 2
 host = 0.0.0.0
 notification_url = None
 clock_on = false
