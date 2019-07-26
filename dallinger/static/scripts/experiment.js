@@ -893,13 +893,10 @@ function display_earnings(){
     p7_html.innerHTML += '<span class = "computer_number"> $' + total_dollars_str + "</span>"
     p8_html.innerHTML = "Click the button to finish the experiment. Thank you!"
 
-    $(".button-wrapper").css("display", "none");
     $('.outcome').css('text-align','right')
     $('.outcome').css('margin','0 auto')
     $('.outcome').css('width','300px')
     $(".outcome").css("display", "block");
-    $(".button-wrapper").css("text-align", "right");
-    $(".button-wrapper").css("display", "block");
     $("#continue-info").css("text-align", "center");
     
 
