@@ -448,7 +448,7 @@ report = function (color) {
                   generation: generation,
                   network_id:network_id,
                   node_id: my_node_id,
-                  running_total_bonus:total_points,
+                  running_total_pay:total_points,
                   current_bonus: accuracy_b+condition_b,
                   pre_stimulus_social_info: meme["choice"],
                   participant_id: dallinger.identity.participantId,
