@@ -23,6 +23,10 @@ var generation_seed = generation;
 var network_id_seed = network_id;
 var yellow_left = localStorage.getItem('yellow_left')=='true'
 
+var num_test_correct = 0;
+var total_dots = 0;
+var points_per_dot = 1;
+
 
 var constrained = localStorage.getItem('constrained')=='true'
 $('#instructions').css('font-size','19px')
@@ -183,7 +187,7 @@ function round(num, places){
   return Math.round(num * multiplier) / multiplier;
 }
 
-$('#total_earnings').html('Total points: '+total_points.toFixed(0))
+//$('#total_earnings').html('Total points: '+total_points.toFixed(0))
 
 create_agent = function() {
   // console.log("------")
@@ -346,7 +350,7 @@ function regenerateDisplay (propBlue) {
   rMax = 18;
   horizontalOffset = (window.innerWidth - width) / 2;
 
-  paper = Raphael(horizontalOffset, 300, width, height);
+  paper = Raphael(horizontalOffset, 250, width, height);
 
   colors = [];
   //colorsRGB = ["#428bca", "#FBB829"];
@@ -369,7 +373,7 @@ function regenerateDisplay (propBlue) {
 
     // Check if there is overlap with any other dots
     pass = true;
-    for (i = dots.length - 1; i >= 0; i--) x{
+    for (i = dots.length - 1; i >= 0; i--) {
       distance = Math.sqrt(Math.pow(dots[i].attrs.cx - x, 2) + Math.pow(dots[i].attrs.cy - y, 2));
       if (distance < (sizes[i] + r)) {
         pass = false;
@@ -395,7 +399,8 @@ function getBlueDots(propBlue){
 function randi(min, max) {
   generation_seed = generation_seed + 0.05;
   network_id_seed = network_id_seed + 0.05;
-  random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+  //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
@@ -425,6 +430,8 @@ report = function (color) {
   bonuses=getBonusAmount(true_color,color)
   accuracy_b = bonuses[0]
   condition_b = bonuses[1]
+  num_test_correct += accuracy_b
+  total_dots += (condition_b * points_per_dot)
   dotStr = bonuses[2]
   if (is_practice==false){
     total_points += (accuracy_b+condition_b)
@@ -613,57 +620,29 @@ function getBonusAmount(truth,response){
 
 function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus){
 
-  if (cover_story==false){
-    if (payout_condition=='blue'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
-      "</div>")
+  if (trial<=num_practice_trials){
+    if (cover_story==false){
+      if (payout_condition=='blue'){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'numDots'></p>" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot bonus (points): </p> &nbsp;" + 
+        "<hr class='hr_block'>"+
+        "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
+        "</div>")
 
-    } else if (payout_condition=='yellow'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
-      "</div>")
-    } else if (payout_condition=='no-utility'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
-      "</div>")
-    }
-
-  } else{
-    if (payout_condition=='blue'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
-      "</div>")
-    } else if (payout_condition=='yellow'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'></p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
-      "</div>")
+      } else if (payout_condition=='yellow'){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'numDots'></p>" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot bonus (points): </p> &nbsp;" + 
+        "<hr class='hr_block'>"+
+        "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
+        "</div>")
       } else if (payout_condition=='no-utility'){
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
@@ -671,55 +650,90 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
         "</div>")
       }
-    }
 
+    } else{
+      if (payout_condition=='blue'){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'numDots'></p>" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus (points): </p> &nbsp;" + 
+        "<hr class='hr_block'>"+
+        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+        "</div>")
+      } else if (payout_condition=='yellow'){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'numDots'></p>" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus (points): </p> &nbsp;" + 
+        "<hr class='hr_block'>"+
+        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+        "</div>")
+        } else if (payout_condition=='no-utility'){
+          $(".outcome").html("<div class='titleOutcome'>"+
+          "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+          "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+          "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
+          "</div>")
+        }
+      }
 
-  if (response=='yellow'){
+    if (response=='yellow'){
       responseStr = yellowStr
     } else{
       responseStr = blueStr
-  }
-
-  if (truth.indexOf('yellow')!=-1){
-    var true_state = yellowStr
-      } else{
-    var true_state = blueStr
-  }
+    }
   
-  accuracyStr = accuracy_bonus.toFixed(0)
-  conditionStr = condition_bonus.toFixed(0)
-  netStr = (accuracy_bonus+condition_bonus).toFixed(0)
-
-  total_str = total_points.toFixed(0)
-  $('#total_earnings').html('Total points: '+ total_str)
-
-  var p1_html = document.getElementById('topResult');
-  var p2_html = document.getElementById('responseResult');
-  var p3_html = document.getElementById('accuracy');
-  if (payout_condition!='no-utility'){
-    var p4_html = document.getElementById('numDots');
-    var p5_html = document.getElementById('goodAreaPay');
-    var p6_html = document.getElementById('total');
+    if (truth.indexOf('yellow')!=-1){
+      var true_state = yellowStr
+        } else{
+      var true_state = blueStr
+    }
+    
+    accuracyStr = accuracy_bonus.toFixed(0)
+    conditionStr = condition_bonus.toFixed(0)
+    netStr = (accuracy_bonus+condition_bonus).toFixed(0)
+  
+    total_str = total_points.toFixed(0)
+    $('#total_earnings').html('Total points: '+ total_str)
   }
-  p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
-  p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
-  p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
-  if (payout_condition!='no-utility'){
-    p4_html.innerHTML =  dotStr
-    p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
-    p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+
+
+  if (trial<=num_practice_trials){
+    var p1_html = document.getElementById('topResult');
+    var p2_html = document.getElementById('responseResult');
+    var p3_html = document.getElementById('accuracy');
+    if (payout_condition!='no-utility'){
+      var p4_html = document.getElementById('numDots');
+      var p5_html = document.getElementById('goodAreaPay');
+      var p6_html = document.getElementById('total');
+    }
+    p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
+    p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
+    p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
+    if (payout_condition!='no-utility'){
+      p4_html.innerHTML =  dotStr
+      p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
+      p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
+    }
+    $('.outcome').css('text-align','right')
+
+  } else{
+      $('.outcome').css('text-align','center')
+  
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "&nbsp;&nbsp;<p class = 'computer_number' id = 'topResult'> <font size='+2'> Test round " + String(trial-num_practice_trials) + " of " + String(num_test_trials)+ " complete.</font></p></div>")
   }
 
   $('.outcome').css('margin','0 auto')
   $('.outcome').css('width','300px')
-  $('.outcome').css('text-align','right')
   $(".outcome").css("display", "block");
   $(".button-wrapper").css("text-align", "right");
   $(".button-wrapper").css("display", "block");
   $(".center_div").css("display", "none");
-  $('.text_left').css('margin','0 auto')
-  $('.text_left').css('width','200px')
-  $('.text_left').css('text-align','right') 
 
   $('#continue_button').unbind('click').click(function(){
     if (trial==num_practice_trials){
@@ -727,7 +741,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
-        "Points from these rounds will be added to your final pay.</p> ")
+        "Points from these rounds will be added to your final pay."+
+        "<br>Note that unlike the practice rounds, you will not recieve feedback about your score after each round."+
+        "Instead, you will be able to view your earnings at the end of the experiment.</p>")
       $('#topResult').css('font-size','19px')
 
       $('#continue_button').unbind('click').click(function(){
@@ -766,5 +782,28 @@ function display_practice_info(){
           $("#instructions").html("")
           get_social_info();
       });
+}
+
+
+function display_earnings(){
+  $(".outcome").html("")
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('width','300px')
+      $(".outcome").css("display", "block");
+      $(".button-wrapper").css("text-align", "right");
+      $(".button-wrapper").css("display", "block");
+      $('.outcome').css('text-align','center')
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
+        "Points from these rounds will not be added to your final pay.</p> ")
+      $('#topResult').css('font-size','19px')
+      $('#continue_button').unbind('click').click(function(){
+          $(".outcome").css("display", "none");
+          $(".button-wrapper").css("display", "none");
+          $(".outcome").html("")
+          $("#instructions").html("")
+          get_social_info();
+      });
 
 }
+
