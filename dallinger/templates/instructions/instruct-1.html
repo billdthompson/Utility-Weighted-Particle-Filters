@@ -32,7 +32,21 @@
             .done(function (resp) {
                 var include_numbers = true;
                 localStorage.setItem('include_numbers',include_numbers)
+                if (Math.random()<=(1/3)){
+                    payout_condition = 'no-utility'
+                } else{
+                    payout_condition = 'with_utility'
+                }
 
+                if (payout_condition=='with_utility'){
+                    if (Math.random()<=0.5){
+                        payout_condition = 'blue'
+                    } else {
+                        payout_condition = 'yellow'
+                    }
+                }
+                
+                localStorage.setItem("payout_condition",payout_condition);
                 localStorage.setItem("node_id",parseInt(resp.node.id));
                 var generation = parseInt(resp.node.property2)
                 localStorage.setItem("generation",generation);

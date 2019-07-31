@@ -57,8 +57,8 @@
                 $('#story-instructions').html('<p>You have already been paid 250 points as a salary. '+
                 'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
                 'containing more water or more sand. </p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, you will be paid 1 point for every water deposit (blue dot) '+
-                'in the area, regardless of the size of the deposit. Because the water will always be collected, you will get this bonus '+
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every water deposit (blue dot) '+
+                'in the area</b>, regardless of the size of the deposit. Because the water will always be collected, you will get this bonus '+
                 'regardless of whether your judgment is correct. </p>'+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
 
@@ -66,13 +66,15 @@
                 $('#story-instructions').html('<p>You have already been paid 250 points as a salary. '+
                 'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
                 'containing more gold or more water. </p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, you will be paid 1 point for every gold deposit (yellow dot) '+
-                'in the area, regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus '+
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every gold deposit (yellow dot) '+
+                'in the area</b>, regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus '+
                 'regardless of whether your judgment is correct.</p>' +
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='no-utility'){
                 $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
                 'containing more '+first+' or more '+second+' dots. This will be added to the 250 points you earn from completing the experiment.</p>'+
+                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 350 point '+
+                'bonus for completing the experiment.</p> '+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
                 
             }
@@ -80,21 +82,23 @@
             if (payout_condition=='blue'){
                 $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
                 'containing more blue or more yellow dots. This will be added to the 250 points you earn from completing the experiment.</p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, you will be paid 1 point for every blue dot '+
-                'in the image, regardless of the size of the dot. You will get this bonus '+
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every blue dot '+
+                'in the image</b>, regardless of the size of the dot. You will get this bonus '+
                 'regardless of whether your judgment is correct.</p>'+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='yellow'){
                 $('#story-instructions').html('<p>You have already been paid 250 points. '+
                 'On each round, you will get a 50 point bonus if you are correct in judging the image as '+
                 'containing more yellow or more blue dots. </p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, you will be paid 1 point for every yellow dot '+
-                'in the image, regardless of the size of the dot. You will get this bonus '+
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every yellow dot '+
+                'in the image</b>, regardless of the size of the dot. You will get this bonus '+
                 'regardless of whether your judgment is correct.</p>' +
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='no-utility'){
                 $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
                 'containing more '+first+' or more '+second+' dots. This will be added to the 250 points you earn from completing the experiment.</p>'+
+                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 350 point '+
+                'bonus for completing the experiment.</p> '+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             }
         }

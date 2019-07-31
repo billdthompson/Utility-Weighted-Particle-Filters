@@ -439,6 +439,14 @@ report = function (color) {
     total_points += (accuracy_b+condition_b)
   }
 
+  current_bonus = accuracy_b+condition_b
+  if (payout_condition=='no-utility'){
+    if (trial==num_practice_trials+num_test_trials){
+      total_points += 350
+      current_bonus += 350
+    }
+  }
+
   var contents = {choice:color,
                   trial_num:trial,
                   is_practice:is_practice,
@@ -449,7 +457,7 @@ report = function (color) {
                   network_id:network_id,
                   node_id: my_node_id,
                   running_total_pay:total_points,
-                  current_bonus: accuracy_b+condition_b,
+                  current_bonus: current_bonus,
                   pre_stimulus_social_info: meme["choice"],
                   participant_id: dallinger.identity.participantId,
                   yellow_left: yellow_left,
@@ -818,6 +826,7 @@ function display_earnings(){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'numDots'> Completion bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
       "</div>" +
@@ -850,13 +859,14 @@ function display_earnings(){
       "<p class = 'computer_number' id = 'continue_info'></p></div>")
       } else if (payout_condition=='no-utility'){
         $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-      "</div>" +
-      "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-      "<p class = 'computer_number' id = 'continue_info'> </p></div>")
+        "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'numDots'> Completion bonus (points): </p> &nbsp;" + 
+        "<hr class='hr_block'>"+
+        "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
+        "</div>" +
+        "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
+        "<p class = 'computer_number' id = 'continue_info'></p></div>")
       }
     }
   
@@ -869,14 +879,15 @@ function display_earnings(){
       total_str = ((total_dots*points_per_dot)+(num_test_correct*50)).toFixed(0)
       total_dollars_str = (((total_dots*points_per_dot)+(num_test_correct*50))/1000).toFixed(2)
     } else{
-      total_str = (num_test_correct*50).toFixed(0)
-      total_dollars_str = ((num_test_correct*50)/1000).toFixed(2)
+      total_int = (num_test_correct*50)+350
+      total_str = (total_int).toFixed(0)
+      total_dollars_str = (total_int/1000).toFixed(2)
     }
   
     var p1_html = document.getElementById('topResult');
     var p3_html = document.getElementById('accuracy');
+    var p4_html = document.getElementById('numDots');
     if (payout_condition!='no-utility'){
-      var p4_html = document.getElementById('numDots');
       var p5_html = document.getElementById('goodAreaPay');
     }
     var p6_html = document.getElementById('total');
@@ -888,6 +899,8 @@ function display_earnings(){
     if (payout_condition!='no-utility'){
       p4_html.innerHTML +=  '<span class = "computer_number">' + numDots_str + "</span>"
       p5_html.innerHTML += '<span class = "computer_number">' + goodAreaPay_str + "</span>"
+    } else{
+      p4_html.innerHTML += '<span class = "computer_number">350</span>'
     }
     p6_html.innerHTML += '<span class = "computer_number">' + total_str + "</span>"
     p7_html.innerHTML += '<span class = "computer_number"> $' + total_dollars_str + "</span>"
