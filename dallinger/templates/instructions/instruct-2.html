@@ -47,17 +47,12 @@
                         
                         //payout_condition = propertiesResp.payout_condition
                         
-                        if (Math.random()<=0.5){
-                            payout_condition = 'blue'
-                        } else{
-                            payout_condition = 'yellow'
-                        }
                         
                         //payout_condition='yellow'
-                        cover_story = true
+                        cover_story = false
 
                         localStorage.setItem("cover_story",cover_story);
-                        localStorage.setItem("payout_condition",payout_condition);
+                        payout_condition = localStorage.getItem("payout_condition");
                         $('#instruct-2-div').css('visibility','visible')
 
                         if (Math.random()<=0.5){
