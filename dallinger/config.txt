@@ -4,12 +4,12 @@ auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Yellow Dots (< 5 mins, Bonus up to: $0.80, no mobile please)
+title = Psychology Experiment: Judge Blue and Yellow Dots (< 5 mins, Bonus up to: $0.75, no mobile please)
 description = Judge dot displays
 keywords = Psychology, decision, dots, game
 base_payment = .25
 lifetime = 24
-duration = 0.5
+duration = 0.25
 us_only = true
 contact_email_on_error = wdt@princeton.edu
 organization_name = Princeton University
