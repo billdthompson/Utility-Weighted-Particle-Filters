@@ -73,14 +73,14 @@ $('more-blue').hover(function(){
 })
 
 */
-$('#more-yellow').css('background-color','#ffc300')
-$('#more-yellow').css('border-color','#ffc300')
+$('#more-yellow').css('background-color','#009500')
+$('#more-yellow').css('border-color','#009500')
 $('#more-yellow').css('color','#363636')
 $('#more-yellow').css('font-size','16px')
 $('#more-yellow').css('width','90px')
 
-$('#more-blue').css('background-color','#00ffff')
-$('#more-blue').css('border-color','#00ffff')
+$('#more-blue').css('background-color','#0084ff')
+$('#more-blue').css('border-color','#0084ff')
 $('#more-blue').css('color','#363636')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','90px')
@@ -151,16 +151,16 @@ if (cover_story==true){
 
 if (cover_story==false){
   // without story
-  var yellowStr = 'Yellow';
+  var yellowStr = 'Green';
   var blueStr = 'Blue'
   if (yellow_left==true){
-    var instructionsText = 'Are there more yellow dots or more blue dots?';
+    var instructionsText = 'Are there more green dots or more blue dots?';
   } else{
-    var instructionsText = 'Are there more blue dots or more yellow dots?'
+    var instructionsText = 'Are there more blue dots or more green dots?'
   }
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
-  $('#more-yellow').html('Yellow')
+  $('#more-yellow').html('Green')
   if (social_condition=='social_with_info'){
       if (payout_condition=='blue'){
         var yellow_filepath = '/static/images/yellow_base_blue_no_cover.jpg'
@@ -368,7 +368,7 @@ function regenerateDisplay (propBlue) {
   //colorsRGB = ["#428bca", "#FBB829"];
   //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
   //colorsRGB = ['#00ffff','#ffab29']
-  colorsRGB = ['#00ffff','#ffc300']
+  colorsRGB = ['#0084ff','#009500']
 
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
