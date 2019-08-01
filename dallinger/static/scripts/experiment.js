@@ -73,14 +73,14 @@ $('more-blue').hover(function(){
 })
 
 */
-$('#more-green').css('background-color','#ffc300')
-$('#more-green').css('border-color','#ffc300')
+$('#more-green').css('background-color','#009500')
+$('#more-green').css('border-color','#009500')
 $('#more-green').css('color','#363636')
 $('#more-green').css('font-size','16px')
-$('#more-green').css('width','90px')
 
-$('#more-blue').css('background-color','#00ffff')
-$('#more-blue').css('border-color','#00ffff')
+
+$('#more-blue').css('background-color','#0084ff')
+$('#more-blue').css('border-color','#0084ff')
 $('#more-blue').css('color','#363636')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','90px')
@@ -154,6 +154,7 @@ if (cover_story==false){
   var greenStr = 'Green';
   var blueStr = 'Blue'
   if (green_left==true){
+
     var instructionsText = 'Are there more green dots or more blue dots?';
   } else{
     var instructionsText = 'Are there more blue dots or more green dots?'
@@ -161,6 +162,7 @@ if (cover_story==false){
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
   $('#more-green').html('Green')
+
   if (social_condition=='social_with_info'){
       if (payout_condition=='blue'){
         var green_filepath = '/static/images/green_base_blue_no_cover.jpg'
@@ -368,7 +370,7 @@ function regenerateDisplay (propBlue) {
   //colorsRGB = ["#428bca", "#FBB829"];
   //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
   //colorsRGB = ['#00ffff','#ffab29']
-  colorsRGB = ['#00ffff','#ffc300']
+  colorsRGB = ['#0084ff','#009500']
 
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
