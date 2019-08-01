@@ -32,7 +32,7 @@
             .done(function (resp) {
                 var include_numbers = true;
                 localStorage.setItem('include_numbers',include_numbers)
-                if (Math.random()<=(1/3)){
+                /*if (Math.random()<=(1/3)){
                     payout_condition = 'no-utility'
                 } else{
                     payout_condition = 'with_utility'
@@ -44,7 +44,8 @@
                     } else {
                         payout_condition = 'yellow'
                     }
-                }
+                }*/
+                var payout_condition = 'no-utility'
                 
                 localStorage.setItem("payout_condition",payout_condition);
                 localStorage.setItem("node_id",parseInt(resp.node.id));
