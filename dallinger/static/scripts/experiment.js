@@ -53,7 +53,7 @@ function network_random(seed) {
   return x - Math.floor(x);
 }
 
-
+/*
 $('#more-yellow').css('background-color','#F0AD4E')
 $('#more-yellow').css('border-color','#eea236')
 $('#more-blue').css('background-color','#23badb')
@@ -72,6 +72,18 @@ $('more-blue').hover(function(){
   $(this).css('background-color','#23badb')
 })
 
+*/
+$('#more-yellow').css('background-color','#ffdf39')
+$('#more-yellow').css('border-color','#ffdf39')
+$('#more-yellow').css('color','#363636')
+$('#more-yellow').css('font-size','16px')
+$('#more-yellow').css('width','90px')
+
+$('#more-blue').css('background-color','#00ebff')
+$('#more-blue').css('border-color','#00ebff')
+$('#more-blue').css('color','#363636')
+$('#more-blue').css('font-size','16px')
+$('#more-blue').css('width','90px')
 
 $(".center_div").css("display", "none");
 $("#total-trial-number").html(num_practice_trials + num_test_trials);
@@ -354,7 +366,8 @@ function regenerateDisplay (propBlue) {
 
   colors = [];
   //colorsRGB = ["#428bca", "#FBB829"];
-  colorsRGB = ["#31d3f7","#f7b831"]
+  //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
+  colorsRGB = ['#00ebff','#ffdf39']
 
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
