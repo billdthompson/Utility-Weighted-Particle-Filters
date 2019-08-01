@@ -73,14 +73,14 @@ $('more-blue').hover(function(){
 })
 
 */
-$('#more-yellow').css('background-color','#ffdf39')
-$('#more-yellow').css('border-color','#ffdf39')
+$('#more-yellow').css('background-color','#ffc300')
+$('#more-yellow').css('border-color','#ffc300')
 $('#more-yellow').css('color','#363636')
 $('#more-yellow').css('font-size','16px')
 $('#more-yellow').css('width','90px')
 
-$('#more-blue').css('background-color','#00ebff')
-$('#more-blue').css('border-color','#00ebff')
+$('#more-blue').css('background-color','#00ffff')
+$('#more-blue').css('border-color','#00ffff')
 $('#more-blue').css('color','#363636')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','90px')
@@ -367,7 +367,8 @@ function regenerateDisplay (propBlue) {
   colors = [];
   //colorsRGB = ["#428bca", "#FBB829"];
   //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
-  colorsRGB = ['#00ebff','#ffdf39']
+  //colorsRGB = ['#00ffff','#ffab29']
+  colorsRGB = ['#00ffff','#ffc300']
 
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
