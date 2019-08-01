@@ -44,9 +44,9 @@
 
         if (Math.random()<=0.5){
             first = 'blue'
-            second = 'yellow'
+            second = 'green'
         } else{
-            first='yellow'
+            first='green'
             second='blue'
         }
         
@@ -59,7 +59,7 @@
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
                     'This participant viewed an area with the same number of water and sand dots as the one you will see.</p>')
-                } else if (payout_condition=='yellow'){
+                } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of gold and water dots as the one you will see.</p>')
             }
@@ -69,10 +69,10 @@
             if (cover_story==false){
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of blue and yellow dots as the one you will see, and was also paid for blue dots but not yellow dots</p>')
-                } else if (payout_condition=='yellow'){
+            'This participant viewed an image with the same number of blue and green dots as the one you will see, and was also paid for blue dots but not green dots</p>')
+                } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of yellow and blue dots as the one you will see, and was also paid for yellow dots but not blue dots.</p>')
+            'This participant viewed an image with the same number of green and blue dots as the one you will see, and was also paid for green dots but not blue dots.</p>')
                 } else if (payout_condition=='no-utility'){
                     $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
                 }
@@ -80,7 +80,7 @@
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of water and sand dots as the one you will see. This participant was also paid for water but not sand in each area.</p>')
-                } else if (payout_condition=='yellow'){
+                } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
             'This participant viewed an area with the same number of gold and water dots as the one you will see. This participant was also paid for gold but not water in each area.</p>')
             } else if (payout_condition=='no-utility'){
@@ -105,7 +105,7 @@
                     'water and sand dots. These participants were also paid for water but not sand dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 }
-            } else if (payout_condition=='yellow'){
+            } else if (payout_condition=='green'){
                 if (social_condition=='social' && generation_num!=0){
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more gold or water dots. These buttons will also include numbers indicating how many "+

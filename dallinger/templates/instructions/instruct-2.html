@@ -48,7 +48,7 @@
                         //payout_condition = propertiesResp.payout_condition
                         
                         
-                        //payout_condition='yellow'
+                        //payout_condition='green'
                         cover_story = false
 
                         localStorage.setItem("cover_story",cover_story);
@@ -57,9 +57,9 @@
 
                         if (Math.random()<=0.5){
                             first = 'blue'
-                            second = 'yellow'
+                            second = 'green'
                         } else{
-                            first='yellow'
+                            first='green'
                             second='blue'
                         }
                                         
@@ -67,17 +67,17 @@
                             if (payout_condition=="blue"){
                                 $('#story-instructions').html('You work for an imaginary company looking for water in a desert area. '+
                                 'You will observe areas briefly and decide if the area has more water '+
-                                'or more sand. An area has more water if there are more blue dots than yellow, and more sand if there are '+
-                                'more yellow dots than blue. <b>Note that the size of the dots does not matter, only the number. </b> '+
+                                'or more sand. An area has more water if there are more blue dots than green, and more sand if there are '+
+                                'more green dots than blue. <b>Note that the size of the dots does not matter, only the number. </b> '+
                                 "Don't try to count the dots — they will appear too briefly for that. "+
                                 'Instead, you should take your best guess.')
                                 $('#image-paragraph').html('In this area, there is more sand than water.')
 
-                            } else if (payout_condition=='yellow'){ 
+                            } else if (payout_condition=='green'){ 
                                 $('#story-instructions').html('You work for an imaginary company looking for underwater gold. '+
                                 'You will observe areas briefly and decide if the area has more gold '+
-                                'or more water. An area has more gold if there are more yellow dots than blue, and more water if there are ' +
-                                'more blue dots than yellow. <b>Note that the size of the dots does not matter, only the number. </b> '+
+                                'or more water. An area has more gold if there are more green dots than blue, and more water if there are ' +
+                                'more blue dots than green. <b>Note that the size of the dots does not matter, only the number. </b> '+
                                 "Don't bother trying to count the dots — they will appear too briefly for that. " +
                                 'Instead, you should take your best guess.')
                                 $('#image-paragraph').html('In this area, there is more gold than water.')
@@ -87,7 +87,7 @@
                                 '<b>Note that the size of the dots does not matter, only the number. </b>' +
                                 "Don't bother trying to count the dots — they will appear too briefly for that. " +
                                 "Instead, you should take your best guess.")
-                                $('#image-paragraph').html('In this image, there are more yellow dots than blue dots.')
+                                $('#image-paragraph').html('In this image, there are more green dots than blue dots.')
                             }
                         }  else{ // no cover story, same original covery story as no-utility
                             $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
@@ -95,7 +95,7 @@
                                 '<b>Note that the size of the dots does not matter, only the number. </b>' +
                                 "Don't bother trying to count the dots — they will appear too briefly for that. " +
                                 "Instead, you should take your best guess.")
-                                $('#image-paragraph').html('In this image, there are more yellow dots than blue dots.')
+                                $('#image-paragraph').html('In this image, there are more green dots than blue dots.')
                             }
                     })
                     .fail(function (rejection) {

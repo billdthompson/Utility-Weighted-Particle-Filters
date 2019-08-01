@@ -58,41 +58,41 @@ get_received_infos = function() {
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
-      $("#instructions").text("Are there more blue or yellow dots?");
+      $("#instructions").text("Are there more blue or green dots?");
 
       state = info.contents;
       regenerateDisplay(state);
 
       $("#more-blue").addClass('disabled');
-      $("#more-yellow").addClass('disabled');
+      $("#more-green").addClass('disabled');
 
       presentDisplay();
 
       $("#stimulus-stage").show();
       $("#response-form").hide();
-      $("#more-yellow").show();
+      $("#more-green").show();
       $("#more-blue").show();
     }
 
     // Show the participant the hint.
     if (learning_strategy === "social") {
-      $("#instructions").html("Are there more blue or yellow dots?");
+      $("#instructions").html("Are there more blue or green dots?");
 
       $("#more-blue").addClass('disabled');
-      $("#more-yellow").addClass('disabled');
+      $("#more-green").addClass('disabled');
 
       meme = info.contents;
 
       if (meme === "blue") {
         $("#stimulus").attr("src", "/static/images/blue_social.jpg");
-      } else if (meme === "yellow") {
-        $("#stimulus").attr("src", "/static/images/yellow_social.jpg");
+      } else if (meme === "green") {
+        $("#stimulus").attr("src", "/static/images/green_social.jpg");
       }
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
         $("#more-blue").removeClass('disabled');
-        $("#more-yellow").removeClass('disabled');
+        $("#more-green").removeClass('disabled');
         lock = false;
       }, 2000);
     }
@@ -108,7 +108,7 @@ function presentDisplay (argument) {
       dots[i].hide();
     }
     $("#more-blue").removeClass('disabled');
-    $("#more-yellow").removeClass('disabled');
+    $("#more-green").removeClass('disabled');
     lock = false;
     paper.clear();
   }, 1000);
@@ -121,7 +121,7 @@ function regenerateDisplay (state) {
   numDots = 80;
   dots = [];
   blueDots = Math.round(state * numDots);
-  yellowDots = numDots - blueDots;
+  greenDots = numDots - blueDots;
   sizes = [];
   rMin = 10; // The dots' minimum radius.
   rMax = 20;
@@ -135,7 +135,7 @@ function regenerateDisplay (state) {
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
   }
-  for (i = yellowDots - 1; i >= 0; i--) {
+  for (i = greenDots - 1; i >= 0; i--) {
     colors.push(1);
   }
 
@@ -180,7 +180,7 @@ function shuffle(o){
 report = function (color) {
   if (lock === false) {
     $("#more-blue").addClass('disabled');
-    $("#more-yellow").addClass('disabled');
+    $("#more-green").addClass('disabled');
     $("#reproduction").val("");
 
     dallinger.createInfo(my_node_id, {
@@ -188,7 +188,7 @@ report = function (color) {
       info_type: 'Meme'
     }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
-      $("#more-yellow").removeClass('disabled');
+      $("#more-green").removeClass('disabled');
       create_agent();
     });
     lock = true;
@@ -196,9 +196,9 @@ report = function (color) {
 };
 
 $(document).ready(function() {
-  $("#more-yellow").click(function() {
-    console.log("Reported more yellow.");
-    report("yellow");
+  $("#more-green").click(function() {
+    console.log("Reported more green.");
+    report("green");
   });
 
   $("#more-blue").click(function() {
@@ -211,7 +211,7 @@ $(document).ready(function() {
     if(code === 70) { //Enter keycode
       report("blue");
     } else if (code === 74) {
-      report("yellow");
+      report("green");
     }
   });
 });

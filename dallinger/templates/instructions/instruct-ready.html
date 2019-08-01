@@ -60,9 +60,9 @@
 
                                 if (Math.random()<=0.5){
                                     first = 'blue'
-                                    second = 'yellow'
+                                    second = 'green'
                                 } else{
-                                    first='yellow'
+                                    first='green'
                                     second='blue'
         }
                                 
@@ -74,7 +74,7 @@
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were more water dots in one '+
                                             'area does not mean there will be more in the next area.</p>')
-                                    } else if (payout_condition=='yellow'){
+                                    } else if (payout_condition=='green'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                             'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
@@ -94,12 +94,12 @@
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were ' +
                                             'more blue dots on one round does not mean there will be more in the next area.</p>')
-                                        } else if (payout_condition=='yellow'){
+                                        } else if (payout_condition=='green'){
                                             $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                             'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were ' +
-                                            'more yellow dots on one round does not mean there will be more in the next area.</p>')
+                                            'more green dots on one round does not mean there will be more in the next area.</p>')
                                         } else if (payout_condition=='no-utility'){
                                             $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                             'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 

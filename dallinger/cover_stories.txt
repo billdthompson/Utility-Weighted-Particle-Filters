@@ -5,14 +5,14 @@
 -- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
 You work for a company looking for underwater gold. 
 You will observe areas briefly and decide if the area has more water or more gold. 
-An area has more gold if there are more yellow dots than blue, and more water if there are more blue dots than yellow.
+An area has more gold if there are more green dots than blue, and more water if there are more blue dots than green.
 Note that the size of the dots does not matter, only the number. Don't bother trying to count the 
 dots — they will appear too briefly for that. Instead, you should take your best guess.
 
 -- -- -- -- -- -- -- Page 2 -- -- -- -- -- -- --
 You have already been paid $0.25 as a salary.
 On each round, you will get a $0.20 bonus if you are correct in judging the area as containing more gold or more water.
-In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (yellow dot) in the area, 
+In addition to this accuracy bonus, you will be paid $0.005 for every gold deposit (green dot) in the area, 
 regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus 
 regardless of whether you are correct in judging the area as containing more gold or more water.
 
@@ -42,7 +42,7 @@ from the others - just because there was more gold in one area does not mean the
 -- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
 You work for a company looking for water in a desert area. You will observe areas briefly and 
 decide if the area has more water or more sand. An area has more water if there are more blue dots 
-than yellow, and more sand if there are more yellow dots than blue. Note that the size of the dots 
+than green, and more sand if there are more green dots than blue. Note that the size of the dots 
 does not matter, only the number. Don't bother trying to count the dots — they will appear too briefly for that. 
 Instead, you should take your best guess.
 
@@ -79,8 +79,8 @@ there was more water in one area does not mean there will be more in the next ar
 -- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
 You work for a company cleaning a chemical recently spilled in a protected ocean zone. 
 You will observe areas briefly and decide if the areas contain more chemical or more water. 
-An areas has more chemical if there are more yellow dots than blue, and more water if there 
-are more blue dots than yellow. Note that the size of the dots does not matter, only the number. 
+An areas has more chemical if there are more green dots than blue, and more water if there 
+are more blue dots than green. Note that the size of the dots does not matter, only the number. 
 Don't bother trying to count the dots — they will appear too briefly for that. 
 Instead, you should take your best guess.
 
@@ -88,7 +88,7 @@ Instead, you should take your best guess.
 You have already been paid $4.00 to clean the spill. On each round 
 you will get a $0.20 bonus if you are correct in judging the area as containing more 
 chemical or more water.In addition to this accuracy bonus, however, you need to spend 
-$0.005 to clean every chemical spill (yellow dot), regardless of the size of this spill. 
+$0.005 to clean every chemical spill (green dot), regardless of the size of this spill. 
 Because all the chemical needs to be cleaned, you will pay this cost regardless of whether 
 you are correct in judging the area as containing more chemical or more water.
 
@@ -118,8 +118,8 @@ from the others - just because there was more chemical in one area does not mean
 -- -- -- -- -- -- -- Page 1 -- -- -- -- -- -- --
 You work for a company cleaning a chemical recently spilled in a protected desert zone. 
 You will observe areas briefly and decide if the areas contain more chemical or more sand. 
-An areas has more chemical if there are more blue dots than yellow, and more sand if there are 
-more yellow dots than blue. Note that the size of the dots does not matter, only the number. 
+An areas has more chemical if there are more blue dots than green, and more sand if there are 
+more green dots than blue. Note that the size of the dots does not matter, only the number. 
 Don't bother trying to count the dots — they will appear too briefly for that. Instead, you 
 should take your best guess.
 

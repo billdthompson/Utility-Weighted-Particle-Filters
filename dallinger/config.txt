@@ -4,7 +4,7 @@ auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Yellow Dots (< 5 mins, Bonus up to: $0.75, no mobile please)
+title = Psychology Experiment: Judge Blue and Green Dots (< 5 mins, Bonus up to: $0.75, no mobile please)
 description = Judge dot displays
 keywords = Psychology, decision, dots, game
 base_payment = .25

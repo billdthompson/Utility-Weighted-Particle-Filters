@@ -1,5 +1,5 @@
 //
-var n_generation_size, k_chose_blue,k_chose_yellow,choice_array;
+var n_generation_size, k_chose_blue,k_chose_green,choice_array;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -21,7 +21,7 @@ var proportion_blue = parseFloat(localStorage.getItem("prop_blue")); //string/fl
 var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 var generation_seed = generation;
 var network_id_seed = network_id;
-var yellow_left = localStorage.getItem('yellow_left')=='true'
+var green_left = localStorage.getItem('green_left')=='true'
 
 var num_test_correct = 0;
 var total_dots = 0;
@@ -54,13 +54,13 @@ function network_random(seed) {
 }
 
 /*
-$('#more-yellow').css('background-color','#F0AD4E')
-$('#more-yellow').css('border-color','#eea236')
+$('#more-green').css('background-color','#F0AD4E')
+$('#more-green').css('border-color','#eea236')
 $('#more-blue').css('background-color','#23badb')
 $('#more-blue').css('border-color','#18aac9')
 
 
-$('#more-yellow').hover(function(){
+$('#more-green').hover(function(){
   $(this).css('background-color','#ED9C27')
 }, function(){
   $(this).css('background-color','#F0AD4E')
@@ -73,11 +73,11 @@ $('more-blue').hover(function(){
 })
 
 */
-$('#more-yellow').css('background-color','#ffc300')
-$('#more-yellow').css('border-color','#ffc300')
-$('#more-yellow').css('color','#363636')
-$('#more-yellow').css('font-size','16px')
-$('#more-yellow').css('width','90px')
+$('#more-green').css('background-color','#ffc300')
+$('#more-green').css('border-color','#ffc300')
+$('#more-green').css('color','#363636')
+$('#more-green').css('font-size','16px')
+$('#more-green').css('width','90px')
 
 $('#more-blue').css('background-color','#00ffff')
 $('#more-blue').css('border-color','#00ffff')
@@ -91,57 +91,57 @@ $("#total-trial-number").html(num_practice_trials + num_test_trials);
 if (cover_story==true){
   if (payout_condition=='blue'){
       // with story, payout blue
-      var yellowStr = 'Sand';
+      var greenStr = 'Sand';
       var blueStr = 'Water'
-      if (yellow_left==true){
+      if (green_left==true){
         var instructionsText = 'Are there more sand dots or more water dots?'
       } else{
         var instructionsText = 'Are there more water dots or more sand dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
-      $('#more-yellow').html('Sand')
+      $('#more-green').html('Sand')
       if (social_condition=='social'){
-        var yellow_filepath = '/static/images/yellow_base_blue_social.jpg'
+        var green_filepath = '/static/images/green_base_blue_social.jpg'
         var blue_filepath = '/static/images/blue_base_blue_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var yellow_filepath = '/static/images/yellow_base_blue_SWI.jpg'
+        var green_filepath = '/static/images/green_base_blue_SWI.jpg'
         var blue_filepath = '/static/images/blue_base_blue_SWI.jpg'
       }
     }
-  if (payout_condition=='yellow'){
-      // with story, payout yellow
-      var yellowStr = 'Gold';
+  if (payout_condition=='green'){
+      // with story, payout green
+      var greenStr = 'Gold';
       var blueStr = 'Water'
-      if (yellow_left==true){
+      if (green_left==true){
         var instructionsText = 'Are there more gold dots or more water dots?'
       } else{
         var instructionsText = 'Are there more water dots or more gold dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
-      $('#more-yellow').html('Gold')
+      $('#more-green').html('Gold')
       if (social_condition=='social'){
-        var yellow_filepath = '/static/images/yellow_base_yellow_social.jpg'
-        var blue_filepath = '/static/images/blue_base_yellow_social.jpg'
+        var green_filepath = '/static/images/green_base_green_social.jpg'
+        var blue_filepath = '/static/images/blue_base_green_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var yellow_filepath = '/static/images/yellow_base_yellow_SWI.jpg'
-        var blue_filepath = '/static/images/blue_base_yellow_SWI.jpg'
+        var green_filepath = '/static/images/green_base_green_SWI.jpg'
+        var blue_filepath = '/static/images/blue_base_green_SWI.jpg'
       }
   }
   if (payout_condition=='no-utility'){
-      var yellowStr = 'Yellow';
+      var greenStr = 'Green';
       var blueStr = 'Blue'
-      if (yellow_left==true){
-        var instructionsText = 'Are there more yellow dots or more blue dots?'
+      if (green_left==true){
+        var instructionsText = 'Are there more green dots or more blue dots?'
       } else{
-        var instructionsText = 'Are there more blue dots or more yellow dots?'
+        var instructionsText = 'Are there more blue dots or more green dots?'
       } 
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Blue')
-      $('#more-yellow').html('Yellow')
+      $('#more-green').html('Green')
       if (social_condition=='social'){
-          var yellow_filepath = '/static/images/yellow_no_cover.jpg'
+          var green_filepath = '/static/images/green_no_cover.jpg'
           var blue_filepath = '/static/images/blue_no_cover.jpg'
         } else if (social_condition=='social_with_info'){
             // F I G U R E   T H I S   O U T !
@@ -151,30 +151,30 @@ if (cover_story==true){
 
 if (cover_story==false){
   // without story
-  var yellowStr = 'Yellow';
+  var greenStr = 'Green';
   var blueStr = 'Blue'
-  if (yellow_left==true){
-    var instructionsText = 'Are there more yellow dots or more blue dots?';
+  if (green_left==true){
+    var instructionsText = 'Are there more green dots or more blue dots?';
   } else{
-    var instructionsText = 'Are there more blue dots or more yellow dots?'
+    var instructionsText = 'Are there more blue dots or more green dots?'
   }
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
-  $('#more-yellow').html('Yellow')
+  $('#more-green').html('Green')
   if (social_condition=='social_with_info'){
       if (payout_condition=='blue'){
-        var yellow_filepath = '/static/images/yellow_base_blue_no_cover.jpg'
+        var green_filepath = '/static/images/green_base_blue_no_cover.jpg'
         var blue_filepath = '/static/images/blue_base_blue_no_cover.jpg'
-      } else if (payout_condition=='yellow') {
-        var yellow_filepath = '/static/images/yellow_base_yellow_no_cover.jpg'
-        var blue_filepath = '/static/images/blue_base_yellow_no_cover.jpg'
+      } else if (payout_condition=='green') {
+        var green_filepath = '/static/images/green_base_green_no_cover.jpg'
+        var blue_filepath = '/static/images/blue_base_green_no_cover.jpg'
       } else if (payout_condition=='no-utility'){
         // F I G U R E   T H I S   O U T !
       }
     }
 
   if (social_condition=='social'){
-      var yellow_filepath = '/static/images/yellow_no_cover.jpg'
+      var green_filepath = '/static/images/green_no_cover.jpg'
       var blue_filepath = '/static/images/blue_no_cover.jpg'
   }
 }
@@ -183,11 +183,11 @@ if (cover_story==false){
 /*
 if (learning_strategy=='social'){
   if (include_numbers==true){
-      if (yellow_left==true){
-          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+yellowStr+" and "+blueStr+" dots."
+      if (green_left==true){
+          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+greenStr+" and "+blueStr+" dots."
           $('#instructions').html(instructionsText)
       } else{
-          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+blueStr+" and "+yellowStr+" dots."
+          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+blueStr+" and "+greenStr+" dots."
           $('#instructions').html(instructionsText)
       }
   }
@@ -288,7 +288,7 @@ get_received_infos = function() {
       //console.log(proportion_blue)
 
       $("#more-blue").addClass('disabled');
-      $("#more-yellow").addClass('disabled');
+      $("#more-green").addClass('disabled');
 
       presentDisplay();
   
@@ -303,15 +303,15 @@ get_received_infos = function() {
 
       if (meme["choice"] === "blue") {
         $("#stimulus").attr("src", blue_filepath);
-      } else if (meme["choice"] === "yellow") {
-        $("#stimulus").attr("src", yellow_filepath);
+      } else if (meme["choice"] === "green") {
+        $("#stimulus").attr("src", green_filepath);
       }
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
         $("#instructions").text(instructionsText);
         // $("#more-blue").removeClass('disabled');
-        // $("#more-yellow").removeClass('disabled');
+        // $("#more-green").removeClass('disabled');
         regenerateDisplay(proportion_blue);
         presentDisplay();
       }, 4000);
@@ -339,7 +339,7 @@ function presentDisplay () {
     } 
     if (learning_strategy=='asocial'){
       $("#more-blue").removeClass('disabled');
-      $("#more-yellow").removeClass('disabled');
+      $("#more-green").removeClass('disabled');
     } else{
       $("#instructions").show()
       $("#button-div").show()
@@ -356,7 +356,7 @@ function regenerateDisplay (propBlue) {
   numDots = 100;
   dots = [];
   blueDots = Math.round(propBlue * numDots);
-  yellowDots = numDots - blueDots;
+  greenDots = numDots - blueDots;
   sizes = [];
   rMin = 8; // The dots' minimum radius.
   rMax = 18;
@@ -373,7 +373,7 @@ function regenerateDisplay (propBlue) {
   for (var i = blueDots - 1; i >= 0; i--) {
     colors.push(0);
   }
-  for (i = yellowDots - 1; i >= 0; i--) {
+  for (i = greenDots - 1; i >= 0; i--) {
     colors.push(1);
   }
 
@@ -430,7 +430,7 @@ function correctStr(){
   if (proportion_blue>0.5){
     return 'blue'
   } else{
-    return 'yellow'
+    return 'green'
   }
 }
 
@@ -438,7 +438,7 @@ function correctStr(){
 report = function (color) {
   paper.clear();
   $("#more-blue").addClass('disabled');
-  $("#more-yellow").addClass('disabled');
+  $("#more-green").addClass('disabled');
   $("#reproduction").val("");
   true_color = correctStr()
   bonuses=getBonusAmount(true_color,color)
@@ -474,17 +474,17 @@ report = function (color) {
                   current_bonus: current_bonus,
                   pre_stimulus_social_info: meme["choice"],
                   participant_id: dallinger.identity.participantId,
-                  yellow_left: yellow_left,
+                  green_left: green_left,
                   net_decision_index: net_decision_index,
                   k_chose_blue: k_chose_blue,
-                  k_chose_yellow: k_chose_yellow}
+                  k_chose_green: k_chose_green}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
     info_type: 'Meme'
   }).done(function (resp) {
       $("#more-blue").removeClass('disabled');
-      $("#more-yellow").removeClass('disabled');
+      $("#more-green").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
       updateResponseHTML(true_color,color,dotStr,accuracy_b,condition_b)
@@ -501,9 +501,9 @@ report = function (color) {
 };
 
 $(document).ready(function() {
-  $(".chose-yellow").click(function() {
-    // console.log("Reported more yellow.");
-    report("yellow");
+  $(".chose-green").click(function() {
+    // console.log("Reported more green.");
+    report("green");
   });
 
   $(".chose-blue").click(function() {
@@ -515,12 +515,12 @@ $(document).ready(function() {
 
 
 function getBonusAmount(truth,response){
-    // truth is a string: 'yellow' or 'blue'
-  // response also a string: 'yellow' or 'blue'
+    // truth is a string: 'green' or 'blue'
+  // response also a string: 'green' or 'blue'
   // isBluePayout is boolean
   
-  if (truth == 'yellow'){
-    if (response=="yellow"){
+  if (truth == 'green'){
+    if (response=="green"){
         var accuracy_bonus = 50;
     } else {                                                           
         var accuracy_bonus = 0;
@@ -533,15 +533,15 @@ function getBonusAmount(truth,response){
       }
   }
   var numBlue = getBlueDots(proportion_blue);
-  var numYellow = 100-numBlue;
+  var numGreen = 100-numBlue;
 
   if (cover_story==true){
     if (payout_condition=='blue'){
       dotStr = 'This area has <span>' + numBlue + '</span> water dots'
       condition_bonus = numBlue;
-    } else if (payout_condition=='yellow'){
-      dotStr = 'This area has <span>' + numYellow + '</span> gold dots'
-      condition_bonus = numYellow;
+    } else if (payout_condition=='green'){
+      dotStr = 'This area has <span>' + numGreen + '</span> gold dots'
+      condition_bonus = numGreen;
     } else if (payout_condition=='no-utility'){
       dotStr = ''
       condition_bonus=0
@@ -550,9 +550,9 @@ function getBonusAmount(truth,response){
     if (payout_condition=='blue'){
       dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
       condition_bonus = numBlue;
-    } else if (payout_condition=='yellow'){
-      dotStr = 'This image has <span>' + numYellow + '</span> yellow dots'
-      condition_bonus = numYellow;
+    } else if (payout_condition=='green'){
+      dotStr = 'This image has <span>' + numGreen + '</span> green dots'
+      condition_bonus = numGreen;
     } else if (payout_condition=='no-utility'){
       dotStr = ''
       condition_bonus=0
@@ -568,26 +568,26 @@ function getBonusAmount(truth,response){
         .done(function (particlesResponse) {
           n_generation_size = parseInt(particlesResponse.n)
           k_chose_blue = parseInt(particlesResponse.k)
-          k_chose_yellow = n_generation_size-k_chose_blue
+          k_chose_green = n_generation_size-k_chose_blue
           if (learning_strategy=='social'){
             if (constrained==true){
               blue_array = Array(k_chose_blue).fill('b')
-              yellow_array = Array(k_chose_yellow).fill('y')
-              choice_array = blue_array.concat(yellow_array)
+              green_array = Array(k_chose_green).fill('y')
+              choice_array = blue_array.concat(green_array)
               button_div_str = ''
               for (i=0;i<n_generation_size;i++){
                 curr_sample = sampleWithoutReplacement(choice_array)
                 if (curr_sample=='b'){
                   button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
                 } else if (curr_sample=='y'){
-                  button_div_str += ' <button type="button" class="btn btn-primary chose-yellow">'+yellowStr+'</button>'
+                  button_div_str += ' <button type="button" class="btn btn-primary chose-green">'+greenStr+'</button>'
                 }
               }
               $('#button-div').html(button_div_str)
-              $('.chose-yellow').css('background-color','#F0AD4E')
-              $('.chose-yellow').css('border-color','#eea236')
+              $('.chose-green').css('background-color','#F0AD4E')
+              $('.chose-green').css('border-color','#eea236')
               $('.chose-blue').css('background-color','#428BC9')
-              $('.chose-yellow').hover(function(){
+              $('.chose-green').hover(function(){
                 $(this).css('background-color','#ED9C27')
               }, function(){
                 $(this).css('background-color','#F0AD4E')
@@ -605,19 +605,19 @@ function getBonusAmount(truth,response){
               } else{
                 blue_vote_str = ' votes)'
               }
-              if (k_chose_yellow==1){
-                yellow_vote_str = ' vote)'
+              if (k_chose_green==1){
+                green_vote_str = ' vote)'
               } else{
-                yellow_vote_str = ' votes)'
+                green_vote_str = ' votes)'
               }
 
               $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + blue_vote_str)
-              $('#more-yellow').html(yellowStr + ' (' + String(k_chose_yellow) + yellow_vote_str)
+              $('#more-green').html(greenStr + ' (' + String(k_chose_green) + green_vote_str)
             }
            
-            $(".chose-yellow").unbind('click').click(function() {
-              // console.log("Reported more yellow.");
-              report("yellow");
+            $(".chose-green").unbind('click').click(function() {
+              // console.log("Reported more green.");
+              report("green");
             });
             $(".chose-blue").unbind('click').click(function() {
               // console.log("Reported more blue.");
@@ -657,13 +657,13 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
         "</div>")
 
-      } else if (payout_condition=='yellow'){
+      } else if (payout_condition=='green'){
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
         "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Yellow dot bonus (points): </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Green dot bonus (points): </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
         "</div>")
@@ -686,7 +686,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
-      } else if (payout_condition=='yellow'){
+      } else if (payout_condition=='green'){
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
@@ -705,14 +705,14 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         }
       }
 
-    if (response=='yellow'){
-      responseStr = yellowStr
+    if (response=='green'){
+      responseStr = greenStr
     } else{
       responseStr = blueStr
     }
   
-    if (truth.indexOf('yellow')!=-1){
-      var true_state = yellowStr
+    if (truth.indexOf('green')!=-1){
+      var true_state = greenStr
         } else{
       var true_state = blueStr
     }
@@ -825,12 +825,12 @@ function display_earnings(){
       "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
       "<p class = 'computer_number' id = 'continue_info'></p></div>")
   
-    } else if (payout_condition=='yellow'){
+    } else if (payout_condition=='green'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total yellow dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total yellow dot bonus (points): </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'> Total green dot number:  </p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'> Total green dot bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
       "</div>" +
@@ -860,7 +860,7 @@ function display_earnings(){
       "</div>" +
       "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
       "<p class = 'computer_number' id = 'continue_info'></p></div>")
-    } else if (payout_condition=='yellow'){
+    } else if (payout_condition=='green'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
