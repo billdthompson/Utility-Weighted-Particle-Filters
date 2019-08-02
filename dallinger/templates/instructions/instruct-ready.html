@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-xs-10"></div>
                 <div class="col-xs-2">
-                        <button type="button" class="btn btn-success btn-lg" onClick="advance();">
+                        <button type="button" class="btn btn-success btn-lg" id='next_button' onClick="advance();">
                     Begin</button>
                 </div>
             </div>
@@ -24,6 +24,11 @@
 
 {% block scripts %}
 <script>
+
+    $('#next_button').css('background-color','#5c5c5c')
+    $('#next_button').css('border','none')
+    $('#next_button').css('outline','none')
+
     function advance(){
         dallinger.goToPage('instructions/pregame-questions')
     }
@@ -81,29 +86,29 @@
                                             '<p>Each round is different from the others - just because there were more gold dots in one '+
                                             'area does not mean there will be more in the next area.</p>')
                                     } else if (payout_condition=='no-utility'){
-                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
+                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were more '+first+' or '+second+' dots in one '+
                                             'round does not mean this will hold on the next round.</p>')
                                     }
                                     } else{ // no cover story
                                         if (payout_condition=='blue'){
-                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
+                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were ' +
                                             'more blue dots on one round does not mean there will be more in the next area.</p>')
                                         } else if (payout_condition=='green'){
-                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
+                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were ' +
                                             'more green dots on one round does not mean there will be more in the next area.</p>')
                                         } else if (payout_condition=='no-utility'){
-                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
+                                            $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
+                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
                                             '<p>Each round is different from the others - just because there were more '+first+' or '+second+' dots in one '+
                                             'image does not mean this will hold on the next round.</p>')
                                         }

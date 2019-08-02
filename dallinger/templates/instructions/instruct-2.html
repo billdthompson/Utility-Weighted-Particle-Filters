@@ -11,7 +11,7 @@
         
         <p id =>Here is an example of what you might see:</p>
         <div class="centering_div">
-            <img class="stimulus_image" src="/static/images/another_demo.png" width="400" alt=""/>
+            <img class="stimulus_image" src="/static/images/demo_green.png" width="450" alt=""/>
         </div>
         &nbsp;
         <p id ='image-paragraph'></p>
@@ -25,7 +25,7 @@
                     <div class="col-xs-8">
                     </div>
                     <div class="col-xs-2">
-                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        <button type="button" class="btn btn-primary btn-lg" id='next_button' onClick="advance();">
                         Next
                         </button>
                     </div>
@@ -36,6 +36,10 @@
 
     {% block scripts %}
     <script>
+
+        $('#next_button').css('background-color','#5c5c5c')
+        $('#next_button').css('border','none')
+        $('#next_button').css('outline','none')
 
         var cover_story, payout_condition
         

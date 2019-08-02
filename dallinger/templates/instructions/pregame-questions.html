@@ -125,7 +125,7 @@
         <br>
         <br>
         </div>
-    <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-next" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>&nbsp;
+    <div align="right"><button type="button" class="btn btn-primary btn-lg continue" id="instructions-fail" onClick="showQuestions()"><font size="+1">Try again</font> &raquo;</button></div>&nbsp;
 
     </div>
   </font>
@@ -133,6 +133,19 @@
 
 {% block scripts %}
   <script type="text/javascript">
+
+  $('#submit-pregame-questions').css('background-color','#5c5c5c')
+  $('#submit-pregame-questions').css('border','none')
+  $('#submit-pregame-questions').css('outline','none')
+
+  $('#instructions-next').css('background-color','#5c5c5c')
+  $('#instructions-next').css('border','none')
+  $('#instructions-next').css('outline','none')
+
+  $('#instructions-fail').css('background-color','#5c5c5c')
+  $('#instructions-fail').css('border','none')
+  $('#instructions-fail').css('outline','none')
+
 
   var num_failed = 0;
   var max_num_failed = 3;

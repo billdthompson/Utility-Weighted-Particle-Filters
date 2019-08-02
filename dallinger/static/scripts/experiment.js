@@ -27,6 +27,10 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+$('#continue_button').css('background-color','#5c5c5c')
+$('#continue_button').css('border','none')
+$('#continue_button').css('outline','none')
+
 
 var constrained = localStorage.getItem('constrained')=='true'
 $('#instructions').css('font-size','19px')
@@ -75,13 +79,12 @@ $('more-blue').hover(function(){
 */
 $('#more-green').css('background-color','#009500')
 $('#more-green').css('border-color','#009500')
-$('#more-green').css('color','#363636')
 $('#more-green').css('font-size','16px')
+$('#more-green').css('width','90px')
 
 
 $('#more-blue').css('background-color','#0084ff')
 $('#more-blue').css('border-color','#0084ff')
-$('#more-blue').css('color','#363636')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','90px')
 
@@ -284,13 +287,15 @@ get_received_infos = function() {
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
+      $("#instructions").hide()
+      $("#button-div").hide()
 
       $("#instructions").text(instructionsText);
       regenerateDisplay(proportion_blue);
       //console.log(proportion_blue)
 
-      $("#more-blue").addClass('disabled');
-      $("#more-green").addClass('disabled');
+      //$("#more-blue").addClass('disabled');
+      //$("#more-green").addClass('disabled');
 
       presentDisplay();
   
@@ -339,13 +344,10 @@ function presentDisplay () {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
     } 
-    if (learning_strategy=='asocial'){
-      $("#more-blue").removeClass('disabled');
-      $("#more-green").removeClass('disabled');
-    } else{
-      $("#instructions").show()
-      $("#button-div").show()
-    }
+    //$("#more-blue").removeClass('disabled');
+    //$("#more-green").removeClass('disabled');
+    $("#instructions").show()
+    $("#button-div").show()
     // console.log("clearing paper")
     paper.clear();
   }, 1000);
@@ -439,8 +441,8 @@ function correctStr(){
 
 report = function (color) {
   paper.clear();
-  $("#more-blue").addClass('disabled');
-  $("#more-green").addClass('disabled');
+  //$("#more-blue").addClass('disabled');
+  //$("#more-green").addClass('disabled');
   $("#reproduction").val("");
   true_color = correctStr()
   bonuses=getBonusAmount(true_color,color)
@@ -485,8 +487,8 @@ report = function (color) {
     contents: JSON.stringify(contents),
     info_type: 'Meme'
   }).done(function (resp) {
-      $("#more-blue").removeClass('disabled');
-      $("#more-green").removeClass('disabled');
+      //$("#more-blue").removeClass('disabled');
+      //$("#more-green").removeClass('disabled');
       $("#instructions").html("")
       $("#instructions").hide()
       updateResponseHTML(true_color,color,dotStr,accuracy_b,condition_b)
