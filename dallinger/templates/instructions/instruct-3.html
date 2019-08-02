@@ -15,14 +15,14 @@
         <div>
                 <div class="row">
                     <div class="col-xs-2">
-                        <button type="button" class="btn btn-primary btn-lg" onClick="reverse();">
+                        <button type="button" class="btn btn-primary btn-lg" id='previous_button' onClick="reverse();">
                         Previous
                         </button>
                     </div>
                     <div class="col-xs-8">
                     </div>
                     <div class="col-xs-2">
-                        <button type="button" class="btn btn-primary btn-lg" onClick="advance();">
+                        <button type="button" class="btn btn-primary btn-lg" id='next_button' onClick="advance();">
                         Next
                         </button>
                     </div>
@@ -33,6 +33,17 @@
 
     {% block scripts %}
     <script>
+        $('#next_button').css('background-color','#5c5c5c')
+        $('#next_button').css('border','none')
+        $('#next_button').css('outline','none')
+
+        $('#previous_button').css('background-color','#5c5c5c')
+        $('#previous_button').css('border','none')
+        $('#previous_button').css('outline','none')
+
+
+
+
         var social_condition = localStorage.getItem("social_condition");      
         var generation = parseInt(localStorage.getItem("generation"));     
         var cover_story = localStorage.getItem("cover_story")=='true';    
