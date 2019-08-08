@@ -40,16 +40,22 @@
                     payout_condition = 'no-utility'
                 } else{
                     payout_condition = 'with_utility'
-                }
+                }*/
 
-                if (payout_condition=='with_utility'){
+                /*if (payout_condition=='with_utility'){
                     if (Math.random()<=0.5){
                         payout_condition = 'blue'
                     } else {
                         payout_condition = 'green'
                     }
                 }*/
-                var payout_condition = 'no-utility'
+                //var payout_condition = 'no-utility'
+
+                if (Math.random()<=0.5){
+                    payout_condition = 'blue'
+                } else {
+                    payout_condition = 'green'
+                }
                 
                 localStorage.setItem("payout_condition",payout_condition);
                 localStorage.setItem("node_id",parseInt(resp.node.id));

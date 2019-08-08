@@ -56,7 +56,7 @@
 
                                 // look at figuring out this stuff exactly and/or calling it from back end
                                 if (payout_condition=='no-utility'){
-                                    var max_bonus = num_test*(0.05)+0.35
+                                    var max_bonus = num_test*(0.05)+0.4
                                     var max_bonus = max_bonus.toFixed(2)
                                 } else{
                                     var max_bonus = num_test*(0.1)
@@ -77,13 +77,13 @@
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                             'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more water dots in one '+
+                                            '<p>Each round is different from the others - just because there were more sapphire dots in one '+
                                             'area does not mean there will be more in the next area.</p>')
                                     } else if (payout_condition=='green'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
                                             'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more gold dots in one '+
+                                            '<p>Each round is different from the others - just because there were more emerald dots in one '+
                                             'area does not mean there will be more in the next area.</p>')
                                     } else if (payout_condition=='no-utility'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+

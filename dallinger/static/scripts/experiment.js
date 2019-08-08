@@ -94,16 +94,16 @@ $("#total-trial-number").html(num_practice_trials + num_test_trials);
 if (cover_story==true){
   if (payout_condition=='blue'){
       // with story, payout blue
-      var greenStr = 'Sand';
-      var blueStr = 'Water'
+      var greenStr = 'Grass';
+      var blueStr = 'Sapphire'
       if (green_left==true){
-        var instructionsText = 'Are there more sand dots or more water dots?'
+        var instructionsText = 'Are there more grass dots or more sapphire dots?'
       } else{
-        var instructionsText = 'Are there more water dots or more sand dots?'
+        var instructionsText = 'Are there more sapphire dots or more grass dots?'
       }
       $('#instructions').html(instructionsText)
-      $('#more-blue').html('Water')
-      $('#more-green').html('Sand')
+      $('#more-blue').html('Sapphire')
+      $('#more-green').html('Grass')
       if (social_condition=='social'){
         var green_filepath = '/static/images/green_base_blue_social.jpg'
         var blue_filepath = '/static/images/blue_base_blue_social.jpg'
@@ -114,16 +114,16 @@ if (cover_story==true){
     }
   if (payout_condition=='green'){
       // with story, payout green
-      var greenStr = 'Gold';
+      var greenStr = 'Emerald';
       var blueStr = 'Water'
       if (green_left==true){
-        var instructionsText = 'Are there more gold dots or more water dots?'
+        var instructionsText = 'Are there more emerald dots or more water dots?'
       } else{
-        var instructionsText = 'Are there more water dots or more gold dots?'
+        var instructionsText = 'Are there more water dots or more emerald dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
-      $('#more-green').html('Gold')
+      $('#more-green').html('Emerald')
       if (social_condition=='social'){
         var green_filepath = '/static/images/green_base_green_social.jpg'
         var blue_filepath = '/static/images/blue_base_green_social.jpg'
@@ -460,8 +460,8 @@ report = function (color) {
   current_bonus = accuracy_b+condition_b
   if (payout_condition=='no-utility'){
     if (trial==num_practice_trials+num_test_trials){
-      total_points += 350
-      current_bonus += 350
+      total_points += 400
+      current_bonus += 400
     }
   }
 
@@ -541,10 +541,10 @@ function getBonusAmount(truth,response){
 
   if (cover_story==true){
     if (payout_condition=='blue'){
-      dotStr = 'This area has <span>' + numBlue + '</span> water dots'
+      dotStr = 'This area has <span>' + numBlue + '</span> sapphire dots'
       condition_bonus = numBlue;
     } else if (payout_condition=='green'){
-      dotStr = 'This area has <span>' + numGreen + '</span> gold dots'
+      dotStr = 'This area has <span>' + numGreen + '</span> emerald dots'
       condition_bonus = numGreen;
     } else if (payout_condition=='no-utility'){
       dotStr = ''
@@ -686,7 +686,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
         "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Water bonus (points): </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Sapphire bonus (points): </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
@@ -696,7 +696,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
         "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Gold bonus (points): </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald bonus (points): </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
@@ -857,8 +857,8 @@ function display_earnings(){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total water dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total water dot bonus (points): </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'> Total sapphire dot number:  </p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'> Total sapphire dot bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
       "</div>" +
@@ -868,8 +868,8 @@ function display_earnings(){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
       "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total gold dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total gold dot bonus (points): </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'> Total emerald dot number:  </p>" + 
+      "<p class = 'computer_number' id = 'goodAreaPay'> Total emerald dot bonus (points): </p> &nbsp;" + 
       "<hr class='hr_block'>"+
       "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
       "</div>" +
@@ -897,7 +897,7 @@ function display_earnings(){
       total_str = ((total_dots*points_per_dot)+(num_test_correct*50)).toFixed(0)
       total_dollars_str = (((total_dots*points_per_dot)+(num_test_correct*50))/1000).toFixed(2)
     } else{
-      total_int = (num_test_correct*50)+350
+      total_int = (num_test_correct*50)+400
       total_str = (total_int).toFixed(0)
       total_dollars_str = (total_int/1000).toFixed(2)
     }
@@ -918,7 +918,7 @@ function display_earnings(){
       p4_html.innerHTML +=  '<span class = "computer_number">' + numDots_str + "</span>"
       p5_html.innerHTML += '<span class = "computer_number">' + goodAreaPay_str + "</span>"
     } else{
-      p4_html.innerHTML += '<span class = "computer_number">350</span>'
+      p4_html.innerHTML += '<span class = "computer_number">400</span>'
     }
     p6_html.innerHTML += '<span class = "computer_number">' + total_str + "</span>"
     p7_html.innerHTML += '<span class = "computer_number"> $' + total_dollars_str + "</span>"

@@ -67,35 +67,36 @@
             if (payout_condition=='blue'){
                 $('#story-instructions').html('<p>You have already been paid 250 points as a salary. '+
                 'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
-                'containing more water or more sand. </p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every water deposit (blue dot) '+
-                'in the area</b>, regardless of the size of the deposit. Because the water will always be collected, you will get this bonus '+
+                'containing more sapphires or more grass. </p>' +
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every sapphire (blue dot) '+
+                'in the area</b>, regardless of the size of the sapphire. Because the sapphires will always be collected, you will get this bonus '+
                 'regardless of whether your judgment is correct. </p>'+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
 
             } else if (payout_condition=='green'){ 
                 $('#story-instructions').html('<p>You have already been paid 250 points as a salary. '+
                 'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
-                'containing more gold or more water. </p>' +
-                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every gold deposit (green dot) '+
-                'in the area</b>, regardless of the size of the deposit. Because the gold will always be collected, you will get this bonus '+
+                'containing more emeralds or more water. </p>' +
+                '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every emerald (green dot) '+
+                'in the area</b>, regardless of the size of the emerald. Because the emeralds will always be collected, you will get this bonus '+
                 'regardless of whether your judgment is correct.</p>' +
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
-                'containing more '+first+' or more '+second+' dots. This will be added to the 250 points you earn from completing the experiment.</p>'+
-                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 350 point '+
+                $('#story-instructions').html('<p>You have already been paid 250 points. On each round, you will get a 50 point bonus if you are correct in judging the image as '+
+                'containing more '+first+' or more '+second+' dots.</p>'+
+                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 400 point '+
                 'bonus for completing the experiment.</p> '+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
                 
             }
         } else{
             if (payout_condition=='blue'){
-                $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
-                'containing more blue or more green dots. This will be added to the 250 points you earn from completing the experiment.</p>' +
+                $('#story-instructions').html('<p>You have already been paid 250 points. '+
+                'On each round, you will get a 50 point bonus if you are correct in judging the image as '+
+                'containing more blue or more green dots. </p>' +
                 '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every blue dot '+
                 'in the image</b>, regardless of the size of the dot. You will get this bonus '+
-                'regardless of whether your judgment is correct.</p>'+
+                'regardless of whether your judgment is correct.</p>' +
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='green'){
                 $('#story-instructions').html('<p>You have already been paid 250 points. '+
@@ -106,9 +107,9 @@
                 'regardless of whether your judgment is correct.</p>' +
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             } else if (payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
-                'containing more '+first+' or more '+second+' dots. This will be added to the 250 points you earn from completing the experiment.</p>'+
-                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 350 point '+
+                $('#story-instructions').html('<p>You have already been paid 250 points. On each round, you will get a 50 point bonus if you are correct in judging the image as '+
+                'containing more '+first+' or more '+second+' dots.</p>'+
+                '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional 400 point '+
                 'bonus for completing the experiment.</p> '+
                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
             }
