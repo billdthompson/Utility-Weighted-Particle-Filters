@@ -51,11 +51,15 @@
                 }*/
                 //var payout_condition = 'no-utility'
 
-                if (Math.random()<=0.5){
+                /*if (Math.random()<=0.5){
                     payout_condition = 'blue'
                 } else {
                     payout_condition = 'green'
-                }
+                }*/
+                
+                payout_condition='no-utility'
+                var include_gems = false;
+                localStorage.setItem('include_gems',include_gems)
                 
                 localStorage.setItem("payout_condition",payout_condition);
                 localStorage.setItem("node_id",parseInt(resp.node.id));

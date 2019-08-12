@@ -62,14 +62,14 @@
         if (social_condition=='social'){
             if (cover_story==false || payout_condition=='no-utility'){
                 $('#story-instructions').html('<p>To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
-                'This participant viewed an image with the same number of '+first+' and '+second+' dots as the one you will see.</p>')
+                'This participant viewed an image with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
             } else{
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-                    'This participant viewed an area with the same number of sapphire and grass dots as the one you will see.</p>')
+                    'This participant viewed an area with the same number of sapphire dots and grass dots as the one you will see.</p>')
                 } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an area with the same number of emerald and water dots as the one you will see.</p>')
+            'This participant viewed an area with the same number of emerald dots and water dots as the one you will see.</p>')
             }
         }
 
@@ -77,20 +77,20 @@
             if (cover_story==false){
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of blue and green dots as the one you will see, and like you was paid for blue dots.</p>')
+            'This participant viewed an image with the same number of blue dots and green dots as the one you will see, and like you was paid for blue dots.</p>')
                 } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of green and blue dots as the one you will see, and like you was paid for green dots.</p>')
+            'This participant viewed an image with the same number of green dots and blue dots as the one you will see, and like you was paid for green dots.</p>')
                 } else if (payout_condition=='no-utility'){
                     $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
                 }
             } else{
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of sapphire and grass dots as the one you will see, and like you was paid for sapphire dots.</p>')
+            'This participant viewed an image with the same number of sapphire dots and grass dots as the one you will see, and like you was paid for sapphire dots.</p>')
                 } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of emerald and water dots as the one you will see, and like you was paid for emerald dots.</p>')
+            'This participant viewed an image with the same number of emerald dots and water dots as the one you will see, and like you was paid for emerald dots.</p>')
                 } else if (payout_condition=='no-utility'){
                     $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
                 }
@@ -105,13 +105,13 @@
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more sapphire or grass dots. These buttons will also include numbers indicating how many "+
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'sapphire and grass dots.</p>'
+                    'sapphire dots and grass dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 } else if (social_condition=='social_with_info' && generation_num!=0){
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more sapphire or grass dots. These buttons will also include numbers indicating how many "+
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'sapphire and grass dots. These participants were also paid for sapphire but not grass dots.</p>'
+                    'sapphire dots and grass dots. These participants were also paid for sapphire but not grass dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 }
             } else if (payout_condition=='green'){
@@ -119,21 +119,21 @@
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more emerald or water dots. These buttons will also include numbers indicating how many "+
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'emerald and water dots.</p>'
+                    'emerald dots and water dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 } else if (social_condition=='social_with_info' && generation_num!=0){
                     new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
                     "there are more emerald or water dots. These buttons will also include numbers indicating how many "+
                     'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'emerald and water dots. These participants were also paid for emerald but not water dots.</p>'
+                    'emerald dots and water dots. These participants were also paid for emerald but not water dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 }
-            } else if (payout_condition=='no_utility'){
+            } else if (payout_condition=='no-utility'){
                 if (social_condition=='social' && generation_num!=0){
-                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
+                    new_html = '<p>After viewing an image, you will click on a button indicating whether you think '+
                     "there are more "+first+" or "+second+" dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    +first+' and '+second+' dots.</p>'
+                    'participants in a previous iteration of the experiment chose that option on an image with the same number of '+
+                    first+' dots and '+second+' dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 } else if (social_condition=='social_with_info' && generation_num!=0){
                     new_html = '<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>'

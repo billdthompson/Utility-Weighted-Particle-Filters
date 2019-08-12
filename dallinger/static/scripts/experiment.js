@@ -22,6 +22,7 @@ var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 var generation_seed = generation;
 var network_id_seed = network_id;
 var green_left = localStorage.getItem('green_left')=='true'
+var include_gems = localStorage.getItem('include_gems')=='true';
 
 var num_test_correct = 0;
 var total_dots = 0;
@@ -30,6 +31,7 @@ var points_per_dot = 1;
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
 $('#continue_button').css('outline','none')
+$('#stimulus').css('padding-top','70px')
 
 
 var constrained = localStorage.getItem('constrained')=='true'
@@ -80,13 +82,16 @@ $('more-blue').hover(function(){
 $('#more-green').css('background-color','#009500')
 $('#more-green').css('border-color','#009500')
 $('#more-green').css('font-size','16px')
-$('#more-green').css('width','90px')
+$('#more-green').css('width','160px')
+$('#more-green').css('outline','none')
 
 
 $('#more-blue').css('background-color','#0084ff')
 $('#more-blue').css('border-color','#0084ff')
 $('#more-blue').css('font-size','16px')
-$('#more-blue').css('width','90px')
+$('#more-blue').css('width','160px')
+$('#more-blue').css('outline','none')
+
 
 $(".center_div").css("display", "none");
 $("#total-trial-number").html(num_practice_trials + num_test_trials);
@@ -105,13 +110,13 @@ if (cover_story==true){
       $('#more-blue').html('Sapphire')
       $('#more-green').html('Grass')
       if (social_condition=='social'){
-        var green_filepath = '/static/images/green_base_blue_social.jpg'
-        var blue_filepath = '/static/images/blue_base_blue_social.jpg'
+        var green_filepath = '/static/images/blue_green_social.jpg'
+        var blue_filepath = '/static/images/blue_blue_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var green_filepath = '/static/images/green_base_blue_SWI.jpg'
-        var blue_filepath = '/static/images/blue_base_blue_SWI.jpg'
+        var green_filepath = '/static/images/blue_green_SWI.jpg'
+        var blue_filepath = '/static/images/blue_blue_SWI.jpg'
       }
-    }
+  }
   if (payout_condition=='green'){
       // with story, payout green
       var greenStr = 'Emerald';
@@ -125,14 +130,32 @@ if (cover_story==true){
       $('#more-blue').html('Water')
       $('#more-green').html('Emerald')
       if (social_condition=='social'){
-        var green_filepath = '/static/images/green_base_green_social.jpg'
-        var blue_filepath = '/static/images/blue_base_green_social.jpg'
+        var green_filepath = '/static/images/green_green_social.jpg'
+        var blue_filepath = '/static/images/green_blue_social.jpg'
       } else if (social_condition=='social_with_info'){
-        var green_filepath = '/static/images/green_base_green_SWI.jpg'
-        var blue_filepath = '/static/images/blue_base_green_SWI.jpg'
+        var green_filepath = '/static/images/green_green_SWI.jpg'
+        var blue_filepath = '/static/images/green_blue_SWI.jpg'
       }
   }
   if (payout_condition=='no-utility'){
+    if (include_gems==true){
+      var greenStr = 'Emerald'
+      var blueStr = 'Sapphire'
+      if (green_left==true){
+        var instructionsText = 'Are there more emerald dots or more sapphire dots?'
+      } else{
+        var instructionsText = 'Are there more sapphire dots or more emerald dots?'
+      }
+      $('#instructions').html(instructionsText)
+      $('#more-blue').html('Sapphire')
+      $('#more-green').html('Emerald')
+      if (social_condition=='social'){
+        var green_filepath = '/static/images/green_green_social.jpg' // emeralds
+        var blue_filepath = '/static/images/blue_blue_social.jpg'  // sapphires
+      } else if (social_condition=='social_with_info'){
+          // F I G U R E   T H I S   O U T !
+    } 
+    } else if (include_gems==false){
       var greenStr = 'Green';
       var blueStr = 'Blue'
       if (green_left==true){
@@ -144,11 +167,13 @@ if (cover_story==true){
       $('#more-blue').html('Blue')
       $('#more-green').html('Green')
       if (social_condition=='social'){
-          var green_filepath = '/static/images/green_no_cover.jpg'
-          var blue_filepath = '/static/images/blue_no_cover.jpg'
+          var green_filepath = '/static/images/green_green_NC.jpg'
+          var blue_filepath = '/static/images/blue_blue_NC.jpg'
         } else if (social_condition=='social_with_info'){
             // F I G U R E   T H I S   O U T !
       }
+
+    }
   }
 }
 
@@ -157,7 +182,6 @@ if (cover_story==false){
   var greenStr = 'Green';
   var blueStr = 'Blue'
   if (green_left==true){
-
     var instructionsText = 'Are there more green dots or more blue dots?';
   } else{
     var instructionsText = 'Are there more blue dots or more green dots?'
@@ -166,21 +190,29 @@ if (cover_story==false){
   $('#more-blue').html('Blue')
   $('#more-green').html('Green')
 
-  if (social_condition=='social_with_info'){
-      if (payout_condition=='blue'){
-        var green_filepath = '/static/images/green_base_blue_no_cover.jpg'
-        var blue_filepath = '/static/images/blue_base_blue_no_cover.jpg'
-      } else if (payout_condition=='green') {
-        var green_filepath = '/static/images/green_base_green_no_cover.jpg'
-        var blue_filepath = '/static/images/blue_base_green_no_cover.jpg'
-      } else if (payout_condition=='no-utility'){
-        // F I G U R E   T H I S   O U T !
-      }
+  if (payout_condition=='green'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/green_green_NC.jpg'
+      var blue_filepath = '/static/images/green_blue_NC.jpg'
+    } else if (social_condition=='social_with_info'){
+      var green_filepath = '/static/images/green_green_NCWI.jpg'
+      var blue_filepath = '/static/images/green_blue_NCWI.jpg'
     }
-
-  if (social_condition=='social'){
-      var green_filepath = '/static/images/green_no_cover.jpg'
-      var blue_filepath = '/static/images/blue_no_cover.jpg'
+  } else if (payout_condition=='blue'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/blue_green_NC.jpg'
+      var blue_filepath = '/static/images/blue_blue_NC.jpg'
+    } else if (social_condition=='social_with_info'){
+      var green_filepath = '/static/images/blue_green_NCWI.jpg'
+      var blue_filepath = '/static/images/blue_blue_NCWI.jpg'
+    }
+  } else if (payout_condition=='no-utility'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/blue_green_NC.jpg'
+      var blue_filepath = '/static/images/blue_blue_NC.jpg'
+    } else if (social_condition=='social_with_info'){
+      // makes no sense ... 
+    }
   }
 }
 
@@ -309,8 +341,10 @@ get_received_infos = function() {
 
 
       if (meme["choice"] === "blue") {
+        console.log('blue')
         $("#stimulus").attr("src", blue_filepath);
       } else if (meme["choice"] === "green") {
+        console.log('green')
         $("#stimulus").attr("src", green_filepath);
       }
       $("#stimulus").show();
@@ -675,7 +709,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
         "</div>")
       }
 
@@ -704,7 +738,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
           $(".outcome").html("<div class='titleOutcome'>"+
           "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
           "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-          "<p class = 'computer_number' id = 'accuracy'> Image bonus (points): </p> &nbsp;" +
+          "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
           "</div>")
         }
       }
@@ -816,6 +850,7 @@ function display_practice_info(){
 
 
 function display_earnings(){
+  $('#stimulus').css('padding-top','0px')
   if (cover_story==false){
     if (payout_condition=='blue'){
       $(".outcome").html("<div class='titleOutcome'>"+
@@ -936,5 +971,4 @@ function display_earnings(){
     $('#continue_button').unbind('click').click(function(){
       dallinger.submitAssignment()
     });
-
 }

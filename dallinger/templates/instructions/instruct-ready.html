@@ -75,42 +75,30 @@
                                 if (cover_story==true){
                                     if (payout_condition=='blue'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more sapphire dots in one '+
-                                            'area does not mean there will be more in the next area.</p>')
+                                            'Depending on how many areas you judge correctly and how many sapphires are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p> &nbsp;')
                                     } else if (payout_condition=='green'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and which areas you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more emerald dots in one '+
-                                            'area does not mean there will be more in the next area.</p>')
+                                            'Depending on how many areas you judge correctly and how many emeralds are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p> &nbsp;')
                                     } else if (payout_condition=='no-utility'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
-                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more '+first+' or '+second+' dots in one '+
-                                            'round does not mean this will hold on the next round.</p>')
+                                            'Depending on how many images you judge correctly, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p> &nbsp;')
                                     }
                                     } else{ // no cover story
                                         if (payout_condition=='blue'){
                                             $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
-                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were ' +
-                                            'more blue dots on one round does not mean there will be more in the next area.</p>')
+                                            'Depending on how many images you judge correctly and how many blue dots are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p> &nbsp;')
                                         } else if (payout_condition=='green'){
                                             $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
-                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were ' +
-                                            'more green dots on one round does not mean there will be more in the next area.</p>')
+                                            'Depending on how many images you judge correctly and how many green dots are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p> &nbsp;')
                                         } else if (payout_condition=='no-utility'){
                                             $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
-                                            'Depending on how many images you judge correctly and which images you see, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p>' +
-                                            '<p>Each round is different from the others - just because there were more '+first+' or '+second+' dots in one '+
-                                            'image does not mean this will hold on the next round.</p>')
+                                            'Depending on how many images you judge correctly, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p> &nbsp;')
                                         }
                                     }
                             })
