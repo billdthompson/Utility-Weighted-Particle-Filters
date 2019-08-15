@@ -19,8 +19,8 @@ var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
 var proportion_blue = parseFloat(localStorage.getItem("prop_blue")); //string/float
 var network_id = parseInt(localStorage.getItem("network_id")); //string/int
-var generation_seed = generation;
-var network_id_seed = network_id;
+//var generation_seed = generation;
+//var network_id_seed = network_id;
 var green_left = localStorage.getItem('green_left')=='true'
 var include_gems = localStorage.getItem('include_gems')=='true';
 
@@ -31,7 +31,17 @@ var points_per_dot = 1;
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
 $('#continue_button').css('outline','none')
-$('#stimulus').css('padding-top','70px')
+$("#continue_button").css("width", "300px");
+$("#continue_button").css("text-align", "center");
+
+$('#stimulus').css('padding-top','10px')
+$('.outcome').css('margin-top','80px')
+$("#instructions").css('margin-top','110px')
+
+$(".button-wrapper").css("width", "300px");
+$(".button-wrapper").css("margin", "0 auto");
+$(".button-wrapper").css("margin-top", "50px");
+
 
 
 var constrained = localStorage.getItem('constrained')=='true'
@@ -254,8 +264,6 @@ create_agent = function() {
       is_practice = resp.node.property1=="'practice'";
       proportion_blue = parseFloat(resp.node.property4);
       network_id = parseInt(resp.node.network_id);
-      generation_seed = generation;
-      network_id_seed = network_id;
       decision_index = parseFloat(resp.node.property3)
       network_string = '/network/' + String(network_id) + "/getnet/"
       // console.log("** Inside create_agent -- node properties for the next trial will be: ", resp.node.property5, resp.node.property1,  my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index)
@@ -377,9 +385,10 @@ function presentDisplay () {
   setTimeout(function() {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
-    } 
-    //$("#more-blue").removeClass('disabled');
-    //$("#more-green").removeClass('disabled');
+    }
+    $('svg').remove() // remove the annoying disabled version of the screen from the dot display 
+    $("#more-blue").removeClass('disabled');
+    $("#more-green").removeClass('disabled');
     $("#instructions").show()
     $("#button-div").show()
     // console.log("clearing paper")
@@ -400,7 +409,7 @@ function regenerateDisplay (propBlue) {
   rMax = 18;
   horizontalOffset = (window.innerWidth - width) / 2;
 
-  paper = Raphael(horizontalOffset, 250, width, height);
+  paper = Raphael(horizontalOffset, 185, width, height);
 
   colors = [];
   //colorsRGB = ["#428bca", "#FBB829"];
@@ -415,13 +424,19 @@ function regenerateDisplay (propBlue) {
     colors.push(1);
   }
 
-  colors = shuffle(colors);
+  random_string = String(generation) + String(net_decision_index)
+  console.log(random_string)
+  console.log(net_decision_index)
 
+  var myrng0 = new Math.seedrandom(random_string+'_colors');
+  colors = shuffle(colors,myrng0);
+
+  var myrng = new Math.seedrandom(random_string);
   while (dots.length < numDots) {
     // Pick a random location for a new dot.
-    r = randi(rMin, rMax);
-    x = randi(r, width - r);
-    y = randi(r, height - r);
+    r = randi(rMin, rMax,myrng);
+    x = randi(r, width - r,myrng);
+    y = randi(r, height - r,myrng);
 
     // Check if there is overlap with any other dots
     pass = true;
@@ -448,18 +463,21 @@ function getBlueDots(propBlue){
   return Math.round(propBlue * numDots)
 }
 
-function randi(min, max) {
-  generation_seed = generation_seed + 0.05;
-  network_id_seed = network_id_seed + 0.05;
-  //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
-  random_number = Math.random();
+function randi(min, max,random_generator) {
+  //generation_seed = generation_seed + 0.05;
+  //network_id_seed = network_id_seed + 0.05;
+  //random_number = (generation_random(generation_seed)+network_random(network_id_seed) + addition)/3
+  //console.log(random_number)
+  //random_number = Math.random();
+  random_number = random_generator()
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
-function shuffle(o){
-  generation_seed = generation_seed + 0.05;
-  network_id_seed = network_id_seed + 0.05;
-  random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+function shuffle(o,random_generator){
+  //generation_seed = generation_seed + 0.05;
+  //network_id_seed = network_id_seed + 0.05;
+  //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+  random_number = random_generator()
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -474,9 +492,9 @@ function correctStr(){
 
 
 report = function (color) {
+  $("#more-blue").addClass('disabled');
+  $("#more-green").addClass('disabled');
   paper.clear();
-  //$("#more-blue").addClass('disabled');
-  //$("#more-green").addClass('disabled');
   $("#reproduction").val("");
   true_color = correctStr()
   bonuses=getBonusAmount(true_color,color)
@@ -735,11 +753,19 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
         } else if (payout_condition=='no-utility'){
-          $(".outcome").html("<div class='titleOutcome'>"+
-          "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-          "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-          "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-          "</div>")
+          if (include_gems==true){
+            $(".outcome").html("<div class='titleOutcome'>"+
+            "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+            "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+            "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p>" +
+            "</div>")
+          } else{
+            $(".outcome").html("<div class='titleOutcome'>"+
+            "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+            "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+            "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> " +
+            "</div>")
+          }
         }
       }
 
@@ -781,19 +807,29 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
       p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
     }
-    $('.outcome').css('text-align','right')
-
+    if (payout_condition=='no-utility'){
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('text-align','right')
+      $('.button-wrapper').css('margin-top','65px')
+      $('.outcome').css('margin-top','85px')
+    } else{
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('margin-top','25px')
+      $('.outcome').css('text-align','right')
+      $('.button-wrapper').css('margin-top','40px')
+    }
+    
   } else{
       $('.outcome').css('text-align','center')
-  
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('margin-top','95px')
+      $('.button-wrapper').css('margin-top','70px')
       $(".outcome").html("<div class='titleOutcome'>"+
       "&nbsp;&nbsp;<p class = 'computer_number' id = 'topResult'> <font size='+2'> Test round " + String(trial-num_practice_trials) + " of " + String(num_test_trials)+ " complete.</font></p></div>")
   }
 
-  $('.outcome').css('margin','0 auto')
   $('.outcome').css('width','300px')
   $(".outcome").css("display", "block");
-  $(".button-wrapper").css("text-align", "right");
   $(".button-wrapper").css("display", "block");
   $(".center_div").css("display", "none");
 
@@ -801,12 +837,14 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     if (trial==num_practice_trials){
       $(".outcome").html("")
       $('.outcome').css('text-align','center')
+      $('.outcome').css('margin-top','20px')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
         "Points from these rounds will be added to your final pay."+
         "<br><br>Unlike the practice rounds, you will not recieve feedback about your score after each round. "+
         "Instead, you will view your earnings at the end of the experiment.</p>")
       $('#topResult').css('font-size','19px')
+      $('.button-wrapper').css('margin-top','40px')
 
       $('#continue_button').unbind('click').click(function(){
         $(".outcome").css("display", "none");
@@ -830,9 +868,10 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
 function display_practice_info(){
   $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
+      $('.outcome').css('margin-top','80px')
       $('.outcome').css('width','300px')
       $(".outcome").css("display", "block");
-      $(".button-wrapper").css("text-align", "right");
+      //$(".button-wrapper").css("text-align", "right");
       $(".button-wrapper").css("display", "block");
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
@@ -961,14 +1000,30 @@ function display_earnings(){
 
     $('.outcome').css('text-align','right')
     $('.outcome').css('margin','0 auto')
+    //$('.outcome').css('margin-top','0px')
     $('.outcome').css('width','300px')
     $(".outcome").css("display", "block");
     $("#continue-info").css("text-align", "center");
+    $('.button-wrapper').css('margin-top','50px')
     
 
     $('#continue_button').html('Finish')
 
     $('#continue_button').unbind('click').click(function(){
-      dallinger.submitAssignment()
+      $(".outcome").html("")
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('margin-top','80px')
+      $('.outcome').css('width','300px')
+      $(".outcome").css("display", "block");
+      $('.button-wrapper').html('');
+      $('.button-wrapper').hide();
+      //$(".button-wrapper").css("text-align", "right");
+      $('.outcome').css('text-align','center')
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'headerText'><b>Saving your data...</b></p> <br>"+
+      '<p id="topResult">If this message displays for more than about 45 seconds, something must have gone wrong '+
+      '(please accept our apologies and contact the researchers). </p> ')
+      $('#headerText').css('font-size','30px')
+      $('#topResult').css('font-size','19px')
     });
 }

@@ -57,14 +57,35 @@
 
                         localStorage.setItem("cover_story",cover_story);
                         payout_condition = localStorage.getItem("payout_condition");
+                        include_gems = localStorage.getItem('include_gems')=='true';
                         $('#instruct-2-div').css('visibility','visible')
 
                         if (Math.random()<=0.5){
-                            first = 'blue'
-                            second = 'green'
+                            if (include_gems==true){
+                                first = 'sapphire'
+                                second= 'emerald'
+                                firsts = 'sapphires'
+                                seconds = 'emeralds'
+                                first_full = 'blue sapphires'
+                                second_full = 'green emeralds'
+                                add_str = 'An area has more sapphires if there are more blue dots than green, and more emeralds if there are green dots than blue. '
+                            } else {
+                                first = 'blue'
+                                second = 'green'
+                            }
                         } else{
-                            first='green'
-                            second='blue'
+                            if (include_gems==true){
+                                first = 'emerald'
+                                second= 'sapphire'
+                                firsts = 'emeralds'
+                                seconds = 'sapphires'
+                                first_full = 'green emeralds'
+                                second_full = 'blue sapphires'
+                                add_str = 'An area has more emeralds if there are more green dots than blue, and more sapphires if there are blue dots than green. '
+                            } else {
+                                first = 'green'
+                                second = 'blue'
+                            }
                         }
                                         
                         if (cover_story==true){
@@ -86,12 +107,24 @@
                                 'Instead, you should take your best guess.')
                                 $('#image-paragraph').html('In this area, there are more emerald dots than water dots.')
                             } else if (payout_condition=='no-utility'){
-                                $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
-                                'if they contain more '+first+' dots or more '+second+' dots. '+
-                                '<b>Note that the size of the dots does not matter, only the number. </b>' +
-                                "Don't bother trying to count the dots — they will appear too briefly for that. " +
-                                "Instead, you should take your best guess.")
-                                $('#image-paragraph').html('In this image, there are more green dots than blue dots.')
+                                if (include_gems==false){
+                                    $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+
+                                    'if they contain more '+first+' dots or more '+second+' dots. '+
+                                    '<b>Note that the size of the dots does not matter, only the number. </b>' +
+                                    "Don't bother trying to count the dots — they will appear too briefly for that. " +
+                                    "Instead, you should take your best guess.")
+                                    $('#image-paragraph').html('In this image, there are more green dots than blue dots.')
+                                } else if (include_gems==true){
+                                    $('#story-instructions').html('You work for an imaginary company looking for '+first_full+' and ' +second_full +' (both are valuable gem stones). '+
+                                    'You will observe areas briefly and decide '+
+                                    'if they contain more '+firsts+' or more '+seconds+'. '+
+                                    add_str +
+                                    '<b>Note that the size of the dots does not matter, only the number. </b>' +
+                                    "Don't bother trying to count the dots — they will appear too briefly for that. " +
+                                    "Instead, you should take your best guess.")
+                                    $('#image-paragraph').html('In this area, there are more emerald dots than sapphire dots.')
+
+                                }
                             }
                         }  else{ // no cover story, same original covery story as no-utility
                             $('#story-instructions').html('In this experiment, you will observe images briefly and decide '+

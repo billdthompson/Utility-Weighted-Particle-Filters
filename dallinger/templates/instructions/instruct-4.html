@@ -48,21 +48,38 @@
 
         var payout_condition = localStorage.getItem("payout_condition"); 
         var generation_num = parseInt(localStorage.getItem("generation")); 
-        var cover_story = localStorage.getItem("cover_story")=='true'; 
+        var cover_story = localStorage.getItem("cover_story")=='true';
+        var include_gems = localStorage.getItem('include_gems')=='true';
 
-        if (Math.random()<=0.5){
-            first = 'blue'
-            second = 'green'
-        } else{
-            first='green'
-            second='blue'
+        if (include_gems==false){
+            filler_word = 'image'
+            small_word = 'on'
+            if (Math.random()<=0.5){
+                first = 'blue'
+                second = 'green'
+            } else{
+                first='green'
+                second='blue'
+            }
+        }
+
+        if (include_gems==true){
+            filler_word = 'area'
+            small_word = 'in'
+            if (Math.random()<=0.5){
+                first = 'emerald'
+                second = 'sapphire'
+            } else{
+                first='sapphire'
+                second='emerald'
+            }
         }
         
         
         if (social_condition=='social'){
             if (cover_story==false || payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>To help you make a decision, before viewing an image you will view the decision made by another participant. '  +
-                'This participant viewed an image with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
+                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will view the decision made by another participant. '  +
+                'This participant viewed an '+filler_word+' with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
             } else{
                 if (payout_condition=='blue'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
@@ -130,9 +147,9 @@
                 }
             } else if (payout_condition=='no-utility'){
                 if (social_condition=='social' && generation_num!=0){
-                    new_html = '<p>After viewing an image, you will click on a button indicating whether you think '+
+                    new_html = '<p>After viewing an '+filler_word+', you will click on a button indicating whether you think '+
                     "there are more "+first+" or "+second+" dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option on an image with the same number of '+
+                    'participants in a previous iteration of the experiment chose that option '+small_word+' an '+filler_word+' with the same number of '+
                     first+' dots and '+second+' dots.</p>'
                     $('#story-instructions').html(old_html+new_html)
                 } else if (social_condition=='social_with_info' && generation_num!=0){

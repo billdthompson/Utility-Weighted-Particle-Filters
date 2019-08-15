@@ -149,6 +149,7 @@
   var payout_condition = localStorage.getItem('payout_condition');
   var social_condition = localStorage.getItem('social_condition');
   var include_numbers = localStorage.getItem('include_numbers')=='true';
+  var include_gems = localStorage.getItem('include_gems')=='true';
   // hacky but gets the job done
   if (generation==0 || social_condition=='asocial'){
     social_condition='asocial'
@@ -159,13 +160,33 @@
     $('#h3-thing').html('')
   }
   */
-  if (Math.random()<=0.5){
+
+  if (include_gems==false || cover_story==false){
+    if (Math.random()<=0.5){
       first = 'blue'
       second = 'green'
-  } else{
+    } else{
       first='green'
       second='blue'
+    }
+    filler_word = 'image'
+    filler_words = 'images'
+    small_word = 'on'
   }
+
+  if (include_gems==true && cover_story==true){
+    if (Math.random()<=0.5){
+      first = 'sapphire'
+      second = 'emerald'
+    } else{
+      first='emerald'
+      second='sapphire'
+    }
+    filler_word = 'area'
+    filler_words = 'areas'
+    small_word = 'in'
+  }
+
   if (cover_story==false){
     // without cover
     if (social_condition=='asocial'){
@@ -436,8 +457,8 @@ if (cover_story==true){
       } else if (payout_condition=='no-utility'){
           // Asocial, without cover, payout no-u
           $('#q1').html('<option value="1">Judge whether there are more '+first+' dots or more '+second+' dots</option>'+
-                                '<option value="2">Judge how many green dots are in the image</option>'+
-                                '<option value="3">Judge how many blue dots are in the image</option>'+
+                                '<option value="2">Judge how many '+first+' dots are in the '+filler_word+'</option>'+
+                                '<option value="3">Judge how many '+second+' dots are in the '+filler_word+'</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
           $('#question-2').html('')
           $('#question-3').html('')
@@ -446,7 +467,7 @@ if (cover_story==true){
           $('#question-4').css('display','none')
           $('#question-5').css('display','none')
           $('#instructions-text-2').html('1). On every round, you must judge '+
-          'whether there are more '+first+' dots or more '+second+' dots in the image.')
+          'whether there are more '+first+' dots or more '+second+' dots in the '+filler_word+'.')
           $('#question-3-wrapper').css('display','none')
           $('#question-4-wrapper').css('display','none')
           $('#question-5-wrapper').css('display','none')
@@ -470,7 +491,7 @@ if (cover_story==true){
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an image with equal numbers of sapphire and grass dots</option>"+
+                              "<option value='1'>A participant's decision in an area with equal numbers of sapphire and grass dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -506,7 +527,7 @@ if (cover_story==true){
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an area with equal numbers of emerald and water dots</option>"+
+                              "<option value='1'>A participant's decision in an area with equal numbers of emerald and water dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').html('<div class="col-md-8" id="social-info">'+
@@ -548,7 +569,7 @@ if (cover_story==true){
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an area with equal numbers of sapphire and grass dots</option>"+
+                              "<option value='1'>A participant's decision in an area with equal numbers of sapphire and grass dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -575,7 +596,7 @@ if (cover_story==true){
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an area with equal numbers of emerald and water dots</option>"+
+                              "<option value='1'>A participant's decision in an area with equal numbers of emerald and water dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
@@ -590,30 +611,30 @@ if (cover_story==true){
         $('#question-3-wrapper').css('display','none')
         $('#question-4-wrapper').css('display','none')
         $('#q1').html('<option value="1">Judge whether there are more '+first+' dots or more '+second+' dots</option>'+
-        '<option value="2">Judge how many green dots are in the image</option>'+
-        '<option value="3">Judge how many blue dots are in the image</option>'+
+        '<option value="2">Judge how many '+first+' dots are in the '+filler_word+'</option>'+
+        '<option value="3">Judge how many '+second+' dots are in the '+filler_word+'</option>'+
           '<option value="4" SELECTED>None of these options</option>')
         $('#question-2').css('display','none')
         $('#question-2').html('')
         $('#question-3').html('')
         $('#question-3').css('display','none')
         $('#question-4').html('<div class="col-md-8" id="social-info">'+
-            'Before viewing an image, what information will you get?'+
+            'Before viewing an '+filler_word+', what information will you get?'+
         '</div><br>'+
         '<div class="col-md-4">'+
             '<select id="q4" name="q4">'+
-                "<option value='2'>A participant's decision in a different image</option>"+
+                "<option value='2'>A participant's decision "+small_word+" a different "+filler_word+"</option>"+
                 '<option value="3">A previous decision you made</option>'+
-                "<option value='1'>A participant's decision on an image with equal numbers of "+first+" and "+second+" dots</option>"+
+                "<option value='1'>A participant's decision "+small_word+" an "+filler_word+" with equal numbers of "+first+" and "+second+" dots</option>"+
                 '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more '+first+' dots or more '+second+' dots in the image.')
+        'whether there are more '+first+' dots or more '+second+' dots in the '+filler_word+'.')
         $('#instructions-text-3').css('display','none')
         $('#instructions-text-4').html('display','none')
-        $('#instructions-text-5').html('2). Before viewing an image, you will view the decision made by another participant '+
-        'viewing an image with the same number of '+first+' dots and '+second+' dots.')
+        $('#instructions-text-5').html('2). Before viewing an '+filler_word+', you will view the decision made by another participant '+
+        'viewing an '+filler_word+' with the same number of '+first+' dots and '+second+' dots.')
         $('#instructions-text-6').css('display','none')
       }
   }
@@ -679,17 +700,17 @@ if (cover_story==true){
 } else if (payout_condition=='no-utility'){
     if (social_condition=='social'){
     $('#question-6').html('<div class="col-md-8" id="social-info-update">'+
-      'After viewing an area, what information will be added to each button?'+
+      'After viewing an '+filler_word+', what information will be added to each button?'+
       '</div><br><br>'+
       '<div class="col-md-4">'+
         '<select id="q4" name="q4">'+
-          "<option value='2'>A random set of others' decisions on a different image</option>"+
-          "<option value='1'>The number of participants choosing each option on an equivalent image</option>"+
+          "<option value='2'>A random set of others' decisions "+small_word+" a different "+filler_word+"</option>"+
+          "<option value='1'>The number of participants choosing each option "+small_word+" an equivalent "+filler_word+"</option>"+
           '<option value="3">No other information</option>'+
           '<option value="5" SELECTED>None of these options</option>'+
           '</select></div><br><br>')
-    $('#instructions-text-7').html('3). After viewing an image, you will view the decisions made by a random set of participants '+
-    'viewing an image with the same number of '+first+' dots and '+second+' dots.')
+    $('#instructions-text-7').html('3). After viewing an '+filler_word+', you will view the decisions made by a random set of participants '+
+    'viewing an '+filler_word+' with the same number of '+first+' dots and '+second+' dots.')
   } else if (social_condition=='social_with_info'){
     // makes zero sense
   }

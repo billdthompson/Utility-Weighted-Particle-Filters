@@ -49,6 +49,7 @@
                                 num_test = num_test_fixed+num_test_random;
                                 cover_story = localStorage.getItem('cover_story') =='true'
                                 payout_condition = localStorage.getItem('payout_condition')
+                                include_gems = localStorage.getItem('include_gems')=='true'
 
                                 localStorage.setItem('num_practice',num_practice)
                                 localStorage.setItem('num_test',num_test)
@@ -69,7 +70,13 @@
                                 } else{
                                     first='green'
                                     second='blue'
-        }
+                                }
+
+                                if (include_gems==true){
+                                    filler_word = 'areas'
+                                } else{
+                                    filler_word = 'images'
+                                }
                                 
                                 $('#ready-div').css('visibility','visible')
                                 if (cover_story==true){
@@ -82,9 +89,9 @@
                                             'Depending on how many areas you judge correctly and how many emeralds are in each, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p> &nbsp;')
                                     } else if (payout_condition=='no-utility'){
-                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' images in total. '+
-                                            'Depending on how many images you judge correctly, you can earn a bonus of up to $' + max_bonus + 
-                                            '. The first '+ String(num_practice) + ' images are for practice and will not count towards your bonus.</p> &nbsp;')
+                                        $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' ' + filler_word + ' in total. '+
+                                            'Depending on how many '+filler_word+' you judge correctly, you can earn a bonus of up to $' + max_bonus + 
+                                            '. The first '+ String(num_practice) + ' '+filler_word+' are for practice and will not count towards your bonus.</p> &nbsp;')
                                     }
                                     } else{ // no cover story
                                         if (payout_condition=='blue'){
