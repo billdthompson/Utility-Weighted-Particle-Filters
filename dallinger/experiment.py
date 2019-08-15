@@ -16,31 +16,36 @@ from flask import Blueprint, Response
 import numpy as np
 import random
 import json
-# import pysnooper
-# import pysnooper
+import pysnooper
+from operator import attrgetter
+from collections import Counter
 
 import logging
 logger = logging.getLogger(__file__)
 
+DEBUG = True
+
 class UWPFWP(Experiment):
-	"""Utility Weighted Particle Filter with People.
-	
-	qualification_blacklist = UWSPF
-	assign_qualifications = true
-	approve_requirement = 95
-	group_name = UWSPF
+	"""Utility Weighted self.models.Particle Filter with People.
+	 
+	 TODO: 
+	 - stress test new overflow mechanism
+	 - chekc that node_ids are strictly indreasing (parent samples selection requires this -- see self.add_node_to_network)
+	 - why is calculate over-recruitment being called so many times?
 	"""
 
 	@property
 	def public_properties(self):
 		return {
 		'generation_size':2, 
-		'generations': 3, 
-		'num_fixed_order_experimental_networks_per_condition': 4,
-		'num_random_order_experimental_networks_per_condition': 4,
-		'num_practice_networks_per_condition': 4,
+		'generations': 2, 
+		'num_replications_per_condition':1,
+		'num_fixed_order_experimental_networks_per_experiment': 1,
+		'num_random_order_experimental_networks_per_experiment': 1,
+		'num_practice_networks_per_experiment': 1,
 		'payout_blue': 'true',
-		'cover_story': 'true'
+		'cover_story': 'true',
+		'bonus_max': 1,
 		}
 
 	def __init__(self, session=None):
@@ -52,151 +57,127 @@ class UWPFWP(Experiment):
 		
 		# These variables are potentially needed on every invocation 
 		self.set_params()
-		self.assign_proportions_to_networks()
 
 		# These variables are only needed when launching the experiment 
 		if session and not self.networks():
 			self.setup()
 		self.save()
 
-	# @pysnooper.snoop()
 	def set_known_classes(self):
 		self.known_classes["trialbonus"] = self.models.TrialBonus
 		self.known_classes["particle"] = self.models.Particle
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
-		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
+		self.known_classes["networkrandomattributes"] = self.models.NetworkRandomAttributes
+		self.known_classes["overflow"] = self.models.OverFlow
+		self.known_classes["overflowparticle"] = self.models.OverflowParticle
+
 
 	def set_params(self):
-		self.condition_names = {0:'social'}#{0:"asocial", 2:"social_with_info", 1:"social"}
-		self.nconditions = len(self.condition_names)
-		self.generation_size = self.public_properties['generation_size']
+		"""
+		Notes:
+		- A condition is a manipulation
+		- An experiment is a single replication of a condition
+		- Information does not flow between experiments
+		- A network is a single "Trial", with a constant proportion but generation-verying stimulus relations of that proportion
+		- Every experiment includes some practice networks and some experimental networks (fixed order and random order)
+		"""
+
+		# Public Parameters
+		self.generation_size = self.planned_overflow = self.public_properties['generation_size']
 		self.generations = self.public_properties['generations']
-		self.num_fixed_order_experimental_networks_per_condition = self.public_properties['num_fixed_order_experimental_networks_per_condition']
-		self.num_random_order_experimental_networks_per_condition = self.public_properties['num_random_order_experimental_networks_per_condition']
-		self.num_experimental_networks_per_condition = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_condition + self.num_random_order_experimental_networks_per_condition
-		self.num_practice_networks_per_condition = self.practice_decisions = self.public_properties['num_practice_networks_per_condition']
-		self.number_of_networks = (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition) * self.nconditions
-		self.nodes_per_generation = self.generation_size * self.nconditions * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
-		self.initial_recruitment_size = self.nconditions * self.generation_size
-		self.bonus_max = 1.
-
-	def assign_conditions_to_networks(self):
-		self.conditions = list(self.condition_names.values()) * (self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition)
-
-	def assign_proportions_to_networks(self):
-		# proprtions for practice networks
-		self.practice_network_proportions = [.53, .46, .47, .54]
-		#self.practice_network_proportions = [.30, .46, .47, .54]
+		self.num_replications_per_condition = self.public_properties['num_replications_per_condition']
+		self.num_fixed_order_experimental_networks_per_experiment = self.public_properties['num_fixed_order_experimental_networks_per_experiment']
+		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
+		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
+		self.bonus_max = self.public_properties['bonus_max']
+		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.52]
+		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.52]
+		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
+		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
+		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 		
-		# proprtions for experimental networks (fixed order and random order)
-		self.fixed_order_experimental_network_proportions = [.48, .52, .51, .49]
-		self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+		# Conditions
+		self.condition_counts = {"social":self.num_replications_per_condition,
+								 "overflow":1
+								 }
+								 # "social":self.num_replications_per_condition, 
+								 # "social_with_info": self.num_replications_per_condition,
+		# Derrived Quantities
+		self.num_experiments = sum(self.condition_counts.values())
+		self.num_experimental_networks_per_experiment = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_experiment + self.num_random_order_experimental_networks_per_experiment
+		self.num_networks_total = (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * self.num_experiments
+		self.num_participants_per_generation = self.initial_recruitment_size = self.generation_size * self.num_experiments
+		self.num_experimental_participants_per_generation = (self.num_experiments - 1) * self.generation_size
+		self.num_nodes_per_generation = self.generation_size * self.num_networks_total 
+		self.num_experimental_nodes_per_generation = ((self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * (self.num_experiments - 1)) * self.generation_size
 
-		# checlk the proportions match the number of networks in total
-		ntrials = len(self.practice_network_proportions) + len(self.fixed_order_experimental_network_proportions) + len(self.random_order_experimental_network_proportions)
+	def create_network(self, condition, replication, role, decision_index, proportion):
+		# identify entwork type: overflow?
+		network_type = self.models.ParticleFilter if condition != "overflow" else self.models.OverFlow
 		
-		# self.log("{};{};{}".format(ntrials, self.num_practice_networks_per_condition, self.num_experimental_networks_per_condition), '---->')
-		assert ntrials == self.experimental_decisions + self.practice_decisions
-
-		# concatenate a proprtion scedule for each condition
-		self.proportion_schedule = self.practice_network_proportions + self.fixed_order_experimental_network_proportions + self.random_order_experimental_network_proportions
-
-		# drop onto network conditions
-		self.network_proportions = np.repeat(self.proportion_schedule, self.nconditions)
-
-	def assign_roles_to_networks(self):
-		self.role_schedule = (['practice'] * self.num_practice_networks_per_condition) + (['experiment'] * self.num_experimental_networks_per_condition)
-
-		self.roles = np.repeat(self.role_schedule, self.nconditions)
-
-	def assign_decision_indices_to_networks(self):
-		self.decision_indices = np.repeat(list(range(self.practice_decisions + self.experimental_decisions)), self.nconditions).astype(int)
+		# build network and add to session
+		net = network_type(generations=self.generations, generation_size=self.generation_size, replication=replication)
+			
+		# update network parameters
+		net.max_size = net.max_size + 1  # make room for environment node.
+		net.role = role
+		net.condition = condition
+		net.decision_index = decision_index
+		self.session.add(net)
+		
+		# create the Genertative process for stimuli
+		datasource = self.models.GenerativeModel(network=net)
+		datasource.create_state(proportion=proportion)
+		return net
 		
 	def setup(self):
 		"""First time setup."""
-		for _ in range(self.number_of_networks):
-			network = self.create_network()
-			self.session.add(network)
-			self.session.commit()
+		for (condition, replications) in self.condition_counts.items():
+			for replication in range(replications):
+				for p in range(self.num_practice_networks_per_experiment):
+					network = self.create_network(condition = condition, replication = replication, role = 'practice', decision_index = p, proportion = self.practice_network_proportions[p])
+					self.models.NetworkRandomAttributes(network = network)
+					
+				for f in range(self.num_fixed_order_experimental_networks_per_experiment):
+					decision_index = self.num_practice_networks_per_experiment + f
+					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.fixed_order_experimental_network_proportions[f])
+					self.models.NetworkRandomAttributes(network = network)
+
+				for r in range(self.num_random_order_experimental_networks_per_experiment):
+					decision_index = self.num_practice_networks_per_experiment + self.num_fixed_order_experimental_networks_per_experiment + r
+					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.random_order_experimental_network_proportions[r])
+					self.models.NetworkRandomAttributes(network = network)
 		
-		self.sample_parents()
-		self.assign_conditions_to_networks()
-		self.assign_decision_indices_to_networks()
-		self.assign_roles_to_networks()
-		
-		for i, net in enumerate(self.networks()):
-			net.max_size = net.max_size + 1  # make room for environment node.
-			net.role = self.roles[i]
-			net.condition = self.conditions[i]
-			net.decision_index = self.decision_indices[i]
-			datasource = self.models.GenerativeModel(network=net)
-			datasource.create_state(proportion=self.network_proportions[i])
+		self.session.commit()
 
-	def create_network(self):
-		"""Create a new network."""
-		return self.models.ParticleFilter(generations=self.generations, generation_size=self.generation_size, initial_source=True)
+	def network_occupancy_counts(self):
+		"""How many participants are already working or have completed working in each network?"""
 
-	# @pysnooper.snoop()
-	def sample_parents(self):
-		"""Sample parent assignments for all gens & networks pre-hoc. 
-		   This is possible b/c transmission dynamics is random sampling.
-		"""
-		for network in self.networks():
-			self.models.NetworkParentSamples(network = network)
+		arbitrary_network = self.models.ParticleFilter.query.filter_by(failed = False, full = False).first()
 
-	# @pysnooper.snoop()
-	def sample_network_for_new_participant(self, participant):
-		"""Obtain a netwokr for a participant who has not yet been assigned to a condition"""
-		nets = Network.query.filter(Network.property4 == repr(0)).filter_by(full = False).all()
+		if not arbitrary_network:
+			return []
 
-		# Establish largest generation attested in nodes table (property2 = generation)
-		maximum_generation_among_nodes = self.session.query(func.max(self.models.Particle.property2)).scalar()
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
 
-		self.log("{}".format(maximum_generation_among_nodes), "--**maxgen**-->>")
-
-		# count nodes showing generation
-		number_of_nodes_with_maximum_generation = self.session.query(func.count(self.models.Particle.property2).label('count')).filter(self.models.Particle.property2 == maximum_generation_among_nodes).filter_by(failed = False).scalar()
-
-		# self.log("{}".format(number_of_nodes_with_maximum_generation), "--**num nodes with maxgenmaxgen**-->>")
-
-		# if number of nodes with this generation if the same as the recruitment batch size, we're at a new generation
-		current_generation = repr(int(maximum_generation_among_nodes) + 1) if number_of_nodes_with_maximum_generation == self.nodes_per_generation else maximum_generation_among_nodes
-
-		# self.log("{}".format(self.nodes_per_generation), "--**nodespergen**-->>")
-
-		self.log("{}".format(current_generation), "--**currentgen**-->>")
-
-		# Goal: select a condition that does not already have a full generation of workers 
+		# Goal: identify networks that do not already have a full generation of workers working / completed 
 		# 1: count unique participant ids in all nodes
-		# 2: sum this count by condition by grouping
+		# 2: sum this count by network (by grouping)
 		# 3: subset down to just this generation
 		# 4: don't count failed nodes
-		condition_counts = self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.condition) \
-				.group_by(self.models.Particle.condition) \
-				.filter(self.models.Particle.property2 == current_generation) \
+		network_counts = self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.network_id) \
+				.group_by(self.models.Particle.network_id) \
+				.filter(self.models.Particle.property2 == repr(current_generation)) \
 				.filter_by(failed = False)\
 				.all()
 
-		self.log("{}".format(condition_counts), "--**condition counts**-->>")
+		# reverse the items so that the format is [(network_id, count), ...]
+		return [c[::-1] for c in network_counts]
 
-		# if this is the first Particle node in the experiment, all decions_index = 0 networks are availible
-		# property4 = decision_index
-		if not condition_counts:
-			return random.choice(nets)
-
-		condition_counts = dict([c[::-1] for c in condition_counts])
-
-		# filter out any networks who already have enough nodes in this generation
-		availible_conditions = list(filter(lambda c: condition_counts[c] < self.generation_size, condition_counts.keys())) + list(filter(lambda k: k not in condition_counts, self.condition_names.values()))
-		# self.log("{}".format(condition_counts),"--**groupby network id condition_counts-->>")
-		# self.log("{}".format(availible_conditions),"--**availible conditions-->>")
-
-		nets = [net for net in nets if net.condition in availible_conditions]
-		return random.choice(nets)
-
-	def sample_network_for_existing_participant(self, participant, participant_nodes):
+	@pysnooper.snoop()
+	def get_network_for_existing_participant(self, participant, participant_nodes):
 		"""Obtain a netwokr for a participant who has already been assigned to a condition by completeing earlier rounds"""
 		
 		# What condition is this participant in?
@@ -204,27 +185,30 @@ class UWPFWP(Experiment):
 
 		# which networks has this participant already completed?
 		networks_participated_in = [node.network_id for node in participant_nodes]
+
+		# What replciation is this participant in?
+		participant_replication = self.models.Network.query.get(networks_participated_in[0]).property3 # network.property3 = replication
 		
 		# How many decisions has the particiapnt already made?
 		completed_decisions = len(networks_participated_in)
 
 		# When the participant has completed all networks in their condition, their experiment is over
 		# returning None throws an error to the fronted which directs to questionnaire and completion
-		if completed_decisions == self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition:
+		if completed_decisions == self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment:
 			return None
 
-		nfixed = self.num_practice_networks_per_condition + self.num_fixed_order_experimental_networks_per_condition
+		nfixed = self.num_practice_networks_per_experiment + self.num_fixed_order_experimental_networks_per_experiment
 
 		# If the participant must still follow the fixed network order
 		if completed_decisions < nfixed:
 			# find the network that is next in the participant's schedule
 			# match on completed decsions b/c decision_index counts from zero but completed_decisions count from one
-			return Network.query.filter(and_(Network.property4 == repr(completed_decisions), Network.property5 == participant_condition)).filter_by(full = False).one()
+			return self.models.Network.query.filter(and_(self.models.ParticleFilter.property4 == repr(completed_decisions), self.models.ParticleFilter.property5 == participant_condition, self.models.ParticleFilter.property3 == participant_replication)).filter_by(full = False).one()
 
 		# If it is time to sample a network at random
 		else:
 			# find networks which match the participant's condition and werent' fixed order nets
-			matched_condition_experimental_networks = Network.query.filter(and_(cast(Network.property4, Integer) >= nfixed, Network.property5 == participant_condition)).filter_by(full = False).all()
+			matched_condition_experimental_networks = self.models.Network.query.filter(and_(cast(self.models.ParticleFilter.property4, Integer) >= nfixed, self.models.ParticleFilter.property5 == participant_condition, self.models.ParticleFilter.property3 == participant_replication)).filter_by(full = False).all()
 			
 			# subset further to networks not already participated in (because here decision index doesnt guide use)
 			availible_options = [net for net in matched_condition_experimental_networks if net.id not in networks_participated_in]
@@ -234,54 +218,120 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop(prefix = "@snoop: ")
+	def get_network_for_new_participant(self, participant):
+		key = "experiment.py >> get_network_for_new_participant ({}); ".format(participant.id)
+
+		# Get all first-trial networks
+		nets = self.models.ParticleFilter.query.filter_by(full = False).filter(self.models.ParticleFilter.property4 == repr(0)).all()
+
+		# And their IDs
+		net_ids = [net.id for net in nets]
+
+		# Get the occupancy counts for all networks
+		network_counts = self.network_occupancy_counts()
+
+		if not network_counts:
+			if nets:
+				# all networks have open slots, choose randomly
+				return random.choice(nets)
+			else:
+				# must be the end of the experiment, direct ps to overflow
+				return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+
+		# Subset netowek counts down to only first trial networks
+		network_counts = dict(filter(lambda count: count[0] in net_ids, network_counts))
+		self.log("Network Counts: {}".format(network_counts), key)
+
+		# Find networks that have some participants but are not full
+		not_saturated = dict(filter(lambda count: count[1] < self.generation_size, network_counts.items()))
+		self.log("These networks have some participants, but are not saturated: {}".format(not_saturated), key)
+
+		self.log("dict(network_counts).keys(): {}; dict(network_counts): {}; net_ids: {}".format(network_counts.keys(), network_counts, net_ids), key)
+
+		# And networks that have no participants yet
+		not_started = list(filter(lambda net_id: net_id not in network_counts.keys(), net_ids))
+		self.log("These networks do not have any participants yet this generation: {}".format(not_started), key)
+
+		# filter out any conditions who already have enough nodes in this generation
+		availible_networks = [net for net in nets if net.id in not_started + list(not_saturated.keys())]
+
+		if not availible_networks:
+			self.log("No experimental networks are availible. Returning Overflow network.", key)
+			return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+
+		self.log("The availible networks are: {}".format([net.id for net in availible_networks]), key)
+		return random.choice(availible_networks)
+
+	def assign_slot(self, participant, network):
+		node_type = self.models.OverflowParticle if isinstance(network, self.models.OverFlow) else self.models.Particle
+
+		# estbalish current generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = network.id).one().current_generation
+
+		all_nodes_this_network_this_generation_so_far = node_type.query.filter(node_type.property2 == repr(int(current_generation))).filter_by(network_id = network.id, failed = False).all()
+
+		# which slots (1, ..., n) are already occupied?
+		all_node_slots_already_taken = [existing_node.slot for existing_node in all_nodes_this_network_this_generation_so_far]
+
+		# which slots remain availible for new nodes?
+		node_slots_still_availible = [slot for slot in range(self.generation_size) if slot not in all_node_slots_already_taken]
+
+		return random.choice(node_slots_still_availible)
+
+	@pysnooper.snoop()
 	def get_network_for_participant(self, participant):
 		"""Find a network for a participant."""
-		key = "--->> Participant: {}; ".format(participant.id)
-		participant_nodes = Node.query.filter_by(participant_id=participant.id).all()
+		key = "experiment.py >> get_network_for_participant ({}); ".format(participant.id)
+		participant_nodes = participant.nodes()
 		if not participant_nodes:
-			chosen_network = self.sample_network_for_new_participant(participant)
+			chosen_network = self.get_network_for_new_participant(participant)
 		else:
-			chosen_network = self.sample_network_for_existing_participant(participant, participant_nodes)
+			chosen_network = self.get_network_for_existing_participant(participant, participant_nodes)
 
 		if chosen_network is not None:
 			self.log("Assigned to network: {}".format(chosen_network.id), key)
 
 		else:
-			self.log("Requested a network but was assigned None. Participant already created {} nodes.".format(len(participant_nodes)), key)
+			self.log("Requested a network but was assigned None.".format(len(participant_nodes)), key)
 
 		return chosen_network
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
 		memes = [i for i in participant.infos() if i.type == "meme"]
-		if len(memes) >= (self.practice_decisions + self.experimental_decisions):
+		if len(memes) >= (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment):
 			raise Exception
-		
-		return self.models.Particle(network=network,participant=participant)
 
-	# @pysnooper.snoop()
+		# has this partciipants alreeady been assigned a "slot"?
+		nodes = participant.nodes()
+		slot = self.assign_slot(participant, network) if not nodes else nodes[0].slot
+		return self.models.Particle(network=network,participant=participant, slot = slot) if network.condition != 'overflow' else self.models.OverflowParticle(network=network,participant=participant, slot = slot)
+
+	@pysnooper.snoop()
 	def add_node_to_network(self, node, network):
 		"""Add participant's node to a network."""
 		network.add_node(node)
 		node.receive()
 
-		if isinstance(node, self.models.Particle):
-			node.proportion = self.proportion_schedule[network.decision_index]
+		if isinstance(node, self.models.Particle) or isinstance(node, self.models.OverflowParticle):
+
+			node_type = self.models.OverflowParticle if isinstance(node, self.models.OverflowParticle) else self.models.Particle
+			
+			node.proportion = float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
 			# keep track of how which order the participant is doing neteworks
-			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
+			completed_decisions = node_type.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
 
-		if node.generation > 0:
+		if node.generation > 0 and not node.condition == "overflow":
 
-			# grab pre-sampled parent schedule for this network
-			parentschedule = self.models.NetworkParentSamples.query.filter_by(network_id = network.id).one()
-
-			details = parentschedule.details
+			# retrieve randomised properties for thsi network
+			network_attributes = self.models.NetworkRandomAttributes.query.filter_by(network_id = network.id).one()
 			
-			# isolaterab the parent indices for this generation
-			parent_index_lookup = json.loads(parentschedule.details)[str(node.generation)]
+			# grab pre-sampled parent schedule for this network
+			# and isolate the parent indices for this generation
+			parent_index_lookup = json.loads(network_attributes.details)['parentschedule'][str(node.generation)]
 
 			# list all nodes from the previous generation
 			# and sort the node_ids
@@ -289,20 +339,14 @@ class UWPFWP(Experiment):
 			previous_generation_node_ids_sorted = [previous_node.id for previous_node in all_nodes_previous_generation]
 			previous_generation_node_ids_sorted.sort()
 
-			# list all the nodes in the current generation so far
-			# and sort the node_ids
-			all_nodes_this_generation_so_far = self.models.Particle.query.filter(self.models.Particle.property2 == repr(int(node.generation))).filter_by(network_id = network.id, failed = False).all()
-			current_generation_node_ids_sorted = [existing_node.id for existing_node in all_nodes_this_generation_so_far]
-			current_generation_node_ids_sorted.sort()
-
 			# make a lookup table that takes a numerical index and returns a node_id for nodes at the previous generation 
 			previous_generation_node_id_lookup = dict(zip(list(range(len(all_nodes_previous_generation))), previous_generation_node_ids_sorted))
-			
-			# make a lookup table that takes a node_id and returns a numerical index for nodes at the current generation
-			current_node_order_lookup = dict(zip(current_generation_node_ids_sorted, list(range(len(all_nodes_this_generation_so_far)))))
+
+			# every node should have been assigned a "slot" from 0 to n - 1
+			current_node_numerical_index = node.slot
 
 			# find the pre-sampled numerical index of the parent for the current node
-			parent_index = parent_index_lookup[repr(current_node_order_lookup[node.id])]
+			parent_index = parent_index_lookup[repr(current_node_numerical_index)]
 
 			# and lookup the node_id of the previous-generation node at that numerical index
 			parent_id = previous_generation_node_id_lookup[parent_index]
@@ -313,25 +357,137 @@ class UWPFWP(Experiment):
 
 		node.receive()
 
+	@pysnooper.snoop(prefix = "@snoop: ")
+	def calculate_required_overrecruitment(self):
+		key = "experiment.py >> calculate_required_overrecruitment: "
+		if not self.models.OverflowParticle.query.all():
+			self.log("No overflow nodes have been created. All initial overflow recruitments remain unstarted.", key)
+			return 0
+
+		arbitrary_network = self.models.ParticleFilter.query.first()
+
+		# ...to estbalish current generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+
+		# We only need to check how many overflow nodes began
+		# so we only need to check for overflownodes belonging to the first overflow network
+		# i.e., the overflow network with the smallest decision_index
+		first_overflow_network_id = self.models.OverFlow.query.filter(self.models.OverFlow.property4 == repr(0)).one().id # property4 == decision_index 
+
+		completed_participant_ids = [p.id for p in self.models.Participant.query.filter_by(failed = False).all()]
+
+		next_generation_required_overflow = number_of_overflow_nodes_with_current_generation = self.models.OverflowParticle.query \
+																							   .filter(self.models.OverflowParticle.property2 == repr(current_generation), self.models.OverflowParticle.network_id == first_overflow_network_id, self.models.OverflowParticle.participant_id.in_(completed_participant_ids)) \
+																							   .filter_by(failed = False) \
+																							   .count()
+		if next_generation_required_overflow == 0:
+			self.log("No overflow nodes were created during geneeration {}. All current overflow recruitments remain unstarted.".format(current_generation), key)
+			return 0
+		
+		# next_generation_required_overflow = number_of_overflow_nodes_with_current_generation = self.session.query(func.count(self.models.OverFlowSortingNode.property2).label('count')).filter(self.models.OverFlowSortingNode.property2 == maximum_generation_among_overflow_nodes).filter_by(failed = False).scalar()			
+		self.log("In generation {}, {} overflow nodes were created.".format(current_generation, number_of_overflow_nodes_with_current_generation), key)
+		self.log("Planned over recruitment requires {} live overflow assignments at each generation. {} overflow assingments remain live from generation {}".format(self.planned_overflow, self.planned_overflow - number_of_overflow_nodes_with_current_generation, current_generation), key)
+
+		overflow_networks = self.models.OverFlow.query.all()
+		for overflow_network in overflow_networks:
+			overflow_network.max_size = float(overflow_network.max_size) + next_generation_required_overflow
+			self.log("Adding {} to max_size of overflow network. Max_size is now: {}. The overflow network has {} nodes.".format(next_generation_required_overflow, overflow_network.max_size, len(overflow_network.nodes())), key)
+			self.save()
+		
+		return min([self.planned_overflow, next_generation_required_overflow])
+
+	def rollover_generation(self):
+		key ="experiment.py >> rollover_generation: "
+
+		# grab all network stats holders
+		networkstats = self.models.NetworkRandomAttributes.query.all()
+
+		# ...to estbalish finishing generation
+		finishing_generation = networkstats[0].current_generation
+
+		# fecth ids for all approved participants
+		approved_participant_ids = [p.id for p in self.models.Participant.query.filter_by(failed = False, status = "approved").all()]
+
+		# count all sorting nodes made by an approved participant at the generation now finishing
+		finishing_generation_approved_node_count = self.models.Particle.query.filter(self.models.Particle.property2 == repr(finishing_generation), self.models.Particle.participant_id.in_(approved_participant_ids)).filter_by(failed = False).count()
+
+		if not finishing_generation_approved_node_count == self.num_experimental_nodes_per_generation:
+			self.log("Refusing to rollover generation. Node count from so-called finsihing generation is: {}; Required node count is: {}".format(finishing_generation_approved_node_count, self.num_experimental_nodes_per_generation), key)
+			return
+
+		for net in networkstats:
+			net.current_generation = int(finishing_generation) + 1
+			self.log("Rolled new generation for Network: {}; Was at generation {}. Now at generation: {}".format(net.network.id, finishing_generation, net.current_generation), key)
+
+	@pysnooper.snoop(prefix = "@snoop: ")
 	def recruit(self):
-		"""Recruit participants if necessary."""
-		num_approved = len(Participant.query.filter_by(status="approved").all())
+		"""Recruit participants"""
+		key = "experiment.py >> recruit: "
+		
+		# all approveed participnts
+		approved_participants = self.models.Participant.query.filter_by(status="approved", failed = False).all()
 
-		self.log("num_approved: {}".format(num_approved), "--** recruit called **-->>")
+		# all approved participant ids
+		approved_participant_ids = [p.id for p in approved_participants]
 
-		end_of_generation = num_approved % (self.generation_size * self.nconditions) == 0
+		# grab a network...
+		arbitrary_network = self.models.ParticleFilter.query.first()
 
-		self.log("end_of_generation: {}".format(end_of_generation), "--** recruit called **-->>")
+		# ...to estbalish current generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
 
-		self.log("completion threshold: {}; met? {}".format(self.generations * self.generation_size * self.nconditions, num_approved >= (self.generations * self.generation_size * self.nconditions)), "--** recruit called **-->>")
+		# how many of this geenration's nodes have been approved?
+		num_experimental_nodes_approved_this_generation = self.models.Particle.query.filter_by(failed = False).filter(self.models.Particle.participant_id.in_(approved_participant_ids), self.models.Particle.property2 == repr(current_generation)).count()
 
-		complete = num_approved >= (self.generations * self.generation_size * self.nconditions)
-		if complete:
-			self.log("All networks full: closing recruitment", "--** end recruit **-->>")
-			self.recruiter.close_recruitment()
+		# Is this generation complete?
+		end_of_generation = num_experimental_nodes_approved_this_generation == self.num_experimental_nodes_per_generation
+
+		self.log("Generation in Progress: {}; Experimental self.models.Particles approved: {}; Required: {}".format(current_generation, num_experimental_nodes_approved_this_generation, self.num_experimental_nodes_per_generation), key)
+		self.log("End of generation: {}".format(end_of_generation), key)
+
+		# Are all experimental generations complete?
+		experimental_networks_complete = (current_generation == self.generations - 1) & (end_of_generation)
+
+		# Have we finished recruiting experimental paricipants?
+		if experimental_networks_complete:
+			# How many overflow recruitments have been issued?
+			total_overflow_recruits = self.models.OverFlow.query.first().max_size - 1
+
+			num_approved_overflow_nodes = self.models.OverflowParticle.query.filter_by(failed = False).filter(self.models.OverflowParticle.participant_id.in_(approved_participant_ids)).count()
+
+			if num_approved_overflow_nodes >= total_overflow_recruits:
+				self.log("All experimental networks are full. Overflow is full. Experiment complete: closing recruitment", key)
+				self.recruiter.close_recruitment()
+
+			else:
+				self.log("All experimental networks are full. Overflow networks are not full (there are {} overflow particles, but there should be {}). Waiting...".format(self.models.OverflowParticle.query.filter(failed = False).count(), self.models.OverFlow.query.first().max_size * (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment)), key)
+				return
+
+		# Or are more generations required? 
 		elif end_of_generation:
-			self.log("generation finished, recruiting another", "--** recruit **-->>")
-			self.recruiter.recruit(n=(self.generation_size * self.nconditions))
+			most_recently_approved_participant = max(approved_participants, key=attrgetter("end_time"))
+			most_recently_approved_participant_nodes = most_recently_approved_participant.nodes()
+
+			# not technically impossible that an overflow participant could create no nodes but still finish?
+			if not most_recently_approved_participant_nodes: return
+			
+			# An overflow node can technically submit before any of a new generation of experimental participants submit
+			# for example if an overflow ndoe from the prrviosu egenration submits just after all the previous gen's experimental participants
+			# in this boundary case, dallinger thinks it's time to recruit a new generation
+			# prevent this by checking the type of the most recent submitter whenever dallinger wants to recruit a new gnenrartion
+			if most_recently_approved_participant_nodes[0].type == "overflowparticle":
+				self.log("Doing nothing. Reason: An overflow participant trigered end_of_generation. This can only happen if an overflow participant submits after recruitment of a new generation, but before any experimental participants create a node.", key)
+				return
+
+			next_generation_required_overflow = self.calculate_required_overrecruitment()
+			self.log("Required over-recruiment at the next generation is: {}.".format(next_generation_required_overflow), key)
+
+			# If we got here, it's time to roll out a new generation
+			# change state
+			self.log("Generation finished.", key)
+			self.rollover_generation()
+
+			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments - 1)) + next_generation_required_overflow)
 
 	def bonus(self, participant):
 		"""Calculate a participants bonus."""
@@ -385,30 +541,30 @@ class UWPFWP(Experiment):
 		if not nodes:
 			return False
 
-		if len(nodes) != self.num_practice_networks_per_condition + self.num_experimental_networks_per_condition:
-			print("Error: Participant has {} nodes. Data check failed"
+		if len(nodes) != self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment:
+			print("Error: self.models.Participant has {} nodes. Data check failed"
 				  .format(len(nodes)))
 			return False
 
 		nets = [n.network_id for n in nodes]
 		if len(nets) != len(set(nets)):
-			print("Error: Participant participated in the same network \
+			print("Error: self.models.Participant participated in the same network \
 				   multiple times. Data check failed")
 			return False
 
 		return True
 
-	def is_complete(self):
-		"""Determine whether the experiment is complete"""
-		node_count = self.session.query(func.count(self.models.Particle.id.label('count'))).filter_by(failed = False).scalar()
+	# def is_complete(self):
+	# 	"""Determine whether the experiment is complete"""
+	# 	node_count = self.session.query(func.count(self.models.Particle.id.label('count'))).filter_by(failed = False).scalar()
 
-		participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
+	# 	participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
 
-		return True if (node_count >= (self.nodes_per_generation * self.generations) & (participant_count >= (self.generation_size * self.generations * self.nconditions))) else False
+	# 	return True if (node_count >= (self.nodes_per_generation * self.generations) & (participant_count >= (self.generation_size * self.generations * self.nconditions))) else False
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def getnet(self, network_id):
-		net = Network.query.filter_by(id = network_id).one()
+		net = self.models.Network.query.filter_by(id = network_id).one()
 		return net
 
 extra_routes = Blueprint(
@@ -430,14 +586,91 @@ def getnet(network_id):
 		db.logger.exception('Error fetching network info')
 		return Response(status=403, mimetype='application/json')
 
+
+@extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
+def get_random_atttributes(network_id, node_generation, node_slot):
+	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+
+	@pysnooper.snoop()
+	def f(network_id, node_slot, node_generation):
+		# get an exp instance
+		exp = UWPFWP(db.session)
+
+		# get the network for this id
+		net = exp.getnet(network_id)
+
+		# establish whether we're dealing with an overflow node or not
+		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
+		
+		# grab all nodes from this network at the previos generation
+		previous_generation_nodes = list(filter(lambda node: node.generation == (node_generation - 1), net.nodes(failed = False, type = node_type)))
+
+		# grab the attributes for this netowrk
+		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
+
+		# load detils
+		data = json.loads(network_attributes.details)
+
+		# isolate the three data fields
+		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][node_generation].values), np.array(data["payout_color"]), np.array(data["button_order"])
+
+		# estblish the incentivised colors for this node
+		node_payout = payout_colors[node_slot]
+
+		# get the node's parent's slot
+		node_parent_slot = parentschedule[node_slot]
+
+		# establish the payout color for the node that provided social information on this round
+		# this is simple because the slot --> payout mapping is constant over generations
+		node_parent_payout = payout_colors[node_parent_slot]
+
+		# make a lookup table to retrive a node id from a slot at the previous generation
+		previous_generation_slot_to_id_lookup = dict([(node.slot, node.id) for node in all_nodes_previous_generation])
+
+		# make a vector of node_ids for all parents that were sampeld from the previous generations
+		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule]
+
+		# make the node objects accessible via node_id
+		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
+
+		# for every sampled parent, ask what color they chose
+		choices = np.array([json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids])
+
+		# for every parent, what was their incetive payout condition?
+		parent_payouts = payout_colors[parentschedule]
+		
+		# make a list of whether each parent node chose blue or not
+		chose_blue = choices == "blue"
+
+		# count how many parents selected their incentivised color
+		k = choices == parent_payouts
+
+		# count the number who did choose blue
+		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
+		b = sum(chose_blue)
+
+		# count the generation size and check it liens up with the exp
+		n = len(previous_generation_nodes)
+
+		return Response(json.dumps({"k":k, "n":n, "b":b, "button":button_orders[node_slot], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
+
+	try:
+		return f(network_id, node_generation, node_slot)
+
+	except Exception:
+		db.logger.exception('Error fetching network info')
+		return Response(status=403, mimetype='application/json')
+
+
+
 @extra_routes.route("/particles/<int:network_id>/<int:generation>/", methods=["GET"])
 def getparticles(network_id, generation):
-	logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
 	if generation == 0:
 		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
 	def f(network_id, generation):
 		# get an exp instance
 		exp = UWPFWP(db.session)
@@ -449,10 +682,10 @@ def getparticles(network_id, generation):
 		previous_generation_nodes = list(filter(lambda node: node.generation == (generation - 1), net.nodes(failed = False, type = exp.models.Particle)))
 
 		# find the pre-sampled parentschedule for this network
-		parentschedule = exp.models.NetworkParentSamples.query.filter_by(network_id = network_id).one()
+		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
 
 		# isolate the numerical indicies of the parents sampled for the current generation
-		all_parents_indices = json.loads(parentschedule.details)[str(generation)].values()
+		all_parents_indices = json.loads(network_attributes.details)['parentschedule'][str(generation)].values()
 
 		# line up the node_ids from the previous gen in order
 		previous_generation_node_ids_sorted = [previous_node.id for previous_node in previous_generation_nodes]

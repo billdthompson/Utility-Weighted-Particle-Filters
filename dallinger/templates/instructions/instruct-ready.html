@@ -35,17 +35,17 @@
 
     var num_practice, num_test_fixed,num_test_random
 
-    dallinger.getExperimentProperty('num_practice_networks_per_condition')
+    dallinger.getExperimentProperty('num_practice_networks_per_experiment')
                 .done(function (propertiesResp) {
-                    num_practice = propertiesResp.num_practice_networks_per_condition
-                    dallinger.getExperimentProperty('num_fixed_order_experimental_networks_per_condition')
+                    num_practice = propertiesResp.num_practice_networks_per_experiment
+                    dallinger.getExperimentProperty('num_fixed_order_experimental_networks_per_experiment')
                     .done(function (propertiesResp) {
-                        num_test_fixed = propertiesResp.num_fixed_order_experimental_networks_per_condition
-                        dallinger.getExperimentProperty('num_random_order_experimental_networks_per_condition')
+                        num_test_fixed = propertiesResp.num_fixed_order_experimental_networks_per_experiment
+                        dallinger.getExperimentProperty('num_random_order_experimental_networks_per_experiment')
                             .done(function (propertiesResp) {
                                 num_practice = parseInt(num_practice)
                                 num_test_fixed = parseInt(num_test_fixed)
-                                num_test_random = propertiesResp.num_random_order_experimental_networks_per_condition
+                                num_test_random = propertiesResp.num_random_order_experimental_networks_per_experiment
                                 num_test = num_test_fixed+num_test_random;
                                 cover_story = localStorage.getItem('cover_story') =='true'
                                 payout_condition = localStorage.getItem('payout_condition')
