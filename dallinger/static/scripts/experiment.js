@@ -1,5 +1,5 @@
 //
-var n_generation_size, k_chose_blue,k_chose_green,choice_array;
+var n_generation_size, k_chose_blue,k_chose_green,choice_array,parent_chose_utility,pre_stimulus_social_info,parent_utility;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -8,6 +8,9 @@ var n_generation_size; // how many people per generation?
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
 var payout_condition = localStorage.getItem('payout_condition') // string, true/false
+var node_slot = localStorage.getItem('node_slot')
+
+
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
@@ -17,7 +20,7 @@ var include_numbers = localStorage.getItem('include_numbers')=='true';
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
-var proportion_blue = parseFloat(localStorage.getItem("prop_blue")); //string/float
+var proportion_utility = parseFloat(localStorage.getItem("prop_blue")); //string/float
 var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 //var generation_seed = generation;
 //var network_id_seed = network_id;
@@ -261,12 +264,13 @@ create_agent = function() {
       $("#trial-number").html(trial);
       my_node_id = parseInt(resp.node.id);
       generation = parseInt(resp.node.property2);
+      node_slot = parseInt(resp.node.property1);
       is_practice = resp.node.property1=="'practice'";
-      proportion_blue = parseFloat(resp.node.property4);
+      proportion_utility = parseFloat(resp.node.property4);
       network_id = parseInt(resp.node.network_id);
       decision_index = parseFloat(resp.node.property3)
       network_string = '/network/' + String(network_id) + "/getnet/"
-      // console.log("** Inside create_agent -- node properties for the next trial will be: ", resp.node.property5, resp.node.property1,  my_node_id, generation, is_practice, proportion_blue, network_id, generation_seed, network_id_seed, decision_index)
+
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
         // console.log("** Inside get net -- net decision_index: ", net_decision_index)
@@ -299,9 +303,9 @@ create_agent = function() {
 };
 
 get_received_infos = function() {
-  // console.log("Inside get_received_infos -- propertion_blue: ", proportion_blue)
+
   dallinger.getReceivedInfos(my_node_id).done(function (resp) {
-    // console.log("Finished call to dallinger.getReceivedInfos; Response: ", resp)
+
     infos = resp.infos;
     for (i = 0; i < infos.length; i++) {
       if (infos[i].type == "state") {
@@ -331,11 +335,9 @@ get_received_infos = function() {
       $("#button-div").hide()
 
       $("#instructions").text(instructionsText);
-      regenerateDisplay(proportion_blue);
-      //console.log(proportion_blue)
+      regenerateDisplay(proportion_utility);
 
-      //$("#more-blue").addClass('disabled');
-      //$("#more-green").addClass('disabled');
+
 
       presentDisplay();
   
@@ -347,21 +349,53 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
+      parent_chose_utility = parent_utility == meme["choice"];
 
-      if (meme["choice"] === "blue") {
-        console.log('blue')
-        $("#stimulus").attr("src", blue_filepath);
-      } else if (meme["choice"] === "green") {
-        console.log('green')
-        $("#stimulus").attr("src", green_filepath);
+      if (payout_condition=='blue'){
+        if (parent_chose_utility==true){
+          $("#stimulus").attr("src", blue_filepath);
+          pre_stimulus_social_info = 'blue'
+        } else{
+          $("#stimulus").attr("src", green_filepath);
+          pre_stimulus_social_info = 'green'
+        }
       }
+
+      if (payout_condition=='green'){
+        if (parent_chose_utility==true){
+          $("#stimulus").attr("src", green_filepath);
+          pre_stimulus_social_info = 'green'
+        } else{
+          $("#stimulus").attr("src", blue_filepath);
+          pre_stimulus_social_info = 'blue'
+          pre_stimulus_social_info = 'green'
+        }
+      }
+
+      if (payout_condition=='no-utility'){
+        if (randomization_color=='blue'){
+          if (parent_chose_utility==true){
+            $("#stimulus").attr("src", blue_filepath);
+          } else{
+            $("#stimulus").attr("src", green_filepath);
+          } 
+
+        } else if (randomization_color=='green'){
+          if (parent_chose_utility==true){
+            $("#stimulus").attr("src", green_filepath);
+          } else{
+            $("#stimulus").attr("src", blue_filepath);
+          } 
+        }
+      }
+
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
         $("#instructions").text(instructionsText);
         // $("#more-blue").removeClass('disabled');
         // $("#more-green").removeClass('disabled');
-        regenerateDisplay(proportion_blue);
+        regenerateDisplay(proportion_utility);
         presentDisplay();
       }, 4000);
     }
@@ -396,14 +430,14 @@ function presentDisplay () {
   }, 1000);
 }
 
-function regenerateDisplay (propBlue) {
+function regenerateDisplay (propUtility) {
   // Display parameters
   width = 625;
   height = 350;
   numDots = 100;
   dots = [];
-  blueDots = Math.round(propBlue * numDots);
-  greenDots = numDots - blueDots;
+  utilityDots = Math.round(propUtility * numDots);
+  noUtilityDots = numDots - utilityDots;
   sizes = [];
   rMin = 8; // The dots' minimum radius.
   rMax = 18;
@@ -415,12 +449,17 @@ function regenerateDisplay (propBlue) {
   //colorsRGB = ["#428bca", "#FBB829"];
   //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
   //colorsRGB = ['#00ffff','#ffab29']
-  colorsRGB = ['#0084ff','#009500']
+  if (color_randomization=='blue'){
+    colorsRGB = ['#0084ff','#009500']
+  } else {
+    colorsRGB = ['009500','#0084ff']
+  }
 
-  for (var i = blueDots - 1; i >= 0; i--) {
+
+  for (var i = utilityDots - 1; i >= 0; i--) {
     colors.push(0);
   }
-  for (i = greenDots - 1; i >= 0; i--) {
+  for (i = noUtilityDots - 1; i >= 0; i--) {
     colors.push(1);
   }
 
@@ -459,8 +498,13 @@ function regenerateDisplay (propBlue) {
   }
 }
 
-function getBlueDots(propBlue){
-  return Math.round(propBlue * numDots)
+
+function getBlueDots(propUtility){
+  if (randomization_color=='blue'){
+    return Math.round(propUtility * numDots)
+  } else{
+    return Math.round(numDots-(propUtility * numDots))
+  }
 }
 
 function randi(min, max,random_generator) {
@@ -483,10 +527,18 @@ function shuffle(o,random_generator){
 }
 
 function correctStr(){
-  if (proportion_blue>0.5){
-    return 'blue'
+  if (randomization_color=='blue'){
+    if (proportion_utility>0.5){
+      return 'blue'
+    } else{
+      return 'green'
+    }
   } else{
-    return 'green'
+    if (proportion_utility>0.5){
+      return 'green'
+    } else{
+      return 'blue'
+    }
   }
 }
 
@@ -522,7 +574,7 @@ report = function (color) {
                   is_practice:is_practice,
                   payout_condition:payout_condition,
                   social_condition:social_condition,
-                  proportion_blue:proportion_blue,
+                  proportion_utility:proportion_utility,
                   generation: generation,
                   network_id:network_id,
                   node_id: my_node_id,
@@ -533,7 +585,8 @@ report = function (color) {
                   green_left: green_left,
                   net_decision_index: net_decision_index,
                   k_chose_blue: k_chose_blue,
-                  k_chose_green: k_chose_green}
+                  k_chose_green: k_chose_green,
+                  parent_chose_utility: parent_chose_utility}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -588,7 +641,7 @@ function getBonusAmount(truth,response){
           var accuracy_bonus = 0;
       }
   }
-  var numBlue = getBlueDots(proportion_blue);
+  var numBlue = getBlueDots(proportion_utility);
   var numGreen = 100-numBlue;
 
   if (cover_story==true){
@@ -620,57 +673,43 @@ function getBonusAmount(truth,response){
 
 
   function get_social_info(){
-    dallinger.get("/particles/" + network_id +  "/" + generation + "/")
+    dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
         .done(function (particlesResponse) {
-          n_generation_size = parseInt(particlesResponse.n)
-          k_chose_blue = parseInt(particlesResponse.k)
-          k_chose_green = n_generation_size-k_chose_blue
           if (learning_strategy=='social'){
-            if (constrained==true){
-              blue_array = Array(k_chose_blue).fill('b')
-              green_array = Array(k_chose_green).fill('y')
-              choice_array = blue_array.concat(green_array)
-              button_div_str = ''
-              for (i=0;i<n_generation_size;i++){
-                curr_sample = sampleWithoutReplacement(choice_array)
-                if (curr_sample=='b'){
-                  button_div_str += ' <button type="button" class="btn btn-primary chose-blue">'+blueStr+'</button>'
-                } else if (curr_sample=='y'){
-                  button_div_str += ' <button type="button" class="btn btn-primary chose-green">'+greenStr+'</button>'
-                }
-              }
-              $('#button-div').html(button_div_str)
-              $('.chose-green').css('background-color','#F0AD4E')
-              $('.chose-green').css('border-color','#eea236')
-              $('.chose-blue').css('background-color','#428BC9')
-              $('.chose-green').hover(function(){
-                $(this).css('background-color','#ED9C27')
-              }, function(){
-                $(this).css('background-color','#F0AD4E')
-              })
-  
-              $('.chose-blue').hover(function(){
-                $(this).css('background-color','#3176B1')
-              }, function(){
-                $(this).css('background-color','#428BC9')
-              })
-            } else{
-              
-              if (k_chose_blue==1){
-                blue_vote_str = ' vote)'
-              } else{
-                blue_vote_str = ' votes)'
-              }
-              if (k_chose_green==1){
-                green_vote_str = ' vote)'
-              } else{
-                green_vote_str = ' votes)'
-              }
+            n_generation_size = parseInt(particlesResponse.n)
+            parent_utility = particlesResponse.parent_utility // blue, green
 
-              $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + blue_vote_str)
-              $('#more-green').html(greenStr + ' (' + String(k_chose_green) + green_vote_str)
+            if (payout_condition=='no-utility'){
+              k_chose_blue = parseInt(particlesResponse.b)
+              k_chose_green = n_generation_size - k_chose_blue
             }
-           
+
+            if (payout_condition!='no-utility'){
+              k_chose_utility = parseInt(particlesResponse.k)
+              if (payout_condition=='blue'){
+                k_chose_blue = k_chose_utility
+                k_chose_green = n_generation_size - k_chose_blue
+              } else if (payout_condition=='green'){
+                k_chose_green = k_chose_utility
+                k_chose_blue = n_generation_size - k_chose_green
+              }
+            }
+
+            if (k_chose_blue==1){
+              blue_vote_str = ' vote)'
+            } else{
+              blue_vote_str = ' votes)'
+            }
+            if (k_chose_green==1){
+              green_vote_str = ' vote)'
+            } else{
+              green_vote_str = ' votes)'
+            }
+            $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + blue_vote_str)
+            $('#more-green').html(greenStr + ' (' + String(k_chose_green) + green_vote_str)
+
+
+
             $(".chose-green").unbind('click').click(function() {
               // console.log("Reported more green.");
               report("green");
@@ -1025,5 +1064,6 @@ function display_earnings(){
       '(please accept our apologies and contact the researchers). </p> ')
       $('#headerText').css('font-size','30px')
       $('#topResult').css('font-size','19px')
+      dallinger.submitAssignment()
     });
 }
