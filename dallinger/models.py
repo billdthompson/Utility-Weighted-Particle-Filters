@@ -14,8 +14,7 @@ from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
 from dallinger.models import Info, Network, Participant, Node
-
-# import pysnooper
+import pysnooper
 
 class ParticleFilter(Network):
     """Discrete fixed size generations with random transmission"""
@@ -84,11 +83,9 @@ class ParticleFilter(Network):
         """Make condition queryable."""
         return cls.property5
 
+    @pysnooper.snoop()
     def add_node(self, node):
-        """Link to the agent from a parent based on the parent's fitness"""
-        num_agents = len(self.nodes(type=Agent))
-        
-        curr_generation = int((num_agents - 1) / float(self.generation_size))
+        curr_generation = NetworkRandomAttributes.query.filter_by(network_id = self.id).one().current_generation
         
         node.generation = curr_generation
 
@@ -111,19 +108,19 @@ class Particle(Node):
     __mapper_args__ = {"polymorphic_identity": "particle"}
 
     @hybrid_property
-    def role(self):
+    def slot(self):
         """Convert property1 to genertion."""
-        return str(self.property1)
+        return int(self.property1)
 
-    @role.setter
-    def role(self, role):
-        """Make role settable."""
-        self.property1 = repr(role)
+    @slot.setter
+    def slot(self, slot):
+        """Make slot settable."""
+        self.property1 = repr(slot)
 
-    @role.expression
-    def role(self):
-        """Make role queryable."""
-        return cast(self.property1, str)
+    @slot.expression
+    def slot(self):
+        """Make slot queryable."""
+        return cast(self.property1, Integer)
 
     @hybrid_property
     def generation(self):
@@ -186,10 +183,10 @@ class Particle(Node):
         return cls.property5
 
 
-    def __init__(self, contents=None, details = None, network = None, participant = None):
+    def __init__(self, contents=None, details = None, network = None, participant = None, slot = None):
         super(Particle, self).__init__(network, participant)
         self.condition = self.network.property5
-        self.role = self.network.role
+        self.slot = slot
         # self.proportion = self.network.proportion
 
 class OverFlow(Network):
@@ -264,11 +261,12 @@ class OverFlow(Network):
         """Make condition queryable."""
         return cls.property5
 
+    @pysnooper.snoop()
     def add_node(self, node):
 
         arbitrary_network = ParticleFilter.query.first()
 
-        curr_generation = NetworkParentSamples.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+        curr_generation = NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
         
         node.generation = curr_generation
 
@@ -287,19 +285,19 @@ class OverflowParticle(Node):
     __mapper_args__ = {"polymorphic_identity": "overflowparticle"}
 
     @hybrid_property
-    def role(self):
+    def slot(self):
         """Convert property1 to genertion."""
-        return str(self.property1)
+        return int(self.property1)
 
-    @role.setter
-    def role(self, role):
-        """Make role settable."""
-        self.property1 = repr(role)
+    @slot.setter
+    def slot(self, slot):
+        """Make slot settable."""
+        self.property1 = repr(slot)
 
-    @role.expression
-    def role(self):
-        """Make role queryable."""
-        return cast(self.property1, str)
+    @slot.expression
+    def slot(self):
+        """Make slot queryable."""
+        return cast(self.property1, Integer)
 
     @hybrid_property
     def generation(self):
@@ -362,13 +360,13 @@ class OverflowParticle(Node):
         return cls.property5
 
 
-    def __init__(self, contents=None, details = None, network = None, participant = None):
+    def __init__(self, contents=None, details = None, network = None, participant = None, slot = None):
         super(OverflowParticle, self).__init__(network, participant)
         self.condition = self.network.property5
-        self.role = self.network.role
+        self.slot = slot
         # self.proportion = self.network.proportion
 
-class NetworkParentSamples(Node):
+class NetworkRandomAttributes(Node):
     """The participant."""
 
     @declared_attr
@@ -402,9 +400,17 @@ class NetworkParentSamples(Node):
             parents[g] = dict(zip(list(range(n)), random.choices(list(range(n)), k = n)))
         return parents
 
+    def sample_payout_colors(self):
+        n = float(self.network.generation_size)
+        return dict(zip(range(int(n)), (["blue"] * int(n / 2.)) + (["green"] * int(n / 2.))))
+
+    def sample_button_order(self):
+        n = float(self.network.generation_size)
+        return dict(zip(range(int(n)), (["left"] * int(n / 4.)) + (["right"] * int(n / 4.)) + (["left"] * int(n / 4.)) + (["right"] * int(n / 4.))    ))
+
     def __init__(self, network, details = None):
-        super(NetworkParentSamples, self).__init__(network)
-        self.details = json.dumps(self.sample_parents())
+        super(NetworkRandomAttributes, self).__init__(network)
+        self.details = json.dumps({"parentschedule": self.sample_parents(), "payout_color": self.sample_payout_colors(), "button_order": self.sample_button_order()})
         self.current_generation = 0
 
 class TrialBonus(Info):

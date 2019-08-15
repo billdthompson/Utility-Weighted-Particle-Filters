@@ -23,16 +23,15 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
+DEBUG = True
+
 class UWPFWP(Experiment):
 	"""Utility Weighted self.models.Particle Filter with People.
 	 
 	 TODO: 
-	 - add overflow networks
-	 - add overflow nodes
-	 - add current generation to netowrks
-	 - add rollover genreation
-	 - upate recruit
-	 - update get_network_for_participant
+	 - stress test new overflow mechanism
+	 - chekc that node_ids are strictly indreasing (parent samples selection requires this -- see self.add_node_to_network)
+	 - why is calculate over-recruitment being called so many times?
 	"""
 
 	@property
@@ -41,9 +40,9 @@ class UWPFWP(Experiment):
 		'generation_size':2, 
 		'generations': 2, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 4,
-		'num_random_order_experimental_networks_per_experiment': 4,
-		'num_practice_networks_per_experiment': 4,
+		'num_fixed_order_experimental_networks_per_experiment': 1,
+		'num_random_order_experimental_networks_per_experiment': 1,
+		'num_practice_networks_per_experiment': 1,
 		'payout_blue': 'true',
 		'cover_story': 'true',
 		'bonus_max': 1,
@@ -70,7 +69,7 @@ class UWPFWP(Experiment):
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
-		self.known_classes["networkparentsamples"] = self.models.NetworkParentSamples
+		self.known_classes["networkrandomattributes"] = self.models.NetworkRandomAttributes
 		self.known_classes["overflow"] = self.models.OverFlow
 		self.known_classes["overflowparticle"] = self.models.OverflowParticle
 
@@ -93,14 +92,14 @@ class UWPFWP(Experiment):
 		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
-		self.practice_network_proportions = [.53, .46, .47, .54]
-		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49]
+		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.52]
+		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.52]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 		
 		# Conditions
-		self.condition_counts = {"asocial":self.num_replications_per_condition,
+		self.condition_counts = {"social":self.num_replications_per_condition,
 								 "overflow":1
 								 }
 								 # "social":self.num_replications_per_condition, 
@@ -135,22 +134,21 @@ class UWPFWP(Experiment):
 		
 	def setup(self):
 		"""First time setup."""
-
 		for (condition, replications) in self.condition_counts.items():
 			for replication in range(replications):
 				for p in range(self.num_practice_networks_per_experiment):
 					network = self.create_network(condition = condition, replication = replication, role = 'practice', decision_index = p, proportion = self.practice_network_proportions[p])
-					self.models.NetworkParentSamples(network = network)
+					self.models.NetworkRandomAttributes(network = network)
 					
 				for f in range(self.num_fixed_order_experimental_networks_per_experiment):
 					decision_index = self.num_practice_networks_per_experiment + f
 					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.fixed_order_experimental_network_proportions[f])
-					self.models.NetworkParentSamples(network = network)
+					self.models.NetworkRandomAttributes(network = network)
 
 				for r in range(self.num_random_order_experimental_networks_per_experiment):
 					decision_index = self.num_practice_networks_per_experiment + self.num_fixed_order_experimental_networks_per_experiment + r
 					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.random_order_experimental_network_proportions[r])
-					self.models.NetworkParentSamples(network = network)
+					self.models.NetworkRandomAttributes(network = network)
 		
 		self.session.commit()
 
@@ -162,7 +160,7 @@ class UWPFWP(Experiment):
 		if not arbitrary_network:
 			return []
 
-		current_generation = self.models.NetworkParentSamples.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
 
 		# Goal: identify networks that do not already have a full generation of workers working / completed 
 		# 1: count unique participant ids in all nodes
@@ -265,6 +263,22 @@ class UWPFWP(Experiment):
 		self.log("The availible networks are: {}".format([net.id for net in availible_networks]), key)
 		return random.choice(availible_networks)
 
+	def assign_slot(self, participant, network):
+		node_type = self.models.OverflowParticle if isinstance(network, self.models.OverFlow) else self.models.Particle
+
+		# estbalish current generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = network.id).one().current_generation
+
+		all_nodes_this_network_this_generation_so_far = node_type.query.filter(node_type.property2 == repr(int(current_generation))).filter_by(network_id = network.id, failed = False).all()
+
+		# which slots (1, ..., n) are already occupied?
+		all_node_slots_already_taken = [existing_node.slot for existing_node in all_nodes_this_network_this_generation_so_far]
+
+		# which slots remain availible for new nodes?
+		node_slots_still_availible = [slot for slot in range(self.generation_size) if slot not in all_node_slots_already_taken]
+
+		return random.choice(node_slots_still_availible)
+
 	@pysnooper.snoop()
 	def get_network_for_participant(self, participant):
 		"""Find a network for a participant."""
@@ -289,8 +303,11 @@ class UWPFWP(Experiment):
 		memes = [i for i in participant.infos() if i.type == "meme"]
 		if len(memes) >= (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment):
 			raise Exception
-		
-		return self.models.Particle(network=network,participant=participant) if network.condition != 'overflow' else self.models.OverflowParticle(network=network,participant=participant)
+
+		# has this partciipants alreeady been assigned a "slot"?
+		nodes = participant.nodes()
+		slot = self.assign_slot(participant, network) if not nodes else nodes[0].slot
+		return self.models.Particle(network=network,participant=participant, slot = slot) if network.condition != 'overflow' else self.models.OverflowParticle(network=network,participant=participant, slot = slot)
 
 	@pysnooper.snoop()
 	def add_node_to_network(self, node, network):
@@ -299,20 +316,22 @@ class UWPFWP(Experiment):
 		node.receive()
 
 		if isinstance(node, self.models.Particle) or isinstance(node, self.models.OverflowParticle):
+
+			node_type = self.models.OverflowParticle if isinstance(node, self.models.OverflowParticle) else self.models.Particle
+			
 			node.proportion = float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
 			# keep track of how which order the participant is doing neteworks
-			completed_decisions = self.models.Particle.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
+			completed_decisions = node_type.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
 
 		if node.generation > 0 and not node.condition == "overflow":
 
-			# grab pre-sampled parent schedule for this network
-			parentschedule = self.models.NetworkParentSamples.query.filter_by(network_id = network.id).one()
-
-			details = parentschedule.details
+			# retrieve randomised properties for thsi network
+			network_attributes = self.models.NetworkRandomAttributes.query.filter_by(network_id = network.id).one()
 			
-			# isolaterab the parent indices for this generation
-			parent_index_lookup = json.loads(parentschedule.details)[str(node.generation)]
+			# grab pre-sampled parent schedule for this network
+			# and isolate the parent indices for this generation
+			parent_index_lookup = json.loads(network_attributes.details)['parentschedule'][str(node.generation)]
 
 			# list all nodes from the previous generation
 			# and sort the node_ids
@@ -320,20 +339,14 @@ class UWPFWP(Experiment):
 			previous_generation_node_ids_sorted = [previous_node.id for previous_node in all_nodes_previous_generation]
 			previous_generation_node_ids_sorted.sort()
 
-			# list all the nodes in the current generation so far
-			# and sort the node_ids
-			all_nodes_this_generation_so_far = self.models.Particle.query.filter(self.models.Particle.property2 == repr(int(node.generation))).filter_by(network_id = network.id, failed = False).all()
-			current_generation_node_ids_sorted = [existing_node.id for existing_node in all_nodes_this_generation_so_far]
-			current_generation_node_ids_sorted.sort()
-
 			# make a lookup table that takes a numerical index and returns a node_id for nodes at the previous generation 
 			previous_generation_node_id_lookup = dict(zip(list(range(len(all_nodes_previous_generation))), previous_generation_node_ids_sorted))
-			
-			# make a lookup table that takes a node_id and returns a numerical index for nodes at the current generation
-			current_node_order_lookup = dict(zip(current_generation_node_ids_sorted, list(range(len(all_nodes_this_generation_so_far)))))
+
+			# every node should have been assigned a "slot" from 0 to n - 1
+			current_node_numerical_index = node.slot
 
 			# find the pre-sampled numerical index of the parent for the current node
-			parent_index = parent_index_lookup[repr(current_node_order_lookup[node.id])]
+			parent_index = parent_index_lookup[repr(current_node_numerical_index)]
 
 			# and lookup the node_id of the previous-generation node at that numerical index
 			parent_id = previous_generation_node_id_lookup[parent_index]
@@ -354,7 +367,7 @@ class UWPFWP(Experiment):
 		arbitrary_network = self.models.ParticleFilter.query.first()
 
 		# ...to estbalish current generation
-		current_generation = self.models.NetworkParentSamples.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
 
 		# We only need to check how many overflow nodes began
 		# so we only need to check for overflownodes belonging to the first overflow network
@@ -387,7 +400,7 @@ class UWPFWP(Experiment):
 		key ="experiment.py >> rollover_generation: "
 
 		# grab all network stats holders
-		networkstats = self.models.NetworkParentSamples.query.all()
+		networkstats = self.models.NetworkRandomAttributes.query.all()
 
 		# ...to estbalish finishing generation
 		finishing_generation = networkstats[0].current_generation
@@ -421,7 +434,7 @@ class UWPFWP(Experiment):
 		arbitrary_network = self.models.ParticleFilter.query.first()
 
 		# ...to estbalish current generation
-		current_generation = self.models.NetworkParentSamples.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
 
 		# how many of this geenration's nodes have been approved?
 		num_experimental_nodes_approved_this_generation = self.models.Particle.query.filter_by(failed = False).filter(self.models.Particle.participant_id.in_(approved_participant_ids), self.models.Particle.property2 == repr(current_generation)).count()
@@ -573,6 +586,83 @@ def getnet(network_id):
 		db.logger.exception('Error fetching network info')
 		return Response(status=403, mimetype='application/json')
 
+
+@extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
+def get_random_atttributes(network_id, node_generation, node_slot):
+	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+
+	@pysnooper.snoop()
+	def f(network_id, node_slot, node_generation):
+		# get an exp instance
+		exp = UWPFWP(db.session)
+
+		# get the network for this id
+		net = exp.getnet(network_id)
+
+		# establish whether we're dealing with an overflow node or not
+		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
+		
+		# grab all nodes from this network at the previos generation
+		previous_generation_nodes = list(filter(lambda node: node.generation == (node_generation - 1), net.nodes(failed = False, type = node_type)))
+
+		# grab the attributes for this netowrk
+		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
+
+		# load detils
+		data = json.loads(network_attributes.details)
+
+		# isolate the three data fields
+		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][node_generation].values), np.array(data["payout_color"]), np.array(data["button_order"])
+
+		# estblish the incentivised colors for this node
+		node_payout = payout_colors[node_slot]
+
+		# get the node's parent's slot
+		node_parent_slot = parentschedule[node_slot]
+
+		# establish the payout color for the node that provided social information on this round
+		# this is simple because the slot --> payout mapping is constant over generations
+		node_parent_payout = payout_colors[node_parent_slot]
+
+		# make a lookup table to retrive a node id from a slot at the previous generation
+		previous_generation_slot_to_id_lookup = dict([(node.slot, node.id) for node in all_nodes_previous_generation])
+
+		# make a vector of node_ids for all parents that were sampeld from the previous generations
+		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule]
+
+		# make the node objects accessible via node_id
+		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
+
+		# for every sampled parent, ask what color they chose
+		choices = np.array([json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids])
+
+		# for every parent, what was their incetive payout condition?
+		parent_payouts = payout_colors[parentschedule]
+		
+		# make a list of whether each parent node chose blue or not
+		chose_blue = choices == "blue"
+
+		# count how many parents selected their incentivised color
+		k = choices == parent_payouts
+
+		# count the number who did choose blue
+		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
+		b = sum(chose_blue)
+
+		# count the generation size and check it liens up with the exp
+		n = len(previous_generation_nodes)
+
+		return Response(json.dumps({"k":k, "n":n, "b":b, "button":button_orders[node_slot], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
+
+	try:
+		return f(network_id, node_generation, node_slot)
+
+	except Exception:
+		db.logger.exception('Error fetching network info')
+		return Response(status=403, mimetype='application/json')
+
+
+
 @extra_routes.route("/particles/<int:network_id>/<int:generation>/", methods=["GET"])
 def getparticles(network_id, generation):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
@@ -592,10 +682,10 @@ def getparticles(network_id, generation):
 		previous_generation_nodes = list(filter(lambda node: node.generation == (generation - 1), net.nodes(failed = False, type = exp.models.Particle)))
 
 		# find the pre-sampled parentschedule for this network
-		parentschedule = exp.models.NetworkParentSamples.query.filter_by(network_id = network_id).one()
+		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
 
 		# isolate the numerical indicies of the parents sampled for the current generation
-		all_parents_indices = json.loads(parentschedule.details)[str(generation)].values()
+		all_parents_indices = json.loads(network_attributes.details)['parentschedule'][str(generation)].values()
 
 		# line up the node_ids from the previous gen in order
 		previous_generation_node_ids_sorted = [previous_node.id for previous_node in previous_generation_nodes]
