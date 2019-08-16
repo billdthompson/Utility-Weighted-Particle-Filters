@@ -122,7 +122,7 @@ class UWPFWP(Experiment):
 
 	def create_network(self, condition, replication, role, decision_index, proportion):
 		# identify entwork type: overflow?
-		network_type = self.models.ParticleFilter if "OVF" in condition else self.models.OverFlow
+		network_type = self.models.ParticleFilter if not ("OVF" in condition) else self.models.OverFlow
 		
 		# build network and add to session
 		net = network_type(generations=self.generations, generation_size=self.generation_size, replication=replication)
@@ -331,7 +331,7 @@ class UWPFWP(Experiment):
 			completed_decisions = node_type.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
 
-		if node.generation > 0 and not node.condition == "overflow":
+		if node.generation > 0 and not ("OVF" in node.condition):
 
 			# retrieve randomised properties for thsi network
 			network_attributes = self.models.NetworkRandomAttributes.query.filter_by(network_id = network.id).one()

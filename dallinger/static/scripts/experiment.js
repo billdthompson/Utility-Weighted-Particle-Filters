@@ -545,7 +545,7 @@ report = function (color) {
                   payout_condition:payout_condition,
                   social_condition:social_condition,
                   randomization_color:randomization_color,
-                  proportion_utility: proportioƒn_utility,
+                  proportion_utility: proportion_utility,
                   proportion_blue:proportion_blue,
                   parent_chose_utility:parent_chose_utility,
                   parent_utility:parent_utility,
