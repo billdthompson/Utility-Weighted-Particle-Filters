@@ -599,7 +599,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
 	# if we're at generation zero, just get color payout and button order
-	if generation == 0:
+	if node_generation == 0:
 		exp = UWPFWP(db.session)
 
 		# get the network for this id
@@ -614,7 +614,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# load detils
 		data = json.loads(network_attributes.details)
 
-		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][str(node_generation)].values), np.array(data["payout_color"]), np.array(data["button_order"])
+		payout_colors, button_orders = np.array(data["payout_color"]), np.array(data["button_order"])
 
 		# Whcih color is incentivised for this node?
 		node_payout = payout_colors[node_slot]
