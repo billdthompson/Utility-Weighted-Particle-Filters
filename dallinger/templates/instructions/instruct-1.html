@@ -39,33 +39,39 @@
                 var include_gems = true;
                 localStorage.setItem('include_gems',include_gems)
 
-                var node_id = parseInt(resp.node.id)
+                var node_id = parseInt(resp.node.id);
                 localStorage.setItem("node_id",node_id);
 
                 var network_id = parseInt(resp.node.network_id)
                 localStorage.setItem("network_id",network_id);
 
-                var node_slot = parseInt(resp.node.property1)
+                var node_slot = parseInt(resp.node.property1);
                 localStorage.setItem("node_slot",node_slot);
                 
-                var generation = parseInt(resp.node.property2)
+                var generation = parseInt(resp.node.property2);
                 localStorage.setItem("generation",generation);
 
-                var decision_index = parseInt(resp.node.property3)
+                var decision_index = parseInt(resp.node.property3);
                 localStorage.setItem("decision_index",decision_index);
                 
-                var prop_blue = parseFloat(resp.node.property4)
-                localStorage.setItem("prop_blue",prop_blue);
+                var prop_utility = parseFloat(resp.node.property4);
+                localStorage.setItem("prop_utility",prop_utility);
+
+                var prop_utility = parseFloat(resp.node.property4);
+                localStorage.setItem("prop_utility",prop_utility);
+
+                var condition_info = resp.node.property5;
+                console.log(condition_info)
                 
                 var network_string = '/network/' + String(network_id) + '/getnet/'
                 dallinger.get(network_string)
                     .done(function(netresp) {
-                        //console.log("netresponse: ", netresp)
+
                         var net_decision_index = parseInt(netresp.network.property4);
                         localStorage.setItem("net_decision_index",net_decision_index);
 
-                        var randomization_color = parseInt(netresp.network.property5);
-                        localStorage.setItem("randomization_color",randomization_color);
+                        var condition_info = netresp.network.property5;
+                        console.log(condition_info)
 
                         var social_condition = condition_info.substring(0,3);
                         if (social_condition=='ASO' || social_condition=='OVF'){
@@ -82,25 +88,24 @@
                             localStorage.setItem("is_overflow",'false');
                         }
 
-                        var utility_condition = condition_info.substring(4,7);
-                        if (utility_condition=='N-U'){
-                            // no utility
-                            localStorage.setItem("payout_condition",'no-utility');
-                        } else{
-                            // with utility
-                            if (randomization_color=='blue'){
-                                localStorage.setItem("payout_condition",'blue');
-                            } else{
-                                localStorage.setItem("payout_condition",'green');
-                            }
-                        }
-
 
                         dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
                             .done(function (particlesResponse) {
-                                var n_generation_size = parseInt(particlesResponse.n)
-                                var k_chose_utility = parseInt(particlesResponse.k)
-                                var k_chose_blue = parseInt(particlesResponse.b)
+                                var randomization_color = particlesResponse.node_utility // 'green' or 'blue'
+                                var utility_condition = condition_info.substring(4,7);
+                                if (utility_condition=='N-U'){
+                                    // no utility
+                                    localStorage.setItem("payout_condition",'no-utility');
+                                } else{
+                                    // with utility
+                                    if (randomization_color=='blue'){
+                                        localStorage.setItem("payout_condition",'blue');
+                                    } else{
+                                        localStorage.setItem("payout_condition",'green');
+                                    }
+                                }
+                                var button_order = particlesResponse.button_order // 'left' or 'right'
+                                localStorage.setItem('green_left',button_order=='left')
                                 dallinger.goToPage('instructions/instruct-2')
                             }) 
                             .fail(function (rejection) {
