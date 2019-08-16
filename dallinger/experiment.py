@@ -662,6 +662,9 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# make a lookup table to retrive a node id from a slot at the previous generation
 		previous_generation_slot_to_id_lookup = dict([(node.slot, node.id) for node in all_nodes_previous_generation])
 
+		# an one to retrive a node slot from node id at the previous generation
+		previous_generation_id_to_slot_lookup = {v: k for k, v in previous_generation_slot_to_id_lookup.items()}
+
 		# make a vector of node_ids for all parents that were sampeld from the previous generations
 		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule.values]
 
@@ -672,22 +675,23 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		choices = np.array([json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids])
 
 		# for every parent, what was their incetive payout condition?
-		parent_payouts = payout_colors[parentschedule]
-		# [payout_colors[] for node_id in all_parent_node_ids]
+		parent_payouts = [payout_colors[str(previous_generation_id_to_slot_lookup[node_id])] for node_id in all_parent_node_ids]
+		
 		# make a list of whether each parent node chose blue or not
 		chose_blue = choices == "blue"
 
 		# count how many parents selected their incentivised color
-		k = choices == parent_payouts
+		k = (choices == parent_payouts).sum()
 
 		# count the number who did choose blue
 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
 		b = sum(chose_blue)
 
 		# count the generation size and check it liens up with the exp
-		n = len(previous_generation_nodes)
+		n = exp.generation_size
+		assert n == len(chose_blue)
 
-		return Response(json.dumps({"k":k, "n":n, "b":b, "button":button_orders[node_slot], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":k, "n":n, "b":b, "button":button_orders[str(node_slot)], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	try:
 		return f(network_id, node_generation, node_slot)
