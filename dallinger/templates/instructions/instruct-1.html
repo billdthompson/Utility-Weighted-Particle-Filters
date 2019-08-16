@@ -28,7 +28,6 @@
         $('#instruct1_button').css('border','none')
         $('#instruct1_button').css('outline','none')
 
-        var constrained=false;
         create_agent = function() {
             console.log("starting createagent")
           dallinger.createAgent()
@@ -36,52 +35,28 @@
             .done(function (resp) {
                 var include_numbers = true;
                 localStorage.setItem('include_numbers',include_numbers)
-                /*if (Math.random()<=(1/3)){
-                    payout_condition = 'no-utility'
-                } else{
-                    payout_condition = 'with_utility'
-                }*/
 
-                /*if (payout_condition=='with_utility'){
-                    if (Math.random()<=0.5){
-                        payout_condition = 'blue'
-                    } else {
-                        payout_condition = 'green'
-                    }
-                }*/
-                //var payout_condition = 'no-utility'
-
-                /*if (Math.random()<=0.5){
-                    payout_condition = 'blue'
-                } else {
-                    payout_condition = 'green'
-                }*/
-                
-                payout_condition='no-utility'
                 var include_gems = true;
                 localStorage.setItem('include_gems',include_gems)
-                
-                localStorage.setItem("payout_condition",payout_condition);
-                localStorage.setItem("node_id",parseInt(resp.node.id));
-                var generation = parseInt(resp.node.property2)
-                localStorage.setItem("generation",generation);
-                localStorage.setItem("social_condition",resp.node.property5);
-                var prop_blue = parseFloat(resp.node.property4)
-                localStorage.setItem("prop_blue",prop_blue);
-                localStorage.setItem("node_slot",resp.node.property1);
+
+                var node_id = parseInt(resp.node.id)
+                localStorage.setItem("node_id",node_id);
+
                 var network_id = parseInt(resp.node.network_id)
                 localStorage.setItem("network_id",network_id);
-                localStorage.setItem("decision_index",parseInt(resp.node.property3));
-                localStorage.setItem("constrained",constrained);
-                console.log(resp.node.property5)
 
-                //var payout_condition = parseInt(resp.node.payout_condition)
-                //localStorage.setItem('payout_condition',payout_condition)
-                //localStorage.setItem('payout_condition',payout_green)
+                var node_slot = parseInt(resp.node.property1)
+                localStorage.setItem("node_slot",node_slot);
+                
+                var generation = parseInt(resp.node.property2)
+                localStorage.setItem("generation",generation);
 
-                //console.log("** Inside instruct-1 create_agent -- node properties: ", resp.node.id, resp.node.property2, resp.node.property5, resp.node.property4, resp.node.property1, resp.node.network_id)
-
-                var nextpage = 'instructions/instruct-2'
+                var decision_index = parseInt(resp.node.property3)
+                localStorage.setItem("decision_index",decision_index);
+                
+                var prop_blue = parseFloat(resp.node.property4)
+                localStorage.setItem("prop_blue",prop_blue);
+                
                 var network_string = '/network/' + String(network_id) + '/getnet/'
                 dallinger.get(network_string)
                     .done(function(netresp) {
@@ -89,23 +64,57 @@
                         var net_decision_index = parseInt(netresp.network.property4);
                         localStorage.setItem("net_decision_index",net_decision_index);
 
-                            dallinger.get("/particles/" + network_id +  "/" + generation + "/")
-                                .done(function (particlesResponse) {
-                                    var n_generation_size = parseInt(particlesResponse.n)
-                                    var k_chose_blue = parseInt(particlesResponse.k)
-                                    dallinger.goToPage(nextpage)
-                                }) 
-                                .fail(function (rejection) {
-                                    // A 403 is our signal that it's time to go to the questionnaire
-                                    if (rejection.status === 403) {
-                                        dallinger.allowExit();
-                                        dallinger.goToPage('questionnaire');
-                                      } else {
-                                        dallinger.error(rejection);
-                                      }
-                                    
-                                    })
-                                }) 
+                        var randomization_color = parseInt(netresp.network.property5);
+                        localStorage.setItem("randomization_color",randomization_color);
+
+                        var social_condition = condition_info.substring(0,3);
+                        if (social_condition=='ASO' || social_condition=='OVF'){
+                            localStorage.setItem("social_condition",'asocial');
+                        } else if (social_condition=='SOC'){
+                            localStorage.setItem("social_condition",'social');
+                        } else if (social_condition=='SWI'){
+                            localStorage.setItem("social_condition",'social_with_info');
+                        }
+
+                        if (social_condition=='OVF'){
+                            localStorage.setItem("is_overflow",'true');
+                        } else{
+                            localStorage.setItem("is_overflow",'false');
+                        }
+
+                        var utility_condition = condition_info.substring(4,7);
+                        if (utility_condition=='N-U'){
+                            // no utility
+                            localStorage.setItem("payout_condition",'no-utility');
+                        } else{
+                            // with utility
+                            if (randomization_color=='blue'){
+                                localStorage.setItem("payout_condition",'blue');
+                            } else{
+                                localStorage.setItem("payout_condition",'green');
+                            }
+                        }
+
+
+                        dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
+                            .done(function (particlesResponse) {
+                                var n_generation_size = parseInt(particlesResponse.n)
+                                var k_chose_utility = parseInt(particlesResponse.k)
+                                var k_chose_blue = parseInt(particlesResponse.b)
+                                dallinger.goToPage('instructions/instruct-2')
+                            }) 
+                            .fail(function (rejection) {
+                                // A 403 is our signal that it's time to go to the questionnaire
+                                if (rejection.status === 403) {
+                                    dallinger.allowExit();
+                                    dallinger.goToPage('questionnaire');
+                                    } else {
+                                    dallinger.error(rejection);
+                                    }
+                                
+                                })
+                            }) 
+
                     .fail(function (rejection) {
                         // A 403 is our signal that it's time to go to the questionnaire
                         if (rejection.status === 403) {
@@ -131,7 +140,7 @@
 
         pleaseReturnHit = function(){
 
-            $("#loading_message").html("Sory, Something has Gone Wrong.")
+            $("#loading_message").html("Sorry, Something has Gone Wrong.")
             $("#loading_message_2").html("We were unable to assign a unique participant identification nuber based on your worker credentials. Please accept our apologies. Either you have alread participted in this experiment, or there has been a technical error. Please return this HIT. </br></br> We will be posting more experiments in the near future. We hope you will continue to take part in contributing to science! If you have any questions, please email the researcher at: wdt@princeton.edu")
         } 
 

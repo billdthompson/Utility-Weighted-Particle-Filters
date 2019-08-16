@@ -47,7 +47,6 @@ $(".button-wrapper").css("margin-top", "50px");
 
 
 
-var constrained = localStorage.getItem('constrained')=='true'
 $('#instructions').css('font-size','19px')
 var is_practice = true;
 
@@ -265,7 +264,7 @@ create_agent = function() {
       my_node_id = parseInt(resp.node.id);
       generation = parseInt(resp.node.property2);
       node_slot = parseInt(resp.node.property1);
-      is_practice = resp.node.property1=="'practice'";
+      is_practice = trial>num_practice_trials
       proportion_utility = parseFloat(resp.node.property4);
       network_id = parseInt(resp.node.network_id);
       decision_index = parseFloat(resp.node.property3)
