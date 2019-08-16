@@ -71,26 +71,9 @@ function network_random(seed) {
   return x - Math.floor(x);
 }
 
-/*
-$('#more-green').css('background-color','#F0AD4E')
-$('#more-green').css('border-color','#eea236')
-$('#more-blue').css('background-color','#23badb')
-$('#more-blue').css('border-color','#18aac9')
 
 
-$('#more-green').hover(function(){
-  $(this).css('background-color','#ED9C27')
-}, function(){
-  $(this).css('background-color','#F0AD4E')
-})
 
-$('more-blue').hover(function(){
-  $(this).css('background-color','#0b9fbf')
-}, function(){
-  $(this).css('background-color','#23badb')
-})
-
-*/
 $('#more-green').css('background-color','#009500')
 $('#more-green').css('border-color','#009500')
 $('#more-green').css('font-size','16px')
@@ -229,19 +212,6 @@ if (cover_story==false){
 }
 
 
-/*
-if (learning_strategy=='social'){
-  if (include_numbers==true){
-      if (green_left==true){
-          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+greenStr+" and "+blueStr+" dots."
-          $('#instructions').html(instructionsText)
-      } else{
-          instructionsText += " Numbers in parentheses indicate the number of participants choosing that option in an area with the same number of "+blueStr+" and "+greenStr+" dots."
-          $('#instructions').html(instructionsText)
-      }
-  }
-}
-*/ 
 
 function round(num, places){
   var multiplier = Math.pow(10, places);
@@ -264,7 +234,7 @@ create_agent = function() {
       my_node_id = parseInt(resp.node.id);
       generation = parseInt(resp.node.property2);
       node_slot = parseInt(resp.node.property1);
-      is_practice = trial>num_practice_trials
+      is_practice = trial>num_pra
       proportion_utility = parseFloat(resp.node.property4);
       network_id = parseInt(resp.node.network_id);
       decision_index = parseFloat(resp.node.property3)
@@ -335,7 +305,6 @@ get_received_infos = function() {
 
       $("#instructions").text(instructionsText);
       regenerateDisplay(proportion_utility);
-
 
 
       presentDisplay();
@@ -670,7 +639,7 @@ function getBonusAmount(truth,response){
   }
 
 
-
+  // var parent_utility = particlesResponse.parent_utility // 'green' or 'blue'
   function get_social_info(){
     dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
         .done(function (particlesResponse) {

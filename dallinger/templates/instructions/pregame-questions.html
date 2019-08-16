@@ -717,8 +717,7 @@ if (cover_story==true){
 }
 }
   beginExperiment = function () {
-    var green_left = Math.random()<=0.5;
-    localStorage.setItem('green_left',green_left)
+    var green_left = localStorage.getItem('green_left')
     if (green_left==true){
       dallinger.goToPage('stage_green_left')
     } else{

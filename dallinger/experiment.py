@@ -602,6 +602,8 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 	if node_generation == 0:
 		exp = UWPFWP(db.session)
 
+		exp.log(node_slot, "HERERE --->>>")
+
 		# get the network for this id
 		net = exp.getnet(network_id)
 
