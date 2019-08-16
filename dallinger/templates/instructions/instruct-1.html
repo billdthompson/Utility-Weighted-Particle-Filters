@@ -71,6 +71,7 @@
                         localStorage.setItem("net_decision_index",net_decision_index);
 
                         var condition_info = netresp.network.property5;
+                        localStorage.setItem('condition_info',condition_info)
                         console.log(condition_info)
 
                         var social_condition = condition_info.substring(0,3);
