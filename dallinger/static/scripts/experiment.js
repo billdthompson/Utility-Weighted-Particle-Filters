@@ -545,7 +545,7 @@ report = function (color) {
                   payout_condition:payout_condition,
                   social_condition:social_condition,
                   randomization_color:randomization_color,
-                  proportion_utility: proportion_utility,
+                  proportion_utility: proportioƒn_utility,
                   proportion_blue:proportion_blue,
                   parent_chose_utility:parent_chose_utility,
                   parent_utility:parent_utility,
@@ -659,8 +659,13 @@ function getBonusAmount(truth,response){
             parent_utility = particlesResponse.parent_utility // blue, green
 
             if (payout_condition=='no-utility'){
-              k_chose_blue = parseInt(particlesResponse.b)
-              k_chose_green = n_generation_size - k_chose_blue
+              if (randomization_color=='blue'){
+                k_chose_blue = parseInt(particlesResponse.k)
+                k_chose_green=n_generation_size - k_chose_blue
+              } else if (randomization_color=='green'){
+                k_chose_green = parseInt(particlesResponse.k)
+                k_chose_blue=n_generation_size-k_chose_green
+              }
             }
 
             if (payout_condition!='no-utility'){

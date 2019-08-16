@@ -68,9 +68,13 @@
             if (Math.random()<=0.5){
                 first = 'sapphire'
                 second = 'emerald'
+                first_color = '(blue)'
+                second_color = '(green)'
             } else{
                 first='emerald'
                 second='sapphire'
+                first_color = '(green)'
+                second_color = '(blue)'
             }
         }
 
@@ -112,7 +116,7 @@
                                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
                             } else{
                                 $('#story-instructions').html('<p>On each round, you will get a 50 point bonus if you are correct in judging the image as '+
-                                'containing more '+first+' dots or more '+second+' dots.</p>'+
+                                'containing more '+first+' '+first_color+' dots or more '+second+' '+second_color+' dots.</p>'+
                                 '<p id="utility-information">In addition to these accuracy bonuses, you will be paid an additional '+num_points_bonus+' point '+
                                 'bonus for completing the experiment.</p> '+
                                 '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
