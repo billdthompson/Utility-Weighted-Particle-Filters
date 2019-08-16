@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,parent_chose_utility,
-pre_stimulus_social_info,parent_utility,randomization_color,is_overflow;
+pre_stimulus_social_info,parent_utility,randomization_color,is_overflow,k_chose_utility;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -537,25 +537,33 @@ report = function (color) {
     }
   }
 
+  proportion_blue=getBlueDots(proportion_utility)/100
+
   var contents = {choice:color,
                   trial_num:trial,
                   is_practice:is_practice,
                   payout_condition:payout_condition,
                   social_condition:social_condition,
-                  proportion_utility:proportion_utility,
+                  randomization_color:randomization_color,
+                  proportion_utility: proportion_utility,
+                  proportion_blue:proportion_blue,
+                  parent_chose_utility:parent_chose_utility,
+                  parent_utility:parent_utility,
+                  parent_choice: meme["choice"],
+                  pre_stimulus_social_info:pre_stimulus_social_info,
+                  k_chose_blue: k_chose_blue,
+                  k_chose_green: k_chose_green,
+                  k_chose_utility:k_chose_utility,
                   generation: generation,
                   network_id:network_id,
                   node_id: my_node_id,
                   running_total_pay:total_points,
                   current_bonus: current_bonus,
-                  pre_stimulus_social_info: pre_stimulus_social_info,
                   participant_id: dallinger.identity.participantId,
                   green_left: green_left,
                   net_decision_index: net_decision_index,
-                  k_chose_blue: k_chose_blue,
-                  k_chose_green: k_chose_green,
-                  parent_chose_utility: parent_chose_utility,
-                  is_overflow: is_overflow}
+                  is_overflow: is_overflow
+                }
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -745,9 +753,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Sapphire bonus (points): </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Sapphire (blue dot) bonus: </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
@@ -755,9 +763,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald bonus (points): </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald (blue dot) bonus: </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")

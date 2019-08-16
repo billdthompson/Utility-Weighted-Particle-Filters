@@ -413,6 +413,9 @@
         }
     }
 }
+
+
+
 if (cover_story==true){
   $('#question-text-2').html('Which type of dots gives you a bonus?')
   // with cover
@@ -432,9 +435,9 @@ if (cover_story==true){
         $('#question-4').css('display','none')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more sapphire dots or more grass dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
+        'whether there are more sapphire (blue) dots or more gras (green) dots in the area.')
+        $('#instructions-text-3').html('2). You will get a bonus for every sapphire (blue) dot in the area.')
+        $('#instructions-text-4').html('3). You will get this bonus for sapphire (blue) dots regardless of whether your decision is correct.')
         $('#instructions-text-5').css('display','none')
         $('#instructions-text-6').css('display','none')
       } else if (payout_condition=='green'){
@@ -449,9 +452,9 @@ if (cover_story==true){
           $('#question-4').css('display','none')
           $('#question-5').css('display','none')
           $('#instructions-text-2').html('1). On every round, you must judge '+
-          'whether there are more emerald dots or more water dots in the area.')
-          $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-          $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+          'whether there are more emerald (green) dots or more water (blue) dots in the area.')
+          $('#instructions-text-3').html('2). You will get a bonus for every emerald (green) dot in the area.')
+          $('#instructions-text-4').html('3). You will get this bonus for emerald (green) dots regardless of whether your decision is correct.')
           $('#instructions-text-5').css('display','none')
           $('#instructions-text-6').css('display','none')
       } else if (payout_condition=='no-utility'){
@@ -505,12 +508,12 @@ if (cover_story==true){
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more sapphire dots or more grass dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
+        'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
+        $('#instructions-text-3').html('2). You will get a bonus for every sapphire (blue) dot in the area.')
+        $('#instructions-text-4').html('3). You will get this bonus for sapphire (blue) dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decision made by another participant '+
         'viewing an image with the same number of sapphire dots and grass dots.')
-        $('#instructions-text-6').html('5). This participant was also paid for every sapphire dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every sapphire (blue) dot in the area.')
       } else if (payout_condition=='green') {
       // social with info, with cover story, payout green
       $('#q1').html('<option value="1">Judge whether there are more emerald dots or more water dots</option>'+
@@ -541,12 +544,12 @@ if (cover_story==true){
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more emerald dots or more water dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+        'whether there are more emerald (green) dots or more water (blue) dots in the area.')
+        $('#instructions-text-3').html('2). You will get a bonus for every emerald (green) dot in the area.')
+        $('#instructions-text-4').html('3). You will get this bonus for emerald (green) dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
         'viewing an image with the same number of emerald dots and water dots.')
-        $('#instructions-text-6').html('5). This participant was also paid for every emerald dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every emerald (green) dot in the area.')
     } else if (payout_condition=='no-utility'){
       //makes no sense
         }
@@ -601,9 +604,9 @@ if (cover_story==true){
                           '</select></div><br><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more emerald dots or more water dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+        'whether there are more emerald (green) dots or more water (blue) dots in the area.')
+        $('#instructions-text-3').html('2). You will get a bonus for every emerald (green) dot in the area.')
+        $('#instructions-text-4').html('3). You will get this bonus for emerald (green) dots regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decision made by another participant '+
         'viewing an area with the same number of emerald dots and water dots.')
         $('#instructions-text-6').css('display','none')

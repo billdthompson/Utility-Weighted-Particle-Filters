@@ -82,11 +82,11 @@
                                 if (cover_story==true){
                                     if (payout_condition=='blue'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and how many sapphires are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            'Depending on how many areas you judge correctly and how many sapphires (blue dots) are in each, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p> &nbsp;')
                                     } else if (payout_condition=='green'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' areas in total. '+
-                                            'Depending on how many areas you judge correctly and how many emeralds are in each, you can earn a bonus of up to $' + max_bonus + 
+                                            'Depending on how many areas you judge correctly and how many emeralds (green dots) are in each, you can earn a bonus of up to $' + max_bonus + 
                                             '. The first '+ String(num_practice) + ' areas are for practice and will not count towards your bonus.</p> &nbsp;')
                                     } else if (payout_condition=='no-utility'){
                                         $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' ' + filler_word + ' in total. '+

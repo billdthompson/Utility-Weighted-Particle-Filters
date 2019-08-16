@@ -13,7 +13,7 @@ from sqlalchemy import Integer
 from dallinger import db
 from flask import Blueprint, Response
 
-import numpy as np
+import numpy as np 
 import random
 import json
 import pysnooper
@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	def public_properties(self):
 		return {
 		'generation_size':4, 
-		'generations': 2, 
+		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 1,
 		'num_random_order_experimental_networks_per_experiment': 1,
@@ -107,10 +107,11 @@ class UWPFWP(Experiment):
 		# SWI:W-U
 		# OVF:W-U
 		# OVF:N-U
+		self.condition_counts = {"ASO:N-U":self.num_replications_per_condition}
 		
-		self.condition_counts = {"SOC:N-U":self.num_replications_per_condition,
-								 "overflow":1
-								 }
+		#self.condition_counts = {"SOC:N-U":self.num_replications_per_condition,
+		#						 "overflow":1
+		#							 }
 
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values())
