@@ -37,7 +37,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
+		'generation_size':4, 
 		'generations': 2, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 1,
@@ -616,13 +616,13 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# load detils
 		data = json.loads(network_attributes.details)
 
-		payout_colors, button_orders = np.array(data["payout_color"]), np.array(data["button_order"])
+		payout_colors, button_orders = data["payout_color"], data["button_order"]
 
 		# Whcih color is incentivised for this node?
-		node_payout = payout_colors[node_slot]
+		node_payout = payout_colors[str(node_slot)]
 
 		# Button order randomisation
-		node_button_order = button_orders[node_slot]
+		node_button_order = button_orders[str(node_slot)]
 		
 		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button":node_button_order, "parent_utility":-1, "node_utility":node_payout}), status=200, mimetype="application/json")
 
@@ -647,23 +647,23 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		data = json.loads(network_attributes.details)
 
 		# isolate the three data fields
-		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][str(node_generation)].values), np.array(data["payout_color"]), np.array(data["button_order"])
+		parentschedule, payout_colors, button_orders = data["parentschedule"][str(node_generation)], data["payout_color"], data["button_order"]
 
 		# estblish the incentivised colors for this node
-		node_payout = payout_colors[node_slot]
+		node_payout = payout_colors[str(node_slot)]
 
 		# get the node's parent's slot
-		node_parent_slot = parentschedule[node_slot]
+		node_parent_slot = parentschedule[str(node_slot)]
 
 		# establish the payout color for the node that provided social information on this round
 		# this is simple because the slot --> payout mapping is constant over generations
-		node_parent_payout = payout_colors[node_parent_slot]
+		node_parent_payout = payout_colors[str(node_parent_slot)]
 
 		# make a lookup table to retrive a node id from a slot at the previous generation
 		previous_generation_slot_to_id_lookup = dict([(node.slot, node.id) for node in all_nodes_previous_generation])
 
 		# make a vector of node_ids for all parents that were sampeld from the previous generations
-		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule]
+		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule.values]
 
 		# make the node objects accessible via node_id
 		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
@@ -673,7 +673,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 		# for every parent, what was their incetive payout condition?
 		parent_payouts = payout_colors[parentschedule]
-		
+		# [payout_colors[] for node_id in all_parent_node_ids]
 		# make a list of whether each parent node chose blue or not
 		chose_blue = choices == "blue"
 
@@ -698,61 +698,61 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 
 
-@extra_routes.route("/particles/<int:network_id>/<int:generation>/", methods=["GET"])
-def getparticles(network_id, generation):
-	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+# @extra_routes.route("/particles/<int:network_id>/<int:generation>/", methods=["GET"])
+# def getparticles(network_id, generation):
+# 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
-	if generation == 0:
-		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
+# 	if generation == 0:
+# 		return Response(json.dumps({"k":-1, "n":-1}), status=200, mimetype="application/json")
 
-	@pysnooper.snoop()
-	def f(network_id, generation):
-		# get an exp instance
-		exp = UWPFWP(db.session)
+# 	@pysnooper.snoop()
+# 	def f(network_id, generation):
+# 		# get an exp instance
+# 		exp = UWPFWP(db.session)
 
-		# get the network for this id
-		net = exp.getnet(network_id)
+# 		# get the network for this id
+# 		net = exp.getnet(network_id)
 
-		# get all nodes from the previous generation
-		previous_generation_nodes = list(filter(lambda node: node.generation == (generation - 1), net.nodes(failed = False, type = exp.models.Particle)))
+# 		# get all nodes from the previous generation
+# 		previous_generation_nodes = list(filter(lambda node: node.generation == (generation - 1), net.nodes(failed = False, type = exp.models.Particle)))
 
-		# find the pre-sampled parentschedule for this network
-		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
+# 		# find the pre-sampled parentschedule for this network
+# 		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
 
-		# isolate the numerical indicies of the parents sampled for the current generation
-		all_parents_indices = json.loads(network_attributes.details)['parentschedule'][str(generation)].values()
+# 		# isolate the numerical indicies of the parents sampled for the current generation
+# 		all_parents_indices = json.loads(network_attributes.details)['parentschedule'][str(generation)].values()
 
-		# line up the node_ids from the previous gen in order
-		previous_generation_node_ids_sorted = [previous_node.id for previous_node in previous_generation_nodes]
-		previous_generation_node_ids_sorted.sort()
+# 		# line up the node_ids from the previous gen in order
+# 		previous_generation_node_ids_sorted = [previous_node.id for previous_node in previous_generation_nodes]
+# 		previous_generation_node_ids_sorted.sort()
 		
-		# and make a lookup table so we can retrieve a speicifc node_id from a numerical parent_index
-		previous_generation_node_id_lookup = dict(zip(list(range(len(previous_generation_nodes))), previous_generation_node_ids_sorted))
+# 		# and make a lookup table so we can retrieve a speicifc node_id from a numerical parent_index
+# 		previous_generation_node_id_lookup = dict(zip(list(range(len(previous_generation_nodes))), previous_generation_node_ids_sorted))
 
-		# retreive the relevant node_ids for all sapled parents
-		all_parent_node_ids = [previous_generation_node_id_lookup[index] for index in all_parents_indices]
+# 		# retreive the relevant node_ids for all sapled parents
+# 		all_parent_node_ids = [previous_generation_node_id_lookup[index] for index in all_parents_indices]
 
-		# make the node objects accessible via node_id
-		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
+# 		# make the node objects accessible via node_id
+# 		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
 
-		choices = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids]
+# 		choices = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids]
 
-		# make a list of whether each parent node chose blue or not
-		chose_blue = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] == "blue" for node_id in all_parent_node_ids]
+# 		# make a list of whether each parent node chose blue or not
+# 		chose_blue = [json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] == "blue" for node_id in all_parent_node_ids]
 
-		# count the number who did choose blue
-		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
-		k = sum(chose_blue)
+# 		# count the number who did choose blue
+# 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
+# 		k = sum(chose_blue)
 
-		# count the generation size and check it liens up with the exp
-		n = len(previous_generation_nodes)
-		assert n == exp.generation_size
+# 		# count the generation size and check it liens up with the exp
+# 		n = len(previous_generation_nodes)
+# 		assert n == exp.generation_size
 
-		return Response(json.dumps({"k":k, "n":n}), status=200, mimetype="application/json")
+# 		return Response(json.dumps({"k":k, "n":n}), status=200, mimetype="application/json")
 
-	try:
-		return f(network_id, generation)
+# 	try:
+# 		return f(network_id, generation)
 
-	except Exception:
-		db.logger.exception('Error fetching network info')
-		return Response(status=403, mimetype='application/json')
+# 	except Exception:
+# 		db.logger.exception('Error fetching network info')
+# 		return Response(status=403, mimetype='application/json')
