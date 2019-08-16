@@ -76,12 +76,12 @@
 
         var num_fixed,num_random,num_test
 
-        dallinger.getExperimentProperty('num_fixed_order_experimental_networks_per_condition')
+        dallinger.getExperimentProperty('num_fixed_order_experimental_networks_per_experiment')
             .done(function  (propertiesResp) {
-                num_fixed = propertiesResp.num_fixed_order_experimental_networks_per_condition
-                dallinger.getExperimentProperty('num_random_order_experimental_networks_per_condition')
+                num_fixed = propertiesResp.num_fixed_order_experimental_networks_per_experiment
+                dallinger.getExperimentProperty('num_random_order_experimental_networks_per_experiment')
                 .done(function (propertiesResp){
-                    num_random = propertiesResp.num_random_order_experimental_networks_per_condition
+                    num_random = propertiesResp.num_random_order_experimental_networks_per_experiment
                     num_test = num_fixed+num_random
                     num_points_bonus = parseInt(num_test*50)
 

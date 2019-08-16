@@ -99,11 +99,18 @@ class UWPFWP(Experiment):
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 		
 		# Conditions
-		self.condition_counts = {"social":self.num_replications_per_condition,
+		# SOC:N-U
+		# SOC:W-U
+		# ASO:N-U
+		# ASO:W-U
+		# SWI:N-U
+		# SWI:W-U
+		# OVF:W-U
+		# OVF:N-U
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
 								 "overflow":1
 								 }
-								 # "social":self.num_replications_per_condition, 
-								 # "social_with_info": self.num_replications_per_condition,
+
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values())
 		self.num_experimental_networks_per_experiment = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_experiment + self.num_random_order_experimental_networks_per_experiment
@@ -580,7 +587,7 @@ def getnet(network_id):
 
 		net = exp.getnet(network_id)
 
-		return Response(json.dumps({"network":{"property4":net.__json__()["property4"]}}), status=200, mimetype="application/json")
+		return Response(json.dumps({"network":{"property4":net.__json__()["property4"],"property5": net.__json__()["property5"]}}), status=200, mimetype="application/json")
 
 	except Exception:
 		db.logger.exception('Error fetching network info')
@@ -590,6 +597,32 @@ def getnet(network_id):
 @extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
+
+	# if we're at generation zero, just get color payout and button order
+	if generation == 0:
+		exp = UWPFWP(db.session)
+
+		# get the network for this id
+		net = exp.getnet(network_id)
+
+		# establish whether we're dealing with an overflow node or not
+		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
+
+		# grab the attributes for this netowrk
+		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
+
+		# load detils
+		data = json.loads(network_attributes.details)
+
+		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][str(node_generation)].values), np.array(data["payout_color"]), np.array(data["button_order"])
+
+		# Whcih color is incentivised for this node?
+		node_payout = payout_colors[node_slot]
+
+		# Button order randomisation
+		node_button_order = button_orders[node_slot]
+		
+		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button":node_button_order, "parent_utility":-1, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	@pysnooper.snoop()
 	def f(network_id, node_slot, node_generation):
@@ -612,7 +645,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		data = json.loads(network_attributes.details)
 
 		# isolate the three data fields
-		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][node_generation].values), np.array(data["payout_color"]), np.array(data["button_order"])
+		parentschedule, payout_colors, button_orders = np.array(data["parentschedule"][str(node_generation)].values), np.array(data["payout_color"]), np.array(data["button_order"])
 
 		# estblish the incentivised colors for this node
 		node_payout = payout_colors[node_slot]
