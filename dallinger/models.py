@@ -406,7 +406,9 @@ class NetworkRandomAttributes(Node):
 
     def sample_button_order(self):
         n = float(self.network.generation_size)
-        return dict(zip(range(int(n)), (["left"] * int(n / 4.)) + (["right"] * int(n / 4.)) + (["left"] * int(n / 4.)) + (["right"] * int(n / 4.))    ))
+        # uncomment below for real exp; commented so no need to run four per gen
+        # return dict(zip(range(int(n)), (["left"] * int(n / 4.)) + (["right"] * int(n / 4.)) + (["left"] * int(n / 4.)) + (["right"] * int(n / 4.))))
+        return dict(zip(range(int(n)), (["left"] * int(n / 2.)) + (["right"] * int(n / 2.))))
 
     def __init__(self, network, details = None):
         super(NetworkRandomAttributes, self).__init__(network)
