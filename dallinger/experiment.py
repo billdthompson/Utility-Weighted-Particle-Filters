@@ -37,13 +37,8 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-<<<<<<< HEAD
-		'generation_size':4, 
-		'generations': 1, 
-=======
 		'generation_size':2, 
 		'generations': 2, 
->>>>>>> 7076698454714885b915bd58f958991b92bdf871
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 1,
 		'num_random_order_experimental_networks_per_experiment': 1,
@@ -113,7 +108,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		self.condition_counts = {"SOC:N-U":self.num_replications_per_condition,
-								 "overflow":1
+								 "OVF:N-U":1
 								 }
 
 		# Derrived Quantities
@@ -127,7 +122,7 @@ class UWPFWP(Experiment):
 
 	def create_network(self, condition, replication, role, decision_index, proportion):
 		# identify entwork type: overflow?
-		network_type = self.models.ParticleFilter if condition != "overflow" else self.models.OverFlow
+		network_type = self.models.ParticleFilter if "OVF" in condition else self.models.OverFlow
 		
 		# build network and add to session
 		net = network_type(generations=self.generations, generation_size=self.generation_size, replication=replication)
@@ -603,14 +598,13 @@ def getnet(network_id):
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
+	exp = UWPFWP(db.session)
+
+	# get the network for this id
+	net = exp.getnet(network_id)
+
 	# if we're at generation zero, just get color payout and button order
-	if node_generation == 0:
-		exp = UWPFWP(db.session)
-
-		exp.log(node_slot, "HERERE --->>>")
-
-		# get the network for this id
-		net = exp.getnet(network_id)
+	if (node_generation == 0) or ("OVF" in net.property5):
 
 		# establish whether we're dealing with an overflow node or not
 		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
@@ -633,11 +627,6 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 	@pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
-		# get an exp instance
-		exp = UWPFWP(db.session)
-
-		# get the network for this id
-		net = exp.getnet(network_id)
 
 		# establish whether we're dealing with an overflow node or not
 		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
@@ -696,7 +685,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		n = exp.generation_size
 		assert n == len(chose_blue)
 
-		return Response(json.dumps({"k":k, "n":n, "b":b, "button":button_orders[str(node_slot)], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":int(k), "n":int(n), "b":int(b), "button":button_orders[str(node_slot)], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	try:
 		return f(network_id = network_id, node_generation = node_generation, node_slot = node_slot)
