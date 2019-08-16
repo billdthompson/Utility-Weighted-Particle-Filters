@@ -107,7 +107,7 @@ class UWPFWP(Experiment):
 		# SWI:W-U
 		# OVF:W-U
 		# OVF:N-U
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+		self.condition_counts = {"SOC:N-U":self.num_replications_per_condition,
 								 "overflow":1
 								 }
 
