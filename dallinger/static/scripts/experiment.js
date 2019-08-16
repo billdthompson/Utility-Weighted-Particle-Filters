@@ -1,5 +1,6 @@
 //
-var n_generation_size, k_chose_blue,k_chose_green,choice_array,parent_chose_utility,pre_stimulus_social_info,parent_utility;
+var n_generation_size, k_chose_blue,k_chose_green,choice_array,parent_chose_utility,
+pre_stimulus_social_info,parent_utility,randomization_color,is_overflow;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -9,6 +10,9 @@ var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true"
 var social_condition = localStorage.getItem('social_condition'); // string
 var payout_condition = localStorage.getItem('payout_condition') // string, true/false
 var node_slot = localStorage.getItem('node_slot')
+var randomization_color = localStorage.getItem('randomization_color')
+var is_overflow = localStorage.getItem('is_overflow')=='true';
+
 
 
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
@@ -20,7 +24,7 @@ var include_numbers = localStorage.getItem('include_numbers')=='true';
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
-var proportion_utility = parseFloat(localStorage.getItem("prop_blue")); //string/float
+var proportion_utility = parseFloat(localStorage.getItem("prop_utility")); //string/float
 var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 //var generation_seed = generation;
 //var network_id_seed = network_id;
@@ -231,15 +235,17 @@ create_agent = function() {
     dallinger.createAgent()
     .done(function (resp) {
       $("#trial-number").html(trial);
-      my_node_id = parseInt(resp.node.id);
-      generation = parseInt(resp.node.property2);
-      node_slot = parseInt(resp.node.property1);
-      is_practice = trial>num_pra
-      proportion_utility = parseFloat(resp.node.property4);
-      network_id = parseInt(resp.node.network_id);
-      decision_index = parseFloat(resp.node.property3)
-      network_string = '/network/' + String(network_id) + "/getnet/"
+      is_practice = trial>num_practice_trials;
 
+      my_node_id = parseInt(resp.node.id);
+      network_id = parseInt(resp.node.network_id)
+
+      node_slot = parseInt(resp.node.property1);
+      generation = parseInt(resp.node.property2);
+      decision_index = parseFloat(resp.node.property3)
+      proportion_utility = parseFloat(resp.node.property4);
+
+      network_string = '/network/' + String(network_id) + "/getnet/"
       dallinger.get(network_string).done(function(netresp) {
         net_decision_index = parseInt(netresp.network.property4);
         // console.log("** Inside get net -- net decision_index: ", net_decision_index)
@@ -292,12 +298,6 @@ get_received_infos = function() {
       $("#practice-trial").html("This is NOT a practice trial");
     }
 
-    if (generation=='0' || social_condition=='asocial'){
-      var learning_strategy = "asocial";
-    } else{
-      var learning_strategy = "social";
-    }
-
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
       $("#instructions").hide()
@@ -336,7 +336,6 @@ get_received_infos = function() {
         } else{
           $("#stimulus").attr("src", blue_filepath);
           pre_stimulus_social_info = 'blue'
-          pre_stimulus_social_info = 'green'
         }
       }
 
@@ -344,15 +343,19 @@ get_received_infos = function() {
         if (randomization_color=='blue'){
           if (parent_chose_utility==true){
             $("#stimulus").attr("src", blue_filepath);
+            pre_stimulus_social_info = 'blue'
           } else{
             $("#stimulus").attr("src", green_filepath);
+            pre_stimulus_social_info = 'green'
           } 
 
         } else if (randomization_color=='green'){
           if (parent_chose_utility==true){
             $("#stimulus").attr("src", green_filepath);
+            pre_stimulus_social_info = 'green'
           } else{
             $("#stimulus").attr("src", blue_filepath);
+            pre_stimulus_social_info = 'blue'
           } 
         }
       }
@@ -414,13 +417,11 @@ function regenerateDisplay (propUtility) {
   paper = Raphael(horizontalOffset, 185, width, height);
 
   colors = [];
-  //colorsRGB = ["#428bca", "#FBB829"];
-  //colorsRGB = ["#31d3f7","#f7b831"] HSB colors
-  //colorsRGB = ['#00ffff','#ffab29']
-  if (color_randomization=='blue'){
+
+  if (randomization_color=='blue'){
     colorsRGB = ['#0084ff','#009500']
   } else {
-    colorsRGB = ['009500','#0084ff']
+    colorsRGB = ['#009500','#0084ff']
   }
 
 
@@ -432,8 +433,6 @@ function regenerateDisplay (propUtility) {
   }
 
   random_string = String(generation) + String(net_decision_index)
-  console.log(random_string)
-  console.log(net_decision_index)
 
   var myrng0 = new Math.seedrandom(random_string+'_colors');
   colors = shuffle(colors,myrng0);
@@ -520,6 +519,7 @@ report = function (color) {
   bonuses=getBonusAmount(true_color,color)
   accuracy_b = bonuses[0]
   condition_b = bonuses[1]
+
   if (trial>num_practice_trials){
     num_test_correct += (accuracy_b/50)
     total_dots += (condition_b / points_per_dot)
@@ -548,13 +548,14 @@ report = function (color) {
                   node_id: my_node_id,
                   running_total_pay:total_points,
                   current_bonus: current_bonus,
-                  pre_stimulus_social_info: meme["choice"],
+                  pre_stimulus_social_info: pre_stimulus_social_info,
                   participant_id: dallinger.identity.participantId,
                   green_left: green_left,
                   net_decision_index: net_decision_index,
                   k_chose_blue: k_chose_blue,
                   k_chose_green: k_chose_green,
-                  parent_chose_utility: parent_chose_utility}
+                  parent_chose_utility: parent_chose_utility,
+                  is_overflow: is_overflow}
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -643,6 +644,8 @@ function getBonusAmount(truth,response){
   function get_social_info(){
     dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
         .done(function (particlesResponse) {
+          parent_utility = particlesResponse.parent_utility
+
           if (learning_strategy=='social'){
             n_generation_size = parseInt(particlesResponse.n)
             parent_utility = particlesResponse.parent_utility // blue, green
@@ -675,7 +678,6 @@ function getBonusAmount(truth,response){
             }
             $('#more-blue').html(blueStr + ' (' + String(k_chose_blue) + blue_vote_str)
             $('#more-green').html(greenStr + ' (' + String(k_chose_green) + green_vote_str)
-
 
 
             $(".chose-green").unbind('click').click(function() {

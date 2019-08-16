@@ -92,6 +92,7 @@
                         dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
                             .done(function (particlesResponse) {
                                 var randomization_color = particlesResponse.node_utility // 'green' or 'blue'
+                                localStorage.setItem('randomization_color',randomization_color)
                                 var utility_condition = condition_info.substring(4,7);
                                 if (utility_condition=='N-U'){
                                     // no utility
