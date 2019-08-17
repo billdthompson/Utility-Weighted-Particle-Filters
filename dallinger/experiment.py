@@ -633,7 +633,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		node_type = exp.models.OverflowParticle if isinstance(net, exp.models.OverFlow) else exp.models.Particle
 		
 		# grab all nodes from this network at the previos generation
-		previous_generation_nodes = list(filter(lambda node: node.generation == (node_generation - 1), net.nodes(failed = False, type = node_type)))
+		previous_generation_nodes = list(filter(lambda node: node.generation == (node_generation - 1), net.nodes(failed = False, type = node_type))) 		
 
 		# grab the attributes for this netowrk
 		network_attributes = exp.models.NetworkRandomAttributes.query.filter_by(network_id = network_id).one()
@@ -647,36 +647,15 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# estblish the incentivised colors for this node
 		node_payout = payout_colors[str(node_slot)]
 
-		# get the node's parent's slot
-		node_parent_slot = parentschedule[str(node_slot)]
+		previous_generation_choices = np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] for node in previous_generation_nodes])
 
-		# establish the payout color for the node that provided social information on this round
-		# this is simple because the slot --> payout mapping is constant over generations
-		node_parent_payout = payout_colors[str(node_parent_slot)]
-
-		# make a lookup table to retrive a node id from a slot at the previous generation
-		previous_generation_slot_to_id_lookup = dict([(node.slot, node.id) for node in previous_generation_nodes])
-
-		# an one to retrive a node slot from node id at the previous generation
-		previous_generation_id_to_slot_lookup = {v: k for k, v in previous_generation_slot_to_id_lookup.items()}
-
-		# make a vector of node_ids for all parents that were sampeld from the previous generations
-		all_parent_node_ids = [previous_generation_slot_to_id_lookup[sampled_parent] for sampled_parent in parentschedule.values()]
-
-		# make the node objects accessible via node_id
-		previous_generation = dict(zip([node.id for node in previous_generation_nodes], previous_generation_nodes))
-
-		# for every sampled parent, ask what color they chose
-		choices = np.array([json.loads(previous_generation[node_id].infos(type = Meme)[0].contents)["choice"] for node_id in all_parent_node_ids])
-
-		# for every parent, what was their incetive payout condition?
-		parent_payouts = [payout_colors[str(previous_generation_id_to_slot_lookup[node_id])] for node_id in all_parent_node_ids]
+		previous_generation_utilities = np.array([payout_colors[node.slot] for node in previous_generation_nodes])
 		
 		# make a list of whether each parent node chose blue or not
-		chose_blue = choices == "blue"
+		chose_blue = previous_generation_choices == "blue"
 
 		# count how many parents selected their incentivised color
-		k = (choices == parent_payouts).sum()
+		k = (previous_generation_choices == previous_generation_utilities).sum()
 
 		# count the number who did choose blue
 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
