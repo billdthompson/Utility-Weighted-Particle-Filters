@@ -33,9 +33,7 @@
           dallinger.createAgent()
             
             .done(function (resp) {
-                var include_numbers = true;
-                localStorage.setItem('include_numbers',include_numbers)
-
+                
                 var include_gems = true;
                 localStorage.setItem('include_gems',include_gems)
 
@@ -106,7 +104,8 @@
                                         localStorage.setItem("payout_condition",'green');
                                     }
                                 }
-                                var button_order = particlesResponse.button_order // 'left' or 'right'
+                                var button_order = particlesResponse.button_order // 'left' or 'right
+                                localStorage.setItem('button_order',button_order)
                                 localStorage.setItem('green_left',button_order=='left')
                                 dallinger.goToPage('instructions/instruct-2')
                             }) 

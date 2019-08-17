@@ -42,8 +42,6 @@
         $('#previous_button').css('border','none')
         $('#previous_button').css('outline','none')
 
-        var include_numbers = localStorage.getItem('include_numbers')=='true';
-
         var social_condition = localStorage.getItem("social_condition"); 
 
         var payout_condition = localStorage.getItem("payout_condition"); 
@@ -78,87 +76,42 @@
         
         if (social_condition=='social'){
             if (cover_story==false || payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will view the decision made by another participant. '  +
-                'This participant viewed an '+filler_word+' with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
+                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will view the decisions made by another set of participants. '  +
+                'These participants viewed an '+filler_word+' with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-                    'This participant viewed an area with the same number of sapphire dots and grass dots as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another set of participants. '  +
+                    'These participants viewed an area with the same number of sapphire dots and grass dots as the one you will see.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an area with the same number of emerald dots and water dots as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another set of participants. '  +
+            'These participants viewed an area with the same number of emerald dots and water dots as the one you will see.</p>')
             }
         }
 
         } else if (social_condition=='social_with_info'){
             if (cover_story==false){
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of blue dots and green dots as the one you will see, and like you was paid for blue dots.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another set of participants. '  +
+            'These participants viewed an image with the same number of blue dots and green dots as the one you will see, and like you were paid for blue dots.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of green dots and blue dots as the one you will see, and like you was paid for green dots.</p>')
-                } else if (payout_condition=='no-utility'){
-                    $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another set of participants. '  +
+            'These participants viewed an image with the same number of green dots and blue dots as the one you will see, and like you were paid for green dots.</p>')
                 }
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of sapphire dots and grass dots as the one you will see, and like you was paid for sapphire dots.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another set of participants. '  +
+            'This participants viewed an image with the same number of sapphire dots and grass dots as the one you will see, and like you were paid for sapphire dots.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the judgement made by another participant. '  +
-            'This participant viewed an image with the same number of emerald dots and water dots as the one you will see, and like you was paid for emerald dots.</p>')
-                } else if (payout_condition=='no-utility'){
-                    $('#story-instructions').html('<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will view the decisions made by another participant. '  +
+            'These participant viewed an image with the same number of emerald dots and water dots as the one you will see, and like you were paid for emerald dots.</p>')
                 }
             }
         }
+
+
 
         // still need to add the no-cover condition
         old_html = $('#story-instructions').html()
-        if (include_numbers==true){
-            if (payout_condition=='blue'){
-                if (social_condition=='social' && generation_num!=0){
-                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                    "there are more sapphire or grass dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'sapphire dots and grass dots.</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                } else if (social_condition=='social_with_info' && generation_num!=0){
-                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                    "there are more sapphire or grass dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'sapphire dots and grass dots. These participants were also paid for sapphire but not grass dots.</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                }
-            } else if (payout_condition=='green'){
-                if (social_condition=='social' && generation_num!=0){
-                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                    "there are more emerald or water dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'emerald dots and water dots.</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                } else if (social_condition=='social_with_info' && generation_num!=0){
-                    new_html = '<p>After viewing an area, you will click on a button indicating whether you think '+
-                    "there are more emerald or water dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option in an area with the same number of '+
-                    'emerald dots and water dots. These participants were also paid for emerald but not water dots.</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                }
-            } else if (payout_condition=='no-utility'){
-                if (social_condition=='social' && generation_num!=0){
-                    new_html = '<p>After viewing an '+filler_word+', you will click on a button indicating whether you think '+
-                    "there are more "+first+" or "+second+" dots. These buttons will also include numbers indicating how many "+
-                    'participants in a previous iteration of the experiment chose that option '+small_word+' an '+filler_word+' with the same number of '+
-                    first+' dots and '+second+' dots.</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                } else if (social_condition=='social_with_info' && generation_num!=0){
-                    new_html = '<p>N E E D   T O   F I G U R E   T H I S   O U T ! ! !</p>'
-                    $('#story-instructions').html(old_html+new_html)
-                }
-            }
-
-        }
 
         advance = function(){
             var nextpage = 'instructions/instruct-ready'
