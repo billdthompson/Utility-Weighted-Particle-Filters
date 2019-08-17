@@ -497,6 +497,7 @@ class UWPFWP(Experiment):
 
 			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments - 1)) + next_generation_required_overflow)
 
+	@pysnooper.snoop()
 	def bonus(self, participant):
 		"""Calculate a participants bonus."""
 		infos = participant.infos()
@@ -594,8 +595,8 @@ def getnet(network_id):
 		db.logger.exception('Error fetching network info')
 		return Response(status=403, mimetype='application/json')
 
-
 @extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
+@pysnooper.snoop()
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
@@ -624,7 +625,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# Button order randomisation
 		node_button_order = button_orders[str(node_slot)]
 		
-		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button":node_button_order, "parent_utility":-1, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	@pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
@@ -649,7 +650,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 		previous_generation_choices = np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] for node in previous_generation_nodes])
 
-		previous_generation_utilities = np.array([payout_colors[node.slot] for node in previous_generation_nodes])
+		previous_generation_utilities = np.array([payout_colors[str(node.slot)] for node in previous_generation_nodes])
 		
 		# make a list of whether each parent node chose blue or not
 		chose_blue = previous_generation_choices == "blue"
@@ -665,7 +666,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		n = exp.generation_size
 		assert n == len(chose_blue)
 
-		return Response(json.dumps({"k":int(k), "n":int(n), "b":int(b), "button":button_orders[str(node_slot)], "parent_utility":node_parent_payout, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":int(k), "n":int(n), "b":int(b), "button":button_orders[str(node_slot)], "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	try:
 		return f(network_id = network_id, node_generation = node_generation, node_slot = node_slot)
