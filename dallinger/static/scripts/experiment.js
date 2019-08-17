@@ -76,6 +76,110 @@ function network_random(seed) {
 }
 
 
+function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
+  Chart.defaults.global.plugins.datalabels.anchor = 'end';
+  Chart.defaults.global.plugins.datalabels.align = 'end';
+  Chart.defaults.global.defaultFontFamily =  "Helvetica";
+  Chart.defaults.global.defaultFontColor =  "#3b3b3b";
+  if (green_is_left==true){
+    color_vec = ["#009500", "#0084ff"]
+    data_vec = [num_green+0.25,num_blue+0.25]
+    if (payout_condition=='green'){
+      label_vec = [["More",'emerald'], ["More",'water']]
+    } else if (payout_condition=='blue'){
+      label_vec = [["More",'grass'], ["More",'sapphire']]
+    } else if (payout_condition=='no-utility'){
+      label_vec = [["More",'emerald'], ["More",'sapphire']]
+    }
+  } else if (green_is_left==false){
+    data_vec = [num_blue+0.25,num_green+0.25]
+    color_vec = ["#0084ff", "#009500"]
+    if (payout_condition=='green'){
+      label_vec = [["More",'water'], ["More",'emerald']]
+    } else if (payout_condition=='blue'){
+      label_vec = [["More",'sapphire'], ["More",'grass']]
+    } else if (payout_condition=='no-utility'){
+      label_vec = [["More",'sapphire'], ["More",'emerald']]
+    }
+  }
+
+  if (is_SWI==true){
+    if (payout_condition=='green'){
+      text_vec = ['Other participants being','paid for emeralds chose:','']
+    } else if (payout_condition=='blue'){
+      text_vec = ['Other participants being','paid for sapphires chose:','']
+    }
+  } else{
+    text_vec = ['Other participants chose:','']
+  }
+
+  new Chart(document.getElementById("stimulus"), {
+    type: 'bar',
+    data: {
+      labels: label_vec,
+      datasets: [
+        {
+          backgroundColor: color_vec,
+          data: data_vec
+        }
+      ]
+    },
+    options: {
+      animation:false,
+      tooltips: {enabled: false},
+      scaleShowVerticalLines: false,
+      hover: {mode: null},
+      legend: { display: false },
+      title: {
+        display: true,
+        text: text_vec,
+        fontSize: 30
+      },
+      scales: {
+        yAxes: [{
+          display: false,
+            ticks: {
+                beginAtZero: true
+            },
+          gridLines: {
+                display:false,
+            drawBorder: false,
+          }
+        }],
+        xAxes: [{
+          gridLines:{
+            display:false,
+             drawBorder: false
+          },
+          ticks:{
+            fontSize: 30
+          }
+        }]
+      },
+      plugins: {
+      datalabels: {
+        color: '#fffff',
+        formatter: function (value) {
+          value=Math.round(value-0.25)
+          if (value==1){
+            return value + ' participant';
+          } else{
+            return value + ' participants';
+          }
+        },
+        font: {
+          size: 25
+        }
+      }
+    },
+    }
+});
+
+
+
+}
+
+
 
 
 $('#more-green').css('background-color','#009500')
@@ -317,60 +421,19 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      parent_chose_utility = parent_utility == meme["choice"];
+      make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
 
-      if (payout_condition=='blue'){
-        if (parent_chose_utility==true){
-          $("#stimulus").attr("src", blue_filepath);
-          pre_stimulus_social_info = 'blue'
-        } else{
-          $("#stimulus").attr("src", green_filepath);
-          pre_stimulus_social_info = 'green'
-        }
-      }
-
-      if (payout_condition=='green'){
-        if (parent_chose_utility==true){
-          $("#stimulus").attr("src", green_filepath);
-          pre_stimulus_social_info = 'green'
-        } else{
-          $("#stimulus").attr("src", blue_filepath);
-          pre_stimulus_social_info = 'blue'
-        }
-      }
-
-      if (payout_condition=='no-utility'){
-        if (randomization_color=='blue'){
-          if (parent_chose_utility==true){
-            $("#stimulus").attr("src", blue_filepath);
-            pre_stimulus_social_info = 'blue'
-          } else{
-            $("#stimulus").attr("src", green_filepath);
-            pre_stimulus_social_info = 'green'
-          } 
-
-        } else if (randomization_color=='green'){
-          if (parent_chose_utility==true){
-            $("#stimulus").attr("src", green_filepath);
-            pre_stimulus_social_info = 'green'
-          } else{
-            $("#stimulus").attr("src", blue_filepath);
-            pre_stimulus_social_info = 'blue'
-          } 
-        }
-      }
 
       $("#stimulus").show();
       setTimeout(function() {
         $("#stimulus").hide();
         $("#instructions").text(instructionsText);
-        // $("#more-blue").removeClass('disabled');
-        // $("#more-green").removeClass('disabled');
         regenerateDisplay(proportion_utility);
         presentDisplay();
       }, 4000);
     }
   })
+
   .fail(function (rejection) {
       // A 403 is our signal that it's time to go to the questionnaire
       if (rejection.status === 403) {
