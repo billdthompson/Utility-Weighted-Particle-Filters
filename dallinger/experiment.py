@@ -32,18 +32,19 @@ class UWPFWP(Experiment):
 	 - stress test new overflow mechanism
 	 - chekc that node_ids are strictly indreasing (parent samples selection requires this -- see self.add_node_to_network)
 	 - why is calculate over-recruitment being called so many times?
+	 - debug multiple replications ofoverflow conditions
+	 - check randomisation of network ordeing
 	"""
 
 	@property
 	def public_properties(self):
 		return {
 		'generation_size':2, 
-		'generations': 2, 
+		'generations': 3, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 1,
 		'num_random_order_experimental_networks_per_experiment': 1,
 		'num_practice_networks_per_experiment': 1,
-		'payout_blue': 'true',
 		'cover_story': 'true',
 		'bonus_max': 1,
 		}
@@ -93,7 +94,7 @@ class UWPFWP(Experiment):
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
 		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.9]
-		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.9]
+		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
@@ -108,7 +109,10 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		#self.condition_counts = {"SOC:N-U":self.num_replications_per_condition}
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+		self.condition_counts = {"SOC:W-U":2,
+								 "SOC:N-U":self.num_replications_per_condition,
+								 "ASO:N-U":self.num_replications_per_condition,
+								 "ASO:W-U":self.num_replications_per_condition,
 								 "OVF:W-U":1
 								 }
 
