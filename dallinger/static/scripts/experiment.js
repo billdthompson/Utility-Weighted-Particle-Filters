@@ -134,14 +134,15 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       title: {
         display: true,
         text: text_vec,
-        fontSize: 29,
+        fontSize: 28,
         fontStyle: 'normal'
       },
       scales: {
         yAxes: [{
           display: false,
             ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                max: num_blue+num_green
             },
           gridLines: {
                 display:false,
