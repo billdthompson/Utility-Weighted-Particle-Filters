@@ -16,41 +16,37 @@
 	                {% block questions %}
 	                {% endblock %}
 	                <div class="row question" id='question-1'>
-	                    <div class="col-md-8">
+	                    <div>
 	                       On every round of the experiment, your task is to:
                       </div>
-                      <br>
-	                    <div class="col-md-4">
+	                    <div>
 	                        <select id="q1" name="q1">
 	                        </select>
                       </div>
-                    <br><br>
+                    <br>
 	                </div>
 	                <div class="row question" id='question-2'>
-	                    <div class="col-md-8" id = 'question-text-2'>
+	                    <div id = 'question-text-2'>
 	                        Which color of dots give you a bonus?
                       </div>
-                      <br>
-	                    <div class="col-md-4">
+	                    <div>
 	                        <select id="q2" name="q2">
 	                        </select>
                       </div>
-                    <br><br>
+                    <br>
                   </div>
                   <div class="row question" id='question-3'>
-	                    <div class="col-md-8" id='dot-type-question'>
+	                    <div id='dot-type-question'>
 	                        Does the bonus for a certain color of dot pay if your decision is wrong?
                       </div>
-                      <br>
-                      <br>
-	                    <div class="col-md-4">
+	                    <div>
 	                        <select id="q3" name="q3">
                               <option value="1">Yes</option>
                               <option value="2">No</option>
                               <option value="3" SELECTED>None of these options</option>
 	                        </select>
                       </div>
-                      <br><br>
+                      <br>
                   </div>
 
                   <div class="row question" id='question-4'>
@@ -265,26 +261,26 @@
         $('#q2').html('<option value="2">Green</option>'+
                         '<option value="1">Blue</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
 	                        'Before viewing an image, what information will you get?'+
-	                    '</div><br>'+
-	                    '<div class="col-md-4">'+
+	                    '</div>'+
+	                    '<div>'+
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
-        $('#question-5').html('<div class="col-md-8" id="social-info">'+
+                          '</select></div><br>')
+        $('#question-5').html('<div id="social-info">'+
                   'Was this participant also paid for blue dots?'+
-              '</div><br>'+
-              '<div class="col-md-4">'+
+              '</div>'+
+              '<div>'+
                   '<select id="q5" name="q5">'+
                       "<option value='1'>Yes</option>"+
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br><br>')
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more blue dots or more green dots in the image.')
         $('#instructions-text-3').html('2). You will get a bonus for every blue dot in the image.')
@@ -301,26 +297,26 @@
         $('#q2').html('<option value="1">Green</option>'+
                         '<option value="2">Blue</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
 	                        'Before viewing an image, what information will you get?'+
-	                    '</div><br>'+
-	                    '<div class="col-md-4">'+
+	                    '</div>'+
+	                    '<div>'+
 	                        '<select id="q4" name="q4">'+
                               "<option value='2'>A participant's decision in a different image</option>"+
                               '<option value="3">A previous decision you made</option>'+
                               "<option value='1'>A participant's decision on an image with equal numbers of green and blue dots</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
-        $('#question-5').html('<div class="col-md-8" id="social-info">'+
+                          '</select></div><br>')
+        $('#question-5').html('<div id="social-info">'+
                   'Was this participant also paid for green dots?'+
-              '</div><br>'+
-              '<div class="col-md-4">'+
+              '</div>'+
+              '<div>'+
                   '<select id="q5" name="q5">'+
                       "<option value='1'>Yes</option>"+
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br><br>')
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more green dots or more blue dots in the image.')
         $('#instructions-text-3').html('2). You will get a bonus for every green dot in the image.')
@@ -343,16 +339,16 @@
             $('#q2').html('<option value="2">Green</option>'+
                             '<option value="1">Blue</option>'+
                             '<option value="3" SELECTED>None of these options</option>')
-            $('#question-4').html('<div class="col-md-8" id="social-info">'+
+            $('#question-4').html('<div id="social-info">'+
                                 'Before viewing an image, what information will you get?'+
-                            '</div><br>'+
-                            '<div class="col-md-4">'+
+                            '</div>'+
+                            '<div>'+
                                 '<select id="q4" name="q4">'+
                                 "<option value='2'>A participant's decision in a different image</option>"+
                                 '<option value="3">A previous decision you made</option>'+
                                 "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
                                 '<option value="5" SELECTED>None of these options</option>'+
-                            '</select></div><br><br>')
+                            '</select></div><br>')
             $('#question-5').css('display','none')
             $('#instructions-text-2').html('1). On every round, you must judge '+
             'whether there are more blue dots or more green dots in the image.')
@@ -370,16 +366,16 @@
             $('#q2').html('<option value="1">Green</option>'+
                             '<option value="2">Blue</option>'+
                             '<option value="3" SELECTED>None of these options</option>')
-            $('#question-4').html('<div class="col-md-8" id="social-info">'+
+            $('#question-4').html('<div id="social-info">'+
                                 'Before viewing an image, what information will you get?'+
-                            '</div><br>'+
-                            '<div class="col-md-4">'+
+                            '</div>'+
+                            '<div>'+
                                 '<select id="q4" name="q4">'+
                                 "<option value='2'>A participant's decision in a different image</option>"+
                                 '<option value="3">A previous decision you made</option>'+
                                 "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
                                 '<option value="5" SELECTED>None of these options</option>'+
-                            '</select></div><br><br>')
+                            '</select></div><br>')
             $('#question-5').css('display','none')
             $('#instructions-text-2').html('1). On every round, you must judge '+
             'whether there are more green dots or more blue dots in the image.')
@@ -399,16 +395,16 @@
             $('#question-2').html('')
             $('#question-3').html('')
             $('#question-3').css('display','none')
-            $('#question-4').html('<div class="col-md-8" id="social-info">'+
+            $('#question-4').html('<div id="social-info">'+
                 'Before viewing an image, what information will you get?'+
-            '</div><br>'+
-            '<div class="col-md-4">'+
+            '</div>'+
+            '<div>'+
                 '<select id="q4" name="q4">'+
                     "<option value='2'>A participant's decision in a different image</option>"+
                     '<option value="3">A previous decision you made</option>'+
                     "<option value='1'>A participant's decision on an image with equal numbers of "+first+" and "+second+" dots</option>"+
                     '<option value="5" SELECTED>None of these options</option>'+
-                '</select></div><br><br>')
+                '</select></div><br>')
             $('#question-5').css('display','none')
             $('#instructions-text-2').html('1). On every round, you must judge '+
             'whether there are more '+first+' dots or more '+second+' dots in the image.')
@@ -494,26 +490,26 @@ if (cover_story==true){
         $('#q2').html('<option value="2">Grass</option>'+
                         '<option value="1">Sapphire</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
-                        '</div><br>'+
-                        '<div class="col-md-4">'+
+                        '</div>'+
+                        '<div>'+
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A set of participants' decisions in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in an area with equal numbers of sapphire and grass dots</option>"+
+                              "<option value='1'>A set of participants' decisions in an equivalent area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
-        $('#question-5').html('<div class="col-md-8" id="social-info">'+
+                          '</select></div><br>')
+        $('#question-5').html('<div id="social-info">'+
                   'Were these participants also paid for sapphire dots?'+
-              '</div><br>'+
-              '<div class="col-md-4">'+
+              '</div>'+
+              '<div>'+
                   '<select id="q5" name="q5">'+
                       "<option value='1'>Yes</option>"+
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br><br>')
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
@@ -530,26 +526,26 @@ if (cover_story==true){
         $('#q2').html('<option value="1">Emerald</option>'+
                         '<option value="2">Water</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
-                        '</div><br>'+
-                        '<div class="col-md-4">'+
+                        '</div>'+
+                        '<div>'+
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A set of participants' decisions in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in an area with equal numbers of emerald and water dots</option>"+
+                              "<option value='1'>A set of participants' decisions in an equivalent area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
-        $('#question-5').html('<div class="col-md-8" id="social-info">'+
+                          '</select></div><br>')
+        $('#question-5').html('<div id="social-info">'+
                   'Were these participants also paid for emerald dots?'+
-              '</div><br>'+
-              '<div class="col-md-4">'+
+              '</div>'+
+              '<div>'+
                   '<select id="q5" name="q5">'+
                       "<option value='1'>Yes</option>"+
                       '<option value="3">No</option>'+
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br><br>')
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more emerald (green) dots or more water (blue) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
@@ -572,16 +568,16 @@ if (cover_story==true){
         $('#q2').html('<option value="1">Sapphire</option>'+
                         '<option value="2">Grass</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
-                        '</div><br>'+
-                        '<div class="col-md-4">'+
+                        '</div>'+
+                        '<div>'+
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A set of participants' decisions in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in an area with equal numbers of sapphire and grass dots</option>"+
+                              "<option value='1'>A set of participants' decisions in an equivalent area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
+                          '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
@@ -599,16 +595,16 @@ if (cover_story==true){
         $('#q2').html('<option value="1">Emerald</option>'+
                         '<option value="2">Water</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
-                        '</div><br>'+
-                        '<div class="col-md-4">'+
+                        '</div>'+
+                        '<div>'+
                             '<select id="q4" name="q4">'+
                               "<option value='2'>A set of participants' decisions in a random area area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in an area with equal numbers of emerald and water dots</option>"+
+                              "<option value='1'>A set of participants' decisions in an equivalent area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br><br>')
+                          '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more emerald (green) dots or more water (blue) dots in the area.')
@@ -628,16 +624,16 @@ if (cover_story==true){
         $('#question-2').html('')
         $('#question-3').html('')
         $('#question-3').css('display','none')
-        $('#question-4').html('<div class="col-md-8" id="social-info">'+
+        $('#question-4').html('<div id="social-info">'+
             'Before viewing an '+filler_word+', what information will you get?'+
-        '</div><br>'+
-        '<div class="col-md-4">'+
+        '</div>'+
+        '<div>'+
             '<select id="q4" name="q4">'+
                 "<option value='2'>A set of participants' decisions "+small_word+" a random "+filler_word+"</option>"+
                 '<option value="3">A previous decision you made</option>'+
-                "<option value='1'>A set of participants' decisions "+small_word+" an "+filler_word+" with equal numbers of "+first+" and "+second+" dots</option>"+
+                "<option value='1'>A set of participants' decisions in an equivalent "+filler_word+"</option>"+
                 '<option value="5" SELECTED>None of these options</option>'+
-            '</select></div><br><br>')
+            '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more '+first+' '+ parenthesis_first+' dots or more '+second+' '+parenthesis_first+' dots in the '+filler_word+'.')
@@ -649,7 +645,6 @@ if (cover_story==true){
       }
   }
 }
-
 
 
 

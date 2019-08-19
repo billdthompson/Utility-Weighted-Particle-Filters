@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,
-pre_stimulus_social_info,randomization_color,is_overflow,k_chose_utility;
+pre_stimulus_social_info,randomization_color,is_overflow,k_chose_utility, bar_chart,dots;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -35,13 +35,17 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
 $('#continue_button').css('outline','none')
 $("#continue_button").css("width", "300px");
 $("#continue_button").css("text-align", "center");
 
-$('#stimulus').css('padding-top','10px')
+$('#stimulus').css('padding-top','0px')
+$('#stimulus').css('margin','auto')
+$("#stimulus").css('display','none');
+
 $('.outcome').css('margin-top','80px')
 $("#instructions").css('margin-top','110px')
 
@@ -77,10 +81,21 @@ function network_random(seed) {
 
 
 function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
+  is_SWI=true
+  if (trial==1){
+    num_green=6
+    num_blue=6
+  } else if (trial==2){
+    num_green=12
+    num_blue=0
+  } else if (trial==3){
+    num_blue=3
+    num_green=9
+  }
   Chart.defaults.global.plugins.datalabels.anchor = 'end';
   Chart.defaults.global.plugins.datalabels.align = 'end';
-  Chart.defaults.global.defaultFontFamily =  "Helvetica";
-  Chart.defaults.global.defaultFontColor =  "#3b3b3b";
+  //Chart.defaults.global.defaultFontFamily =  "Helvetica";
+  Chart.defaults.global.defaultFontColor =  "#333333";
   if (green_is_left==true){
     color_vec = ["#009500", "#0084ff"]
     data_vec = [num_green+0.25,num_blue+0.25]
@@ -113,7 +128,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
     text_vec = ['Other participants chose:','']
   }
 
-  new Chart(document.getElementById("stimulus"), {
+  bar_chart = new Chart(document.getElementById("myChart"), {
     type: 'bar',
     data: {
       labels: label_vec,
@@ -125,6 +140,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       ]
     },
     options: {
+      responsive:true,
+      maintainAspectRatio: false,
       animation:false,
       tooltips: {enabled: false},
       scaleShowVerticalLines: false,
@@ -133,7 +150,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       title: {
         display: true,
         text: text_vec,
-        fontSize: 30
+        fontSize: 28,
+        fontStyle: 'normal'
       },
       scales: {
         yAxes: [{
@@ -152,7 +170,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
              drawBorder: false
           },
           ticks:{
-            fontSize: 30
+            fontSize: 23
           }
         }]
       },
@@ -168,15 +186,12 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
           }
         },
         font: {
-          size: 25
+          size: 21
         }
       }
     },
     }
 });
-
-
-
 }
 
 
@@ -348,7 +363,6 @@ get_received_infos = function() {
 
       $("#instructions").text(instructionsText);
       regenerateDisplay(proportion_utility);
-      presentDisplay();
 
     }
 
@@ -358,13 +372,12 @@ get_received_infos = function() {
       $("#button-div").hide()
 
       make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
-      $("#stimulus").show();
+      $("#stimulus").css('display','block');
 
       setTimeout(function() {
-        $("#stimulus").hide();
+        $("#stimulus").css('display','none');
         $("#instructions").text(instructionsText);
         regenerateDisplay(proportion_utility);
-        presentDisplay();
       }, 4000);
     }
   })
@@ -381,6 +394,7 @@ get_received_infos = function() {
 };
 
 function presentDisplay () {
+  console.log(dots.length)
   for (var i = dots.length - 1; i >= 0; i--) {
     dots[i].show();
 
@@ -389,7 +403,11 @@ function presentDisplay () {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
     }
-    $('svg').remove() // remove the annoying disabled version of the screen from the dot display 
+    $('svg').remove() // remove the annoying disabled version of the screen from the dot display
+    if (learning_strategy=='social'){
+      bar_chart.destroy() 
+
+    }
     $("#more-blue").removeClass('disabled');
     $("#more-green").removeClass('disabled');
     $("#instructions").show()
@@ -414,53 +432,73 @@ function regenerateDisplay (propUtility) {
 
   paper = Raphael(horizontalOffset, 185, width, height);
 
-  colors = [];
+  center_x = width/2
+  center_y = height/2
+  horizontal_width = 28
+  horizontal_height = 3
+  vertical_width = 3
+  vertical_height = 28
+  var horizontal_rect = paper.rect(center_x - (horizontal_width/2), center_y-(horizontal_height/2), horizontal_width,horizontal_height);
+  var vertical_rect = paper.rect(center_x - (vertical_width/2), center_y-(vertical_height/2), vertical_width,vertical_height);
+  horizontal_rect.attr("fill",'#333333')
+  vertical_rect.attr("fill",'#333333')
+  horizontal_rect.attr("stroke",'#333333')
+  vertical_rect.attr("stroke",'#333333')
 
-  if (randomization_color=='blue'){
-    colorsRGB = ['#0084ff','#009500']
-  } else {
-    colorsRGB = ['#009500','#0084ff']
-  }
+  setTimeout(function(){
+    horizontal_rect.hide()
+    vertical_rect.hide()
+    colors = [];
+
+    if (randomization_color=='blue'){
+      colorsRGB = ['#0084ff','#009500']
+    } else {
+      colorsRGB = ['#009500','#0084ff']
+    }
 
 
-  for (var i = utilityDots - 1; i >= 0; i--) {
-    colors.push(0);
-  }
-  for (i = noUtilityDots - 1; i >= 0; i--) {
-    colors.push(1);
-  }
+    for (var i = utilityDots - 1; i >= 0; i--) {
+      colors.push(0);
+    }
+    for (i = noUtilityDots - 1; i >= 0; i--) {
+      colors.push(1);
+    }
 
-  random_string = String(generation) + String(net_decision_index)
+    random_string = String(generation) + String(net_decision_index)
 
-  var myrng0 = new Math.seedrandom(random_string+'_colors');
-  colors = shuffle(colors,myrng0);
+    var myrng0 = new Math.seedrandom(random_string+'_colors');
+    colors = shuffle(colors,myrng0);
 
-  var myrng = new Math.seedrandom(random_string);
-  while (dots.length < numDots) {
-    // Pick a random location for a new dot.
-    r = randi(rMin, rMax,myrng);
-    x = randi(r, width - r,myrng);
-    y = randi(r, height - r,myrng);
+    var myrng = new Math.seedrandom(random_string);
+    while (dots.length < numDots) {
+      // Pick a random location for a new dot.
+      r = randi(rMin, rMax,myrng);
+      x = randi(r, width - r,myrng);
+      y = randi(r, height - r,myrng);
 
-    // Check if there is overlap with any other dots
-    pass = true;
-    for (i = dots.length - 1; i >= 0; i--) {
-      distance = Math.sqrt(Math.pow(dots[i].attrs.cx - x, 2) + Math.pow(dots[i].attrs.cy - y, 2));
-      if (distance < (sizes[i] + r)) {
-        pass = false;
+      // Check if there is overlap with any other dots
+      pass = true;
+      for (i = dots.length - 1; i >= 0; i--) {
+        distance = Math.sqrt(Math.pow(dots[i].attrs.cx - x, 2) + Math.pow(dots[i].attrs.cy - y, 2));
+        if (distance < (sizes[i] + r)) {
+          pass = false;
+        }
+      }
+
+      if (pass) {
+        console.log('here')
+        var dot = paper.circle(x, y, r);
+        dot.hide();
+        // use the appropriate color.
+        dot.attr("fill", colorsRGB[colors[dots.length]]); // FBB829
+        dot.attr("stroke", "#fff");
+        dots.push(dot);
+        sizes.push(r);
       }
     }
-
-    if (pass) {
-      var dot = paper.circle(x, y, r);
-      dot.hide();
-      // use the appropriate color.
-      dot.attr("fill", colorsRGB[colors[dots.length]]); // FBB829
-      dot.attr("stroke", "#fff");
-      dots.push(dot);
-      sizes.push(r);
-    }
-  }
+    presentDisplay();
+  },1000)
+  
 }
 
 
@@ -725,7 +763,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
         "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
         "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald (blue dot) bonus: </p> &nbsp;" + 
+        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald (green dot) bonus: </p> &nbsp;" + 
         "<hr class='hr_block'>"+
         "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
         "</div>")
