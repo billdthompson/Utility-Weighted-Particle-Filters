@@ -373,12 +373,18 @@ get_received_infos = function() {
 
       make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
       $("#stimulus").css('display','block');
+      if (is_practice==true){
+        timeoutDuration==6000
+      } else {
+        timeoutDuration = 4000
+      }
+
 
       setTimeout(function() {
         $("#stimulus").css('display','none');
         $("#instructions").text(instructionsText);
         regenerateDisplay(proportion_utility);
-      }, 4000);
+      }, timeoutDuration);
     }
   })
 
@@ -497,7 +503,7 @@ function regenerateDisplay (propUtility) {
       }
     }
     presentDisplay();
-  },1000)
+  },1250)
   
 }
 
