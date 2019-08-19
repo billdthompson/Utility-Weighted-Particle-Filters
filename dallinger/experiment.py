@@ -315,7 +315,7 @@ class UWPFWP(Experiment):
 		# has this partciipants alreeady been assigned a "slot"?
 		nodes = participant.nodes()
 		slot = self.assign_slot(participant, network) if not nodes else nodes[0].slot
-		return self.models.Particle(network=network,participant=participant, slot = slot) if network.condition != 'overflow' else self.models.OverflowParticle(network=network,participant=participant, slot = slot)
+		return self.models.Particle(network=network,participant=participant, slot = slot) if ("OVF" not in network.condition) else self.models.OverflowParticle(network=network,participant=participant, slot = slot)
 
 	@pysnooper.snoop()
 	def add_node_to_network(self, node, network):
@@ -468,7 +468,7 @@ class UWPFWP(Experiment):
 				self.recruiter.close_recruitment()
 
 			else:
-				self.log("All experimental networks are full. Overflow networks are not full (there are {} overflow particles, but there should be {}). Waiting...".format(self.models.OverflowParticle.query.filter(failed = False).count(), self.models.OverFlow.query.first().max_size * (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment)), key)
+				self.log("All experimental networks are full. Overflow networks are not full (there are {} overflow particles, but there should be {}). Waiting...".format(self.models.OverflowParticle.query.filter_by(failed = False).count(), self.models.OverFlow.query.first().max_size), key)
 				return
 
 		# Or are more generations required? 
@@ -625,7 +625,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# Button order randomisation
 		node_button_order = button_orders[str(node_slot)]
 		
-		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	@pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
@@ -666,7 +666,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		n = exp.generation_size
 		assert n == len(chose_blue)
 
-		return Response(json.dumps({"k":int(k), "n":int(n), "b":int(b), "button":button_orders[str(node_slot)], "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":int(k), "n":int(n), "b":int(b), "button_order":button_orders[str(node_slot)], "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	try:
 		return f(network_id = network_id, node_generation = node_generation, node_slot = node_slot)
