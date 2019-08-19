@@ -81,57 +81,56 @@ function network_random(seed) {
 
 
 function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
-  is_SWI=true
-  if (trial==1){
-    num_green=6
-    num_blue=6
-  } else if (trial==2){
-    num_green=12
-    num_blue=0
-  } else if (trial==3){
-    num_blue=3
-    num_green=9
-  }
   Chart.defaults.global.plugins.datalabels.anchor = 'end';
   Chart.defaults.global.plugins.datalabels.align = 'end';
-  //Chart.defaults.global.defaultFontFamily =  "Helvetica";
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (green_is_left==true){
     color_vec = ["#009500", "#0084ff"]
-    data_vec = [num_green+0.25,num_blue+0.25]
-    if (payout_condition=='green'){
-      label_vec = [["More",'emerald'], ["More",'water']]
-    } else if (payout_condition=='blue'){
-      label_vec = [["More",'grass'], ["More",'sapphire']]
-    } else if (payout_condition=='no-utility'){
-      label_vec = [["More",'emerald'], ["More",'sapphire']]
-    }
+    data_vec = [num_green+0.2,num_blue+0.2]
   } else if (green_is_left==false){
-    data_vec = [num_blue+0.25,num_green+0.25]
+    data_vec = [num_blue+0.2,num_green+0.2]
     color_vec = ["#0084ff", "#009500"]
-    if (payout_condition=='green'){
-      label_vec = [["More",'water'], ["More",'emerald']]
-    } else if (payout_condition=='blue'){
-      label_vec = [["More",'sapphire'], ["More",'grass']]
-    } else if (payout_condition=='no-utility'){
-      label_vec = [["More",'sapphire'], ["More",'emerald']]
-    }
+  }
+  
+  if (num_green==1){
+    var green_string = "("+ String(num_green) + ' participant)'
+  } else{
+    var green_string = "("+ String(num_green) + ' participants)'
+  }
+
+  if (num_blue==1){
+    var blue_string = "("+ String(num_blue) + ' participant)'
+  } else{
+    var blue_string = "("+ String(num_blue) + ' participants)'
+  }
+
+  if (payout_condition=='green'){
+    green_label ="More emerald\n" + green_string
+    blue_label = "More water\n" + blue_string
+  } else if (payout_condition=='blue'){
+    green_label = "More grass\n" + green_string
+    blue_label = "More sapphire\n" +blue_string
+  } else if (payout_condition=='no-utility'){
+    green_label = "More emerald\n"  + green_string
+    blue_label = "More sapphire\n" + blue_string
   }
 
   if (is_SWI==true){
     if (payout_condition=='green'){
-      text_vec = ['Other participants being','paid for emeralds chose:','']
+      text_vec = ['Other participants being','paid for emeralds chose:','','']
     } else if (payout_condition=='blue'){
-      text_vec = ['Other participants being','paid for sapphires chose:','']
+      text_vec = ['Other participants being','paid for sapphires chose:','','']
     }
   } else{
-    text_vec = ['Other participants chose:','']
+    text_vec = ['Other participants chose:','','']
   }
-
-  bar_chart = new Chart(document.getElementById("myChart"), {
+  
+  var counter=0;
+  
+  bar_chart = new Chart(document.getElementById("myChart1"), {
     type: 'bar',
     data: {
-      labels: label_vec,
+      labels: ['a','b'],
       datasets: [
         {
           backgroundColor: color_vec,
@@ -150,7 +149,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       title: {
         display: true,
         text: text_vec,
-        fontSize: 28,
+        fontSize: 29,
         fontStyle: 'normal'
       },
       scales: {
@@ -165,12 +164,10 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
           }
         }],
         xAxes: [{
+          display: false,
           gridLines:{
             display:false,
              drawBorder: false
-          },
-          ticks:{
-            fontSize: 23
           }
         }]
       },
@@ -179,15 +176,34 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
         color: '#fffff',
         formatter: function (value) {
           value=Math.round(value-0.25)
-          if (value==1){
-            return value + ' participant';
+          if (num_green==num_blue){
+            if (green_is_left==true){
+              if (counter==0){
+                counter = counter + 1
+                return green_label
+              } else {
+                return blue_label
+              }
+            } else if (green_is_left==false){
+              if (counter==0){
+                counter = counter + 1
+                return blue_label 
+              } else {
+                return green_label
+              }
+            }
           } else{
-            return value + ' participants';
+            if (value==(Math.round(num_green))){
+              return green_label
+            } else{
+              return blue_label
+            }
           }
         },
         font: {
-          size: 21
-        }
+          size: 23
+        },
+        textAlign:'center'
       }
     },
     }
@@ -373,10 +389,11 @@ get_received_infos = function() {
 
       make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
       $("#stimulus").css('display','block');
+
       if (is_practice==true){
-        timeoutDuration==6000
+        var timeoutDuration==6000
       } else {
-        timeoutDuration = 4000
+        var timeoutDuration = 4000
       }
 
 
