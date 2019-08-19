@@ -112,7 +112,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
   
   var counter=0;
   
-  bar_chart = new Chart(document.getElementById("myChart1"), {
+  bar_chart = new Chart(document.getElementById("myChart"), {
     type: 'bar',
     data: {
       labels: ['a','b'],
@@ -160,7 +160,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       datalabels: {
         color: '#fffff',
         formatter: function (value) {
-          value=Math.round(value-0.25)
+          value=Math.round(value-0.2)
           if (num_green==num_blue){
             if (green_is_left==true){
               if (counter==0){
@@ -402,7 +402,6 @@ get_received_infos = function() {
 };
 
 function presentDisplay () {
-  console.log(dots.length)
   for (var i = dots.length - 1; i >= 0; i--) {
     dots[i].show();
 
