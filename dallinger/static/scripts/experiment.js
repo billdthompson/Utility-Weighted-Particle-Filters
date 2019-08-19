@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,
-pre_stimulus_social_info,randomization_color,is_overflow,k_chose_utility;
+pre_stimulus_social_info,randomization_color,is_overflow,k_chose_utility, bar_chart;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -35,13 +35,17 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
 $('#continue_button').css('outline','none')
 $("#continue_button").css("width", "300px");
 $("#continue_button").css("text-align", "center");
 
-$('#stimulus').css('padding-top','10px')
+$('#stimulus').css('padding-top','0px')
+$('#stimulus').css('margin','auto')
+$("#stimulus").css('display','none');
+
 $('.outcome').css('margin-top','80px')
 $("#instructions").css('margin-top','110px')
 
@@ -77,10 +81,21 @@ function network_random(seed) {
 
 
 function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
+  is_SWI=true
+  if (trial==1){
+    num_green=6
+    num_blue=6
+  } else if (trial==2){
+    num_green=12
+    num_blue=0
+  } else if (trial==3){
+    num_blue=3
+    num_green=9
+  }
   Chart.defaults.global.plugins.datalabels.anchor = 'end';
   Chart.defaults.global.plugins.datalabels.align = 'end';
-  Chart.defaults.global.defaultFontFamily =  "Helvetica";
-  Chart.defaults.global.defaultFontColor =  "#3b3b3b";
+  //Chart.defaults.global.defaultFontFamily =  "Helvetica";
+  Chart.defaults.global.defaultFontColor =  "#333333";
   if (green_is_left==true){
     color_vec = ["#009500", "#0084ff"]
     data_vec = [num_green+0.25,num_blue+0.25]
@@ -113,7 +128,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
     text_vec = ['Other participants chose:','']
   }
 
-  new Chart(document.getElementById("stimulus"), {
+  bar_chart = new Chart(document.getElementById("myChart"), {
     type: 'bar',
     data: {
       labels: label_vec,
@@ -125,6 +140,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       ]
     },
     options: {
+      responsive:true,
+      maintainAspectRatio: false,
       animation:false,
       tooltips: {enabled: false},
       scaleShowVerticalLines: false,
@@ -133,7 +150,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       title: {
         display: true,
         text: text_vec,
-        fontSize: 30
+        fontSize: 28,
+        fontStyle: 'normal'
       },
       scales: {
         yAxes: [{
@@ -152,7 +170,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
              drawBorder: false
           },
           ticks:{
-            fontSize: 30
+            fontSize: 23
           }
         }]
       },
@@ -168,15 +186,12 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
           }
         },
         font: {
-          size: 25
+          size: 21
         }
       }
     },
     }
 });
-
-
-
 }
 
 
@@ -358,10 +373,10 @@ get_received_infos = function() {
       $("#button-div").hide()
 
       make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
-      $("#stimulus").show();
+      $("#stimulus").css('display','block');
 
       setTimeout(function() {
-        $("#stimulus").hide();
+        $("#stimulus").css('display','none');
         $("#instructions").text(instructionsText);
         regenerateDisplay(proportion_utility);
         presentDisplay();
@@ -389,7 +404,11 @@ function presentDisplay () {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
     }
-    $('svg').remove() // remove the annoying disabled version of the screen from the dot display 
+    $('svg').remove() // remove the annoying disabled version of the screen from the dot display
+    if (learning_strategy=='social'){
+      bar_chart.destroy() 
+
+    }
     $("#more-blue").removeClass('disabled');
     $("#more-green").removeClass('disabled');
     $("#instructions").show()
