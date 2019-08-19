@@ -64,21 +64,6 @@ if (generation=='0' || social_condition=='asocial'){
   var learning_strategy = "social";
 }
 
-function sampleWithoutReplacement(bucket) {
-  var randomIndex = Math.floor(Math.random()*bucket.length);
-  return bucket.splice(randomIndex, 1)[0];
-}
-
-function generation_random(seed) {
-  var x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-}
-
-function network_random(seed) {
-  var x = Math.sin(seed) * 12000;
-  return x - Math.floor(x);
-}
-
 
 function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
   Chart.defaults.global.plugins.datalabels.anchor = 'end';
@@ -391,7 +376,7 @@ get_received_infos = function() {
       $("#stimulus").css('display','block');
 
       if (is_practice==true){
-        var timeoutDuration==6000
+        var timeoutDuration = 6000
       } else {
         var timeoutDuration = 4000
       }
