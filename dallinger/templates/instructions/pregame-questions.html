@@ -652,7 +652,7 @@ if (cover_story==true){
 
 
   beginExperiment = function () {
-    var green_left = localStorage.getItem('green_left')
+    var green_left = localStorage.getItem('green_left')=='true';
     if (green_left==true){
       dallinger.goToPage('stage_green_left')
     } else{
