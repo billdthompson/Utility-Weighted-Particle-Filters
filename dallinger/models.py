@@ -83,7 +83,7 @@ class ParticleFilter(Network):
         """Make condition queryable."""
         return cls.property5
 
-    @pysnooper.snoop()
+    #@pysnooper.snoop()
     def add_node(self, node):
         curr_generation = NetworkRandomAttributes.query.filter_by(network_id = self.id).one().current_generation
         
@@ -203,7 +203,8 @@ class OverFlow(Network):
         """Endow the network with some persistent properties."""
         self.property1 = repr(generations)
         self.property2 = repr(generation_size)
-        self.max_size = generations * generation_size + 1 # add one to account for initial_source
+        # overflow network size is dynamic. It's minimum is generation_size. This may grow over the experiment
+        self.max_size = generation_size + 1 # add one to account for initial_source
         self.replication = replication
 
     @property
@@ -261,7 +262,7 @@ class OverFlow(Network):
         """Make condition queryable."""
         return cls.property5
 
-    @pysnooper.snoop()
+    #@pysnooper.snoop()
     def add_node(self, node):
 
         arbitrary_network = ParticleFilter.query.first()
@@ -391,7 +392,7 @@ class NetworkRandomAttributes(Node):
         """Make current_generation queryable."""
         return cast(self.property2, Integer)
 
-    # @pysnooper.snoop()
+    # #@pysnooper.snoop()
     def sample_parents(self):
         N = self.network.generations
         n = self.network.generation_size
