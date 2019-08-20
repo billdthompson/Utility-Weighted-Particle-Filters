@@ -71,9 +71,9 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (green_is_left==true){
     color_vec = ["#009500", "#0084ff"]
-    data_vec = [num_green+0.2,num_blue+0.2]
+    data_vec = [num_green+0.15,num_blue+0.15]
   } else if (green_is_left==false){
-    data_vec = [num_blue+0.2,num_green+0.2]
+    data_vec = [num_blue+0.15,num_green+0.15]
     color_vec = ["#0084ff", "#009500"]
   }
   
@@ -90,27 +90,31 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
   }
 
   if (payout_condition=='green'){
-    green_label ="More emerald\n" + green_string
-    blue_label = "More water\n" + blue_string
+    green_label ="Emerald dots\n" + green_string
+    blue_label = "Water dots\n" + blue_string
   } else if (payout_condition=='blue'){
-    green_label = "More grass\n" + green_string
-    blue_label = "More sapphire\n" +blue_string
+    green_label = "Grass dots\n" + green_string
+    blue_label = "Sapphire dots\n" +blue_string
   } else if (payout_condition=='no-utility'){
-    green_label = "More emerald\n"  + green_string
-    blue_label = "More sapphire\n" + blue_string
+    green_label = "Emerald dots\n"  + green_string
+    blue_label = "Sapphire dots\n" + blue_string
   }
 
   if (is_SWI==true){
     if (payout_condition=='green'){
-      text_vec = ['Other participants being','paid for emeralds chose:','','']
+      text_vec = ['Other participants being paid for',' emeralds thought there were more:','','']
     } else if (payout_condition=='blue'){
-      text_vec = ['Other participants being','paid for sapphires chose:','','']
+      text_vec = ['Other participants being paid for',' sapphires thought there were more:','','']
     }
   } else{
-    text_vec = ['Other participants chose:','','']
+    text_vec = ['Other participants thought','there were more:','','']
   }
-  
-  var counter=0;
+
+  if (green_is_left==true){
+    context_vec = [green_label,blue_label]
+  } else{
+    context_vec = [blue_label,green_label]
+  }
   
   bar_chart = new Chart(document.getElementById("myChart"), {
     type: 'bar',
@@ -134,7 +138,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       title: {
         display: true,
         text: text_vec,
-        fontSize: 28,
+        fontSize: 25,
         fontStyle: 'normal'
       },
       scales: {
@@ -142,7 +146,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
           display: false,
             ticks: {
                 beginAtZero: true,
-                max: num_blue+num_green
+                max: num_blue+num_green+0.5
             },
           gridLines: {
                 display:false,
@@ -160,34 +164,11 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       plugins: {
       datalabels: {
         color: '#fffff',
-        formatter: function (value) {
-          value=Math.round(value-0.2)
-          if (num_green==num_blue){
-            if (green_is_left==true){
-              if (counter==0){
-                counter = counter + 1
-                return green_label
-              } else {
-                return blue_label
-              }
-            } else if (green_is_left==false){
-              if (counter==0){
-                counter = counter + 1
-                return blue_label 
-              } else {
-                return green_label
-              }
-            }
-          } else{
-            if (value==(Math.round(num_green))){
-              return green_label
-            } else{
-              return blue_label
-            }
-          }
+        formatter: function (value,context) {
+          return context_vec[context.dataIndex]
         },
         font: {
-          size: 23
+          size: 22
         },
         textAlign:'center'
       }
@@ -446,8 +427,12 @@ function regenerateDisplay (propUtility) {
   horizontal_height = 3
   vertical_width = 3
   vertical_height = 28
+  var outer_rect = paper.rect(0,0,width,height)
+  outer_rect.attr("fill",'#ffffff')
+  outer_rect.attr("stroke",'#333333')
+  outer_rect.attr("stroke-width",3)
   var horizontal_rect = paper.rect(center_x - (horizontal_width/2), center_y-(horizontal_height/2), horizontal_width,horizontal_height);
-  var vertical_rect = paper.rect(center_x - (vertical_width/2), center_y-(vertical_height/2), vertical_width,vertical_height);
+  var vertical_rect = paper.rect(center_x - (vertical_width/2), center_y-(vertical_height/2), vertical_width,vertical_height); 
   horizontal_rect.attr("fill",'#333333')
   vertical_rect.attr("fill",'#333333')
   horizontal_rect.attr("stroke",'#333333')
@@ -456,6 +441,7 @@ function regenerateDisplay (propUtility) {
   setTimeout(function(){
     horizontal_rect.hide()
     vertical_rect.hide()
+    outer_rect.hide()
     colors = [];
 
     if (randomization_color=='blue'){
@@ -813,6 +799,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
 
 
   if (trial<=num_practice_trials){
+    if (trial==num_practice_trials){
+      $('#continue_button').html('Finish practice rounds')
+    }
     var p1_html = document.getElementById('topResult');
     var p2_html = document.getElementById('responseResult');
     var p3_html = document.getElementById('accuracy');
@@ -842,6 +831,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     }
     
   } else{
+      if (trial==num_practice_trials+num_test_trials){
+        $('#continue_button').html('Finish test rounds')
+      }
       $('.outcome').css('text-align','center')
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','95px')
@@ -860,6 +852,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $(".outcome").html("")
       $('.outcome').css('text-align','center')
       $('.outcome').css('margin-top','20px')
+      $('#continue_button').html('Start test rounds')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
         "Points from these rounds will be added to your final pay."+
@@ -871,6 +864,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $('#continue_button').unbind('click').click(function(){
         $(".outcome").css("display", "none");
         $(".button-wrapper").css("display", "none");
+        $('#continue_button').html('Next round')
         $(".outcome").html("")
         $("#instructions").html("")
       create_agent();
@@ -892,6 +886,7 @@ function display_practice_info(){
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','80px')
       $('.outcome').css('width','300px')
+      $('#continue_button').html('Start practice rounds')
       $(".outcome").css("display", "block");
       //$(".button-wrapper").css("text-align", "right");
       $(".button-wrapper").css("display", "block");
@@ -903,6 +898,7 @@ function display_practice_info(){
       $('#continue_button').unbind('click').click(function(){
           $(".outcome").css("display", "none");
           $(".button-wrapper").css("display", "none");
+          $('#continue_button').html('Next round')
           $(".outcome").html("")
           $("#instructions").html("")
           get_social_info();
@@ -1025,7 +1021,7 @@ function display_earnings(){
     //$('.outcome').css('margin-top','0px')
     $('.outcome').css('width','300px')
     $(".outcome").css("display", "block");
-    $("#continue-info").css("text-align", "center");
+    $("#continue-info").css("text-align", "center");  $('#continue_button').html('Finish experiment')
     $('.button-wrapper').css('margin-top','50px')
     
 
