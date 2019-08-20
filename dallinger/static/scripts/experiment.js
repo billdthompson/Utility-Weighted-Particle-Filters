@@ -34,6 +34,7 @@ var include_gems = localStorage.getItem('include_gems')=='true';
 var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
+var num_loops= -1;
 
 
 $('#continue_button').css('background-color','#5c5c5c')
@@ -115,6 +116,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
   } else{
     context_vec = [blue_label,green_label]
   }
+
+  num_loops = 0
   
   bar_chart = new Chart(document.getElementById("myChart"), {
     type: 'bar',
@@ -165,6 +168,7 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       datalabels: {
         color: '#fffff',
         formatter: function (value,context) {
+          num_loops = num_loops + 1
           return context_vec[context.dataIndex]
         },
         font: {
@@ -588,7 +592,8 @@ report = function (color) {
                   participant_id: dallinger.identity.participantId,
                   green_left: green_left,
                   net_decision_index: net_decision_index,
-                  is_overflow: is_overflow
+                  is_overflow: is_overflow,
+                  num_loops: num_loops
                 }
 
   dallinger.createInfo(my_node_id, {
@@ -1021,11 +1026,11 @@ function display_earnings(){
     //$('.outcome').css('margin-top','0px')
     $('.outcome').css('width','300px')
     $(".outcome").css("display", "block");
-    $("#continue-info").css("text-align", "center");  $('#continue_button').html('Finish experiment')
+    $("#continue-info").css("text-align", "center");
     $('.button-wrapper').css('margin-top','50px')
     
 
-    $('#continue_button').html('Finish')
+    $('#continue_button').html('Finish experiment')
 
     $('#continue_button').unbind('click').click(function(){
       $(".outcome").html("")
