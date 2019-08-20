@@ -14,7 +14,6 @@ var randomization_color = localStorage.getItem('randomization_color')
 var is_overflow = localStorage.getItem('is_overflow')=='true';
 
 
-
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
@@ -30,6 +29,7 @@ var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 //var network_id_seed = network_id;
 var green_left = localStorage.getItem('green_left')=='true'
 var include_gems = localStorage.getItem('include_gems')=='true';
+
 
 var num_test_correct = 0;
 var total_dots = 0;
