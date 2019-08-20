@@ -29,11 +29,10 @@
         $('#instruct1_button').css('outline','none')
 
         create_agent = function() {
-            console.log("starting createagent")
           dallinger.createAgent()
             
             .done(function (resp) {
-                
+
                 var include_gems = true;
                 localStorage.setItem('include_gems',include_gems)
 
@@ -59,7 +58,6 @@
                 localStorage.setItem("prop_utility",prop_utility);
 
                 var condition_info = resp.node.property5;
-                console.log(condition_info)
                 
                 var network_string = '/network/' + String(network_id) + '/getnet/'
                 dallinger.get(network_string)
@@ -70,7 +68,6 @@
 
                         var condition_info = netresp.network.property5;
                         localStorage.setItem('condition_info',condition_info)
-                        console.log(condition_info)
 
                         var social_condition = condition_info.substring(0,3);
                         if (social_condition=='ASO' || social_condition=='OVF'){

@@ -42,9 +42,9 @@ class UWPFWP(Experiment):
 		'generation_size':2, 
 		'generations': 3, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 1,
-		'num_random_order_experimental_networks_per_experiment': 1,
-		'num_practice_networks_per_experiment': 1,
+		'num_fixed_order_experimental_networks_per_experiment': 2,
+		'num_random_order_experimental_networks_per_experiment': 2,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -94,8 +94,8 @@ class UWPFWP(Experiment):
 		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
-		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.9]
-		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2]
+		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.9,0.4]
+		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
@@ -110,8 +110,8 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		#self.condition_counts = {"SOC:N-U":self.num_replications_per_condition}
-		self.condition_counts = {"SOC:W-U":num_replications_per_condition,
-								"OVF:W-U":num_replications_per_condition}
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+								"OVF:W-U":self.num_replications_per_condition}
 								 #"SOC:N-U":self.num_replications_per_condition,
 								 #"ASO:N-U":self.num_replications_per_condition,
 								 #"ASO:W-U":self.num_replications_per_condition,
