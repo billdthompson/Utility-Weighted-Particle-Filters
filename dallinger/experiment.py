@@ -7,6 +7,7 @@ from dallinger.networks import DiscreteGenerational
 from dallinger.nodes import Agent
 from dallinger.nodes import Environment
 from dallinger.nodes import Source
+from dallinger.config import get_config
 from sqlalchemy import and_, func
 from sqlalchemy.sql.expression import cast
 from sqlalchemy import Integer
@@ -23,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted self.models.Particle Filter with People.
@@ -37,11 +38,11 @@ class UWPFWP(Experiment):
 	def public_properties(self):
 		return {
 		'generation_size':2, 
-		'generations': 3, 
+		'generations': 2, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 2,
-		'num_random_order_experimental_networks_per_experiment': 2,
-		'num_practice_networks_per_experiment': 2,
+		'num_fixed_order_experimental_networks_per_experiment': 4,
+		'num_random_order_experimental_networks_per_experiment': 4,
+		'num_practice_networks_per_experiment': 4,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -91,7 +92,7 @@ class UWPFWP(Experiment):
 		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
-		self.practice_network_proportions = [.53, .46, .47, .54] if not DEBUG else [.9,0.4]
+		self.practice_network_proportions = [.6, .46, .47, .54] if not DEBUG else [.9,0.4]
 		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
@@ -106,18 +107,18 @@ class UWPFWP(Experiment):
 		# SWI:W-U
 		# OVF:W-U
 		# OVF:N-U
-		self.condition_counts = {"SOC:N-U":self.num_replications_per_condition,
-								 "OVF:W-U":1
+		# "OVF:W-U":1
+		self.condition_counts = {"ASO:N-U":self.num_replications_per_condition
 								 }
 		# Derrived Quantities
-		self.num_experiments = sum(self.condition_counts.values())
+		self.num_experiments = sum(self.condition_counts.values()) - sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
 		self.planned_overflow = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())]) * self.generation_size
 		self.num_experimental_networks_per_experiment = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_experiment + self.num_random_order_experimental_networks_per_experiment
 		self.num_networks_total = (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * self.num_experiments
 		self.num_participants_per_generation = self.initial_recruitment_size = self.generation_size * self.num_experiments
-		self.num_experimental_participants_per_generation = (self.num_experiments - 1) * self.generation_size
+		self.num_experimental_participants_per_generation = (self.num_experiments) * self.generation_size
 		self.num_nodes_per_generation = self.generation_size * self.num_networks_total 
-		self.num_experimental_nodes_per_generation = ((self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * (self.num_experiments - 1)) * self.generation_size
+		self.num_experimental_nodes_per_generation = ((self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * (self.num_experiments)) * self.generation_size
 
 	def create_network(self, condition, replication, role, decision_index, proportion):
 		# identify entwork type: overflow?
@@ -493,7 +494,7 @@ class UWPFWP(Experiment):
 			self.log("Generation finished.", key)
 			self.rollover_generation()
 
-			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments - 1)) + next_generation_required_overflow)
+			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments)) + next_generation_required_overflow)
 
 	#@pysnooper.snoop()
 	def bonus(self, participant):
