@@ -46,6 +46,7 @@ class UWPFWP(Experiment):
 		'num_random_order_experimental_networks_per_experiment': 1,
 		'num_practice_networks_per_experiment': 1,
 		'cover_story': 'true',
+		'payout_blue':'true',
 		'bonus_max': 1,
 		}
 
@@ -74,7 +75,7 @@ class UWPFWP(Experiment):
 		self.known_classes["overflow"] = self.models.OverFlow
 		self.known_classes["overflowparticle"] = self.models.OverflowParticle
 
-	@pysnooper.snoop()
+	
 	def set_params(self):
 		"""
 		Notes:
@@ -190,7 +191,7 @@ class UWPFWP(Experiment):
 		# reverse the items so that the format is [(network_id, count), ...]
 		return [c[::-1] for c in network_counts]
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def get_network_for_existing_participant(self, participant, participant_nodes):
 		"""Obtain a netwokr for a participant who has already been assigned to a condition by completeing earlier rounds"""
 		
@@ -311,7 +312,7 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def create_node(self, network, participant):
 		"""Make a new node for participants."""
 		memes = [i for i in participant.infos() if i.type == "meme"]
@@ -323,7 +324,7 @@ class UWPFWP(Experiment):
 		slot = self.assign_slot(participant, network) if not nodes else nodes[0].slot
 		return self.models.Particle(network=network,participant=participant, slot = slot) if ("OVF" not in network.condition) else self.models.OverflowParticle(network=network,participant=participant, slot = slot)
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def add_node_to_network(self, node, network):
 		"""Add participant's node to a network."""
 		network.add_node(node)

@@ -304,7 +304,7 @@ create_agent = function() {
     dallinger.createAgent()
     .done(function (resp) {
       $("#trial-number").html(trial);
-      is_practice = trial>num_practice_trials;
+      is_practice = trial<=num_practice_trials;
 
       my_node_id = parseInt(resp.node.id);
       network_id = parseInt(resp.node.network_id)
@@ -494,7 +494,6 @@ function regenerateDisplay (propUtility) {
       }
 
       if (pass) {
-        console.log('here')
         var dot = paper.circle(x, y, r);
         dot.hide();
         // use the appropriate color.
