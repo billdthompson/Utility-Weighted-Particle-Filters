@@ -1,5 +1,4 @@
 [Experiment]
-mode = live
 auto_recruit = true
 loglevel = 0
 
@@ -11,7 +10,7 @@ base_payment = .25
 lifetime = 24
 duration = 0.25
 us_only = true
-contact_email_on_error = mdhardy@princeton.edu
+contact_email_on_error = wdt@princeton.edu
 organization_name = Princeton University
 browser_exclude_rule = MSIE, mobile, tablet
 qualification_blacklist = UWSPFPILOT
