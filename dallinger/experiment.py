@@ -95,7 +95,7 @@ class UWPFWP(Experiment):
 		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
-		self.practice_network_proportions = [.6, .46, .47, .54] if not DEBUG else [.9,0.4]
+		self.practice_network_proportions = [.65, .46, .47, .54] if not DEBUG else [.9,0.4]
 		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
@@ -106,12 +106,12 @@ class UWPFWP(Experiment):
 		# SOC:W-U
 		# ASO:N-U
 		# ASO:W-U
-		# SWI:N-U
+		# SWI:N-U this one doesn't exist
 		# SWI:W-U
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"ASO:N-U":self.num_replications_per_condition
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
 								 }
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values()) - sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])

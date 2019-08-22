@@ -14,7 +14,6 @@ var randomization_color = localStorage.getItem('randomization_color')
 var is_overflow = localStorage.getItem('is_overflow')=='true';
 
 
-
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
@@ -30,6 +29,7 @@ var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 //var network_id_seed = network_id;
 var green_left = localStorage.getItem('green_left')=='true'
 var include_gems = localStorage.getItem('include_gems')=='true';
+
 
 var num_test_correct = 0;
 var total_dots = 0;
@@ -358,15 +358,14 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
+      make_bar_plot(k_chose_green,k_chose_blue,green_left,social_condition=='social_with_info')
       $("#stimulus").css('display','block');
 
       if (is_practice==true){
-        var timeoutDuration = 6000
+        var timeoutDuration = 6500
       } else {
-        var timeoutDuration = 4000
+        var timeoutDuration = 4500
       }
-
 
       setTimeout(function() {
         $("#stimulus").css('display','none');
