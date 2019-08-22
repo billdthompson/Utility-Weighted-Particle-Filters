@@ -63,6 +63,9 @@ class UWPFWP(Experiment):
 			self.setup()
 		self.save()
 
+	def configure(self):
+		pass
+
 	def set_known_classes(self):
 		self.known_classes["trialbonus"] = self.models.TrialBonus
 		self.known_classes["particle"] = self.models.Particle
