@@ -4,15 +4,15 @@ auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Green Dots (< 5 mins, Bonus up to: $0.80, no mobile please)
+title = Psychology Experiment: Judge Blue and Green Dots (< 7 mins, $1.10 average pay inc. bonus, no mobile please)
 description = Judge dot displays
 keywords = Psychology, decision, dots, game
-base_payment = .25
+base_payment = .5
 lifetime = 24
 duration = 0.25
 us_only = true
-contact_email_on_error = billdthompson@berkeley.edu
-organization_name = University of Calfiornia, Berkeley
+contact_email_on_error = wdt@princeton.edu
+organization_name = Princeton University
 browser_exclude_rule = MSIE, mobile, tablet
 qualification_blacklist = UWSPFPILOT
 assign_qualifications = true
@@ -25,7 +25,7 @@ database_size = standard-2
 
 [Server]
 dyno_type = standard-2x
-num_dynos_web = 1
-num_dynos_worker = 1
+num_dynos_web = 4
+num_dynos_worker = 4
 host = 0.0.0.0
 clock_on = false
