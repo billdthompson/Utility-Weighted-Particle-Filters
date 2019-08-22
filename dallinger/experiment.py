@@ -37,7 +37,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
+		'generation_size':4, 
 		'generations': 2, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 4,
