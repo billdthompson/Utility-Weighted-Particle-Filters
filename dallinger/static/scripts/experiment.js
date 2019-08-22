@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,
-pre_stimulus_social_info,randomization_color,is_overflow,k_chose_utility, bar_chart,dots;
+randomization_color,is_overflow,k_chose_utility, bar_chart,dots;
 var trial = 0;
 var total_points = 250;
 var a;
@@ -579,7 +579,6 @@ report = function (color) {
                   randomization_color:randomization_color,
                   proportion_utility: proportion_utility,
                   proportion_blue:proportion_blue,
-                  pre_stimulus_social_info:pre_stimulus_social_info,
                   k_chose_blue: k_chose_blue,
                   k_chose_green: k_chose_green,
                   k_chose_utility:k_chose_utility,
