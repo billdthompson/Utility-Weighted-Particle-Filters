@@ -1,7 +1,7 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots;
 var trial = 0;
-var total_points = 250;
+var total_points = 400;
 var a;
 var n_generation_size; // how many people per generation?
 
