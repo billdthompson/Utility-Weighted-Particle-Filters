@@ -358,15 +358,14 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      make_bar_plot(k_chose_green,k_chose_blue,green_left,payout_condition=='social_with_info')
+      make_bar_plot(k_chose_green,k_chose_blue,green_left,social_condition=='social_with_info')
       $("#stimulus").css('display','block');
 
       if (is_practice==true){
-        var timeoutDuration = 6000
+        var timeoutDuration = 6500
       } else {
-        var timeoutDuration = 4000
+        var timeoutDuration = 4500
       }
-
 
       setTimeout(function() {
         $("#stimulus").css('display','none');
