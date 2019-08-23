@@ -1,5 +1,6 @@
 //
-var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots;
+var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
+is_equal,info_green;
 var trial = 0;
 var total_points = 500;
 var a;
@@ -11,7 +12,6 @@ var payout_condition = localStorage.getItem('payout_condition') // string, true/
 var node_slot = localStorage.getItem('node_slot')
 var randomization_color = localStorage.getItem('randomization_color')
 var is_overflow = localStorage.getItem('is_overflow')=='true';
-
 
 var num_practice_trials = parseInt(localStorage.getItem('num_practice')) // int 
 var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
@@ -33,7 +33,6 @@ var include_gems = localStorage.getItem('include_gems')=='true';
 var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
-var num_loops= -1;
 
 
 $('#continue_button').css('background-color','#5c5c5c')
@@ -42,9 +41,22 @@ $('#continue_button').css('outline','none')
 $("#continue_button").css("width", "300px");
 $("#continue_button").css("text-align", "center");
 
-$('#stimulus').css('padding-top','0px')
-$('#stimulus').css('margin','auto')
-$("#stimulus").css('display','none');
+
+$('#continue_social').css('background-color','#5c5c5c')
+$('#continue_social').css('border','none')
+$('#continue_social').css('outline','none')
+$("#continue_social").css("width", "300px");
+$("#continue_social").css("text-align", "center");
+
+$('#big_wrapper').css('padding-top','0px')
+$('#big_wrapper').css('margin','auto')
+$("#big_wrapper").css('display','none');
+
+$('#format_div').css('top','0')
+$('#format_div').css('bottom','0')
+$('#format_div').css('right','0')
+$('#format_div').css('left','0')
+$('#format_div').css('margin','auto')
 
 $('.outcome').css('margin-top','80px')
 $("#instructions").css('margin-top','110px')
@@ -53,7 +65,19 @@ $(".button-wrapper").css("width", "300px");
 $(".button-wrapper").css("margin", "0 auto");
 $(".button-wrapper").css("margin-top", "50px");
 
+$(".social_button_wrapper").css("width", "300px");
+$(".social_button_wrapper").css("margin", "0 auto");
 
+if (social_condition=='social_with_info'){
+  $(".social_button_wrapper").css("margin-top", "30px");
+} else {
+  $(".social_button_wrapper").css("margin-top", "50px");
+}
+
+$("#continue_social").css('display','none')
+
+$('#big_wrapper').css('margin-top','-40px')
+$('#other_text').css('padding-top','30px')
 
 $('#instructions').css('font-size','19px')
 var is_practice = true;
@@ -65,71 +89,87 @@ if (generation=='0' || social_condition=='asocial'){
 }
 
 
-function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
-  Chart.defaults.global.plugins.datalabels.anchor = 'end';
-  Chart.defaults.global.plugins.datalabels.align = 'end';
+function make_bar_plot(num_green,num_blue,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
-  if (green_is_left==true){
-    color_vec = ["#009500", "#0084ff"]
-    data_vec = [num_green+0.15,num_blue+0.15]
-  } else if (green_is_left==false){
-    data_vec = [num_blue+0.15,num_green+0.15]
-    color_vec = ["#0084ff", "#009500"]
+  if (num_green>num_blue){
+    data_vec = [num_blue,num_green]
+    color_vec = ["#B8DAFF", "#009500"]
+    percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
+    if (payout_condition=='green'|| payout_condition=='no-utility'){
+      inner_word = 'emerald'
+    } else{
+      inner_word = 'grass'
+    }
+    $('#percentage').html(percentage_num + '%')
+   $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
+   
+  } else if (num_blue>num_green){
+     data_vec = [num_green,num_blue]
+    color_vec = ["#B7DFB8", "#0084ff"]
+    percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
+    if (payout_condition=='blue'|| payout_condition=='no-utility'){
+      inner_word = 'sapphire'
+    } else{
+      inner_word = 'water'
+    }
+    $('#percentage').html(percentage_num + '%')
+    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
+    
+  } else{
+    if (Math.random()<0.5){
+      data_vec = [num_blue,num_green]
+      color_vec = ["#B8DAFF", "#009500"]
+      percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
+      if (payout_condition=='green'|| payout_condition=='no-utility'){
+        inner_word = 'emerald'
+      } else{
+        inner_word = 'grass'
+      }
+      $('#percentage').html(percentage_num + '%')
+     $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
+    } else{
+      data_vec = [num_green,num_blue]
+    color_vec = ["#B7DFB8", "#0084ff"]
+    percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
+    if (payout_condition=='blue'|| payout_condition=='no-utility'){
+      inner_word = 'sapphire'
+    } else{
+      inner_word = 'water'
+    }
+    $('#percentage').html(percentage_num + '%')
+    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
+    }
+    
   }
   
-  if (num_green==1){
-    var green_string = "("+ String(num_green) + ' participant)'
-  } else{
-    var green_string = "("+ String(num_green) + ' participants)'
-  }
-
-  if (num_blue==1){
-    var blue_string = "("+ String(num_blue) + ' participant)'
-  } else{
-    var blue_string = "("+ String(num_blue) + ' participants)'
-  }
-
-  if (payout_condition=='green'){
-    green_label ="Emerald dots\n" + green_string
-    blue_label = "Water dots\n" + blue_string
-  } else if (payout_condition=='blue'){
-    green_label = "Grass dots\n" + green_string
-    blue_label = "Sapphire dots\n" +blue_string
-  } else if (payout_condition=='no-utility'){
-    green_label = "Emerald dots\n"  + green_string
-    blue_label = "Sapphire dots\n" + blue_string
-  }
-
   if (is_SWI==true){
     if (payout_condition=='green'){
-      text_vec = ['Other participants being paid for',' emeralds thought there were more:','','']
-    } else if (payout_condition=='blue'){
-      text_vec = ['Other participants being paid for',' sapphires thought there were more:','','']
+      payout_word = 'emeralds'
+      color_code = '#009500'
+    } else {
+      payout_word = 'sapphires'
+      color_code = '#0084ff'
     }
-  } else{
-    text_vec = ['Other participants thought','there were more:','','']
+    
+    $('#SWI_info').html('<b>DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
+    $('#SWI_info').css('display','block')
   }
-
-  if (green_is_left==true){
-    context_vec = [green_label,blue_label]
-  } else{
-    context_vec = [blue_label,green_label]
-  }
-
-  num_loops = 0
   
-  bar_chart = new Chart(document.getElementById("myChart"), {
-    type: 'bar',
+  
+  doughnut_chart = new Chart(document.getElementById("myChart"), {
+    type: 'doughnut',
     data: {
       labels: ['a','b'],
       datasets: [
         {
           backgroundColor: color_vec,
-          data: data_vec
+          data: data_vec,
+          borderWidth: 4
         }
       ]
     },
     options: {
+      cutoutPercentage: 80,
       responsive:true,
       maintainAspectRatio: false,
       animation:false,
@@ -138,44 +178,8 @@ function make_bar_plot(num_green,num_blue,green_is_left,is_SWI){
       hover: {mode: null},
       legend: { display: false },
       title: {
-        display: true,
-        text: text_vec,
-        fontSize: 25,
-        fontStyle: 'normal'
+        display: false,
       },
-      scales: {
-        yAxes: [{
-          display: false,
-            ticks: {
-                beginAtZero: true,
-                max: num_blue+num_green+0.5
-            },
-          gridLines: {
-                display:false,
-            drawBorder: false,
-          }
-        }],
-        xAxes: [{
-          display: false,
-          gridLines:{
-            display:false,
-             drawBorder: false
-          }
-        }]
-      },
-      plugins: {
-      datalabels: {
-        color: '#fffff',
-        formatter: function (value,context) {
-          num_loops = num_loops + 1
-          return context_vec[context.dataIndex]
-        },
-        font: {
-          size: 22
-        },
-        textAlign:'center'
-      }
-    },
     }
 });
 }
@@ -357,19 +361,21 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      make_bar_plot(k_chose_green,k_chose_blue,green_left,social_condition=='social_with_info')
-      $("#stimulus").css('display','block');
-
-      if (is_practice==true){
-        var timeoutDuration = 6500
-      } else {
-        var timeoutDuration = 4500
-      }
+      make_bar_plot(k_chose_green,k_chose_blue,social_condition=='social_with_info')
+      $("#big_wrapper").css('display','block');
+      
+      var timeoutDuration = 4000;
 
       setTimeout(function() {
-        $("#stimulus").css('display','none');
-        $("#instructions").text(instructionsText);
-        regenerateDisplay(proportion_utility);
+        $("#continue_social").removeClass('disabled')
+        $("#continue_social").css('display','block')
+        $("#continue_social").click(function(){
+          $("#continue_social").addClass('disabled')
+          $("#continue_social").css('display','none')
+          $("#big_wrapper").css('display','none');
+          $("#instructions").text(instructionsText);
+          regenerateDisplay(proportion_utility);
+        })
       }, timeoutDuration);
     }
   })
@@ -396,7 +402,7 @@ function presentDisplay () {
     }
     $('svg').remove() // remove the annoying disabled version of the screen from the dot display
     if (learning_strategy=='social'){
-      bar_chart.destroy() 
+      doughnut_chart.destroy() 
 
     }
     $("#more-blue").removeClass('disabled');
@@ -460,7 +466,7 @@ function regenerateDisplay (propUtility) {
       colors.push(1);
     }
 
-    random_string = String(generation) + String(net_decision_index)
+    random_string = String(generation) + String(net_decision_index) + '1'
 
     var myrng0 = new Math.seedrandom(random_string+'_colors');
     colors = shuffle(colors,myrng0);
@@ -590,7 +596,8 @@ report = function (color) {
                   green_left: green_left,
                   net_decision_index: net_decision_index,
                   is_overflow: is_overflow,
-                  num_loops: num_loops
+                  is_equal:is_equal,
+                  info_green:info_green
                 }
 
   dallinger.createInfo(my_node_id, {
@@ -682,6 +689,7 @@ function getBonusAmount(truth,response){
 
           if (learning_strategy=='social'){
             n_generation_size = parseInt(particlesResponse.n)
+            k_chose_utility = parseInt(particlesResponse.k)
 
             if (randomization_color=='blue'){
               k_chose_blue = parseInt(particlesResponse.k)
@@ -909,7 +917,7 @@ function display_practice_info(){
 
 
 function display_earnings(){
-  $('#stimulus').css('padding-top','0px')
+  $('#big_wrapper').css('padding-top','0px')
   if (cover_story==false){
     if (payout_condition=='blue'){
       $(".outcome").html("<div class='titleOutcome'>"+

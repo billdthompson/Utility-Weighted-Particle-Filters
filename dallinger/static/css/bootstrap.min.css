@@ -6755,3 +6755,22 @@ button.close {
         display: none!important
     }
 }
+
+  
+#percentage {
+    font-size:50px;
+    font-weight:bold;
+}
+
+#other_text {
+    font-size:20px;
+    line-height:1.25;
+}
+
+#SWI_info {
+    display:none;
+    font-size:20px;
+    line-height:1.4;
+    margin-top:15px;
+    text-align:center;
+}
