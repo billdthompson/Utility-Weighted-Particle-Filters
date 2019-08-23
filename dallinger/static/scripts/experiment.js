@@ -93,7 +93,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (num_green>num_blue){
     data_vec = [num_blue,num_green]
-    color_vec = ["#B8DAFF", "#009500"]
+    color_vec = ["#dbdbdb", "#009500"]
     percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
     if (payout_condition=='green'|| payout_condition=='no-utility'){
       inner_word = 'emerald'
@@ -105,7 +105,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
    
   } else if (num_blue>num_green){
      data_vec = [num_green,num_blue]
-    color_vec = ["#B7DFB8", "#0084ff"]
+    color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
     if (payout_condition=='blue'|| payout_condition=='no-utility'){
       inner_word = 'sapphire'
@@ -117,8 +117,9 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     
   } else{
     if (Math.random()<0.5){
+      console.log('here')
       data_vec = [num_blue,num_green]
-      color_vec = ["#B8DAFF", "#009500"]
+      color_vec = ["#dbdbdb", "#009500"]
       percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
       if (payout_condition=='green'|| payout_condition=='no-utility'){
         inner_word = 'emerald'
@@ -129,7 +130,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
      $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
     } else{
       data_vec = [num_green,num_blue]
-    color_vec = ["#B7DFB8", "#0084ff"]
+    color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
     if (payout_condition=='blue'|| payout_condition=='no-utility'){
       inner_word = 'sapphire'
@@ -154,7 +155,6 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     $('#SWI_info').html('<b>DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
     $('#SWI_info').css('display','block')
   }
-  
   
   doughnut_chart = new Chart(document.getElementById("myChart"), {
     type: 'doughnut',
@@ -371,7 +371,6 @@ get_received_infos = function() {
         $("#continue_social").css('display','block')
         $("#continue_social").click(function(){
           $("#continue_social").addClass('disabled')
-          $("#continue_social").css('display','none')
           $("#big_wrapper").css('display','none');
           $("#instructions").text(instructionsText);
           regenerateDisplay(proportion_utility);
@@ -405,6 +404,7 @@ function presentDisplay () {
       doughnut_chart.destroy() 
 
     }
+    $("#continue_social").css('display','none')
     $("#more-blue").removeClass('disabled');
     $("#more-green").removeClass('disabled');
     $("#instructions").show()
