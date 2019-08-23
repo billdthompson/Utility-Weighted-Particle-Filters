@@ -24,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = False
+DEBUG = True
 
 class UWPFWP(Experiment):
 	"""Utility Weighted self.models.Particle Filter with People.
@@ -37,12 +37,12 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
+		'generation_size':2, 
 		'generations': 2, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 4,
-		'num_random_order_experimental_networks_per_experiment': 4,
-		'num_practice_networks_per_experiment': 4,
+		'num_fixed_order_experimental_networks_per_experiment': 2,
+		'num_random_order_experimental_networks_per_experiment': 2,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -111,17 +111,19 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
+		self.condition_counts = {"ASO:W-U":self.num_replications_per_condition,
+								 "OVF:N-U":2
 								 }
 		# Derrived Quantities
-		self.num_experiments = sum(self.condition_counts.values()) - sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
-		self.planned_overflow = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())]) * self.generation_size
-		self.num_experimental_networks_per_experiment = self.experimental_decisions = self.num_fixed_order_experimental_networks_per_experiment + self.num_random_order_experimental_networks_per_experiment
-		self.num_networks_total = (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * self.num_experiments
-		self.num_participants_per_generation = self.initial_recruitment_size = self.generation_size * self.num_experiments
-		self.num_experimental_participants_per_generation = (self.num_experiments) * self.generation_size
-		self.num_nodes_per_generation = self.generation_size * self.num_networks_total 
-		self.num_experimental_nodes_per_generation = ((self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * (self.num_experiments)) * self.generation_size
+		self.num_overflow_experiments = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
+		self.planned_overflow = self.num_overflow_experiments * self.generation_size
+		self.num_experiments = sum(self.condition_counts.values()) - self.num_overflow_experiments
+		self.num_experimental_participants_per_generation = self.generation_size * self.num_experiments
+		self.num_experimental_networks_per_experiment = self.num_fixed_order_experimental_networks_per_experiment + self.num_random_order_experimental_networks_per_experiment
+		self.num_experimental_networks_total = (self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment) * self.num_experiments
+		self.initial_recruitment_size = self.num_experimental_participants_per_generation + self.planned_overflow
+		self.num_experimental_participants_per_generation = self.num_experiments * self.generation_size
+		self.num_experimental_nodes_per_generation = self.num_experimental_networks_total * self.generation_size
 
 	def create_network(self, condition, replication, role, decision_index, proportion):
 		# identify entwork type: overflow?
@@ -213,12 +215,12 @@ class UWPFWP(Experiment):
 		if completed_decisions < nfixed:
 			# find the network that is next in the participant's schedule
 			# match on completed decsions b/c decision_index counts from zero but completed_decisions count from one
-			return self.models.Network.query.filter(and_(self.models.ParticleFilter.property4 == repr(completed_decisions), self.models.ParticleFilter.property5 == participant_condition, self.models.ParticleFilter.property3 == participant_replication)).filter_by(full = False).one()
+			return self.models.Network.query.filter(and_(self.models.Network.property4 == repr(completed_decisions), self.models.Network.property5 == participant_condition, self.models.Network.property3 == participant_replication)).filter_by(full = False).one()
 
 		# If it is time to sample a network at random
 		else:
 			# find networks which match the participant's condition and werent' fixed order nets
-			matched_condition_experimental_networks = self.models.Network.query.filter(and_(cast(self.models.ParticleFilter.property4, Integer) >= nfixed, self.models.ParticleFilter.property5 == participant_condition, self.models.ParticleFilter.property3 == participant_replication)).filter_by(full = False).all()
+			matched_condition_experimental_networks = self.models.Network.query.filter(and_(cast(self.models.Network.property4, Integer) >= nfixed, self.models.Network.property5 == participant_condition, self.models.Network.property3 == participant_replication)).filter_by(full = False).all()
 			
 			# subset further to networks not already participated in (because here decision index doesnt guide use)
 			availible_options = [net for net in matched_condition_experimental_networks if net.id not in networks_participated_in]
@@ -247,7 +249,8 @@ class UWPFWP(Experiment):
 				return random.choice(nets)
 			else:
 				# must be the end of the experiment, direct ps to overflow
-				return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+				# return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+				return random.choice(self.models.OverFlow.query.filter_by(full = False).filter(self.models.OverFlow.property4 == repr(0)).all())
 
 		# Subset netowek counts down to only first trial networks
 		network_counts = dict(filter(lambda count: count[0] in net_ids, network_counts))
@@ -268,7 +271,8 @@ class UWPFWP(Experiment):
 
 		if not availible_networks:
 			self.log("No experimental networks are availible. Returning Overflow network.", key)
-			return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+			# return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+			return random.choice(self.models.OverFlow.query.filter_by(full = False).filter(self.models.OverFlow.property4 == repr(0)).all())
 
 		self.log("The availible networks are: {}".format([net.id for net in availible_networks]), key)
 		return random.choice(availible_networks)
@@ -300,7 +304,7 @@ class UWPFWP(Experiment):
 			chosen_network = self.get_network_for_existing_participant(participant, participant_nodes)
 
 		if chosen_network is not None:
-			self.log("Assigned to network: {}".format(chosen_network.id), key)
+			self.log("Assigned to network: {}; Condition: {}; Replication: {};".format(chosen_network.id, chosen_network.condition, chosen_network.replication), key)
 
 		else:
 			self.log("Requested a network but was assigned None.".format(len(participant_nodes)), key)
@@ -367,42 +371,80 @@ class UWPFWP(Experiment):
 
 		node.receive()
 
-	#@pysnooper.snoop(prefix = "@snoop: ")
-	def calculate_required_overrecruitment(self):
-		key = "experiment.py >> calculate_required_overrecruitment: "
-		if not self.models.OverflowParticle.query.all():
-			self.log("No overflow nodes have been created. All initial overflow recruitments remain unstarted.", key)
-			return 0
-
-		arbitrary_network = self.models.ParticleFilter.query.first()
-
-		# ...to estbalish current generation
-		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = arbitrary_network.id).one().current_generation
+	# @pysnooper.snoop(prefix = "@snoop: ")
+	def overflow_uptake_counts(self):
+		"""How many participants started working or have completed working this generation in each overflow replication?"""
 
 		# We only need to check how many overflow nodes began
 		# so we only need to check for overflownodes belonging to the first overflow networks
 		# i.e., the overflow network with the smallest decision_index
-		first_overflow_network_ids = [ovf_net.id for ovf_net in self.models.OverFlow.query.filter(self.models.OverFlow.property4 == repr(0)).all()] # property4 == decision_index 
+		first_trial_overflow_networks = self.models.OverFlow.query.filter(self.models.OverFlow.property4 == repr(0)).filter_by(failed = False).all()
+		if not first_trial_overflow_networks:
+			return []
 
-		completed_participant_ids = [p.id for p in self.models.Participant.query.filter_by(failed = False).all()]
+		# Establish the generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = first_trial_overflow_networks[0].id).one().current_generation
+		
+		# and cache the relevant network ids
+		first_trial_overflow_network_ids = [net.id for net in first_trial_overflow_networks]
 
-		next_generation_required_overflow = number_of_overflow_nodes_with_current_generation = self.models.OverflowParticle.query \
-																							   .filter(self.models.OverflowParticle.property2 == repr(current_generation), self.models.OverflowParticle.network_id.in_(first_overflow_network_ids), self.models.OverflowParticle.participant_id.in_(completed_participant_ids)) \
-																							   .filter_by(failed = False) \
-																							   .count()
+		participant_ids = [p.id for p in self.models.Participant.query.filter_by(failed = False).all()]
+
+		# Goal: count how many nodes were created this genereastion in each of the first-trial overflow replications
+		# 1: count unique participant ids in all overflow nodes
+		# 2: sum this count by network (by grouping)
+		# 3: subset down to just this generation & first trial & non-failed-participants
+		# 4: don't count failed nodes
+		network_counts = self.session.query(func.count(self.models.OverflowParticle.participant_id.distinct()).label('count'), self.models.OverflowParticle.network_id) \
+				.group_by(self.models.OverflowParticle.network_id) \
+				.filter(self.models.OverflowParticle.property2 == repr(current_generation), self.models.OverflowParticle.network_id.in_(first_trial_overflow_network_ids), self.models.OverflowParticle.participant_id.in_(participant_ids)) \
+				.filter_by(failed = False)\
+				.all()
+
+		# reverse the items so that the format is [(network_id, count), ...]
+		return dict([c[::-1] for c in network_counts])
+
+	# @pysnooper.snoop(prefix = "@snoop: ")
+	def calculate_required_overrecruitment(self):
+		key = "experiment.py >> calculate_required_overrecruitment: "
+		if not self.models.OverflowParticle.query.filter_by(failed = False).count() > 0:
+			self.log("No overflow nodes have been created. All initial overflow recruitments remain unstarted.", key)
+			return 0
+
+		overflow_counts_by_condition_and_replication = self.overflow_uptake_counts()
+		if not overflow_counts_by_condition_and_replication:
+			self.log("Overflow network counts null. No overflow nodes have been created. All initial overflow recruitments remain unstarted.", key)
+			return 0
+
+		# estbalish current generation
+		current_generation = self.models.NetworkRandomAttributes.query.filter_by(network_id = self.models.ParticleFilter.query.first().id).one().current_generation
+
+		next_generation_required_overflow = number_of_overflow_nodes_with_current_generation = sum(overflow_counts_by_condition_and_replication.values())
+		
 		if next_generation_required_overflow == 0:
 			self.log("No overflow partciipants were created during geneeration {}. All current overflow recruitments remain unstarted.".format(current_generation), key)
 			return 0
-		
+
 		# next_generation_required_overflow = number_of_overflow_nodes_with_current_generation = self.session.query(func.count(self.models.OverFlowSortingNode.property2).label('count')).filter(self.models.OverFlowSortingNode.property2 == maximum_generation_among_overflow_nodes).filter_by(failed = False).scalar()			
 		self.log("In generation {}, {} overflow participants were created.".format(current_generation, number_of_overflow_nodes_with_current_generation), key)
 		self.log("Planned over recruitment requires {} live overflow assignments at each generation. {} overflow assingments remain live from generation {}".format(self.planned_overflow, self.planned_overflow - number_of_overflow_nodes_with_current_generation, current_generation), key)
+		
+		# deal with every overflow replrication seprately
+		first_trial_overflow_networks = self.models.OverFlow.query.filter(self.models.OverFlow.property4 == repr(0)).filter_by(failed = False).all()
+		for overflow_experiment in first_trial_overflow_networks:
+			condition, replication = overflow_experiment.condition, overflow_experiment.replication 
 
-		overflow_networks = self.models.OverFlow.query.all()
-		for overflow_network in overflow_networks:
-			overflow_network.max_size = float(overflow_network.max_size) + next_generation_required_overflow
-			self.log("Adding {} to max_size of overflow network (id = {}) (decision index = {}). Max_size is now: {}. This overflow network has {} overflowparticle nodes.".format(next_generation_required_overflow, overflow_network.id, overflow_network.property4, overflow_network.max_size, len(overflow_network.nodes())), key)
-			# self.save()
+			if not overflow_experiment.id in overflow_counts_by_condition_and_replication:
+				self.log("Overflow -- Condition = {}; Replication = {} -- created no nodes this generation. Doing nothing.".format(condition, replication), key)
+
+			else:
+				nodes_created = overflow_counts_by_condition_and_replication[overflow_experiment.id]
+				self.log("Overflow -- Condition = {}; Replication = {} -- created {} nodes this generation. Updating network capacities for all trial networks.".format(condition, replication, nodes_created), key)
+				all_networks_in_this_overflow_experiment = self.models.OverFlow.query.filter(self.models.OverFlow.property5 == condition, self.models.OverFlow.property3 == repr(replication)).filter_by(failed = False).all()
+				
+				for overflow_network in all_networks_in_this_overflow_experiment:
+					overflow_network.max_size = float(overflow_network.max_size) + float(nodes_created)
+					self.log("Overflow network {} (condition = {}; replication = {}; decision index = {}) max_size is now: {}.".format(overflow_network.id, overflow_network.condition, overflow_network.replication, overflow_network.property4, overflow_network.max_size), key)
 		
 		return min([self.planned_overflow, next_generation_required_overflow])
 
@@ -552,6 +594,8 @@ class UWPFWP(Experiment):
 		if not nodes:
 			return False
 
+		self.log("Node type {} submitted".format(nodes[0].type), "experiment.py >> data_check")
+
 		if len(nodes) != self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment:
 			print("Error: self.models.Participant has {} nodes. Data check failed"
 				  .format(len(nodes)))
@@ -564,14 +608,6 @@ class UWPFWP(Experiment):
 			return False
 
 		return True
-
-	# def is_complete(self):
-	# 	"""Determine whether the experiment is complete"""
-	# 	node_count = self.session.query(func.count(self.models.Particle.id.label('count'))).filter_by(failed = False).scalar()
-
-	# 	participant_count = self.session.query(func.count(Participant.id.label('count'))).filter_by(failed = False, status = 'approved').scalar()
-
-	# 	return True if (node_count >= (self.nodes_per_generation * self.generations) & (participant_count >= (self.generation_size * self.generations * self.nconditions))) else False
 
 	#@pysnooper.snoop()
 	def getnet(self, network_id):
