@@ -24,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
@@ -37,12 +37,12 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
-		'generations': 2, 
+		'generation_size':8, 
+		'generations': 4, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 2,
-		'num_random_order_experimental_networks_per_experiment': 2,
-		'num_practice_networks_per_experiment': 2,
+		'num_fixed_order_experimental_networks_per_experiment': 4,
+		'num_random_order_experimental_networks_per_experiment': 4,
+		'num_practice_networks_per_experiment': 4,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -108,7 +108,8 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"ASO:W-U":self.num_replications_per_condition,
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+								 "SWI:W-U":self.num_replications_per_condition,
 								 "OVF:N-U":2
 								 }
 		# Derrived Quantities
