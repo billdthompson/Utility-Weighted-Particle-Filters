@@ -30,16 +30,17 @@ class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
 	 
 	 TODO: 
-	 - stress test new overflow mechanism
 	 - debug multiple replications ofoverflow conditions
+	 - ensure overflow conditions are handed out randomly
+	 - snoop on data_check to see why "real" participants are failing at the end of a generation
 	"""
 
 	@property
 	def public_properties(self):
 		return {
 		'generation_size':8, 
-		'generations': 4, 
-		'num_replications_per_condition':1,
+		'generations': 6, 
+		'num_replications_per_condition':2,
 		'num_fixed_order_experimental_networks_per_experiment': 4,
 		'num_random_order_experimental_networks_per_experiment': 4,
 		'num_practice_networks_per_experiment': 4,
@@ -108,9 +109,9 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
-								 "SWI:W-U":self.num_replications_per_condition,
-								 "OVF:N-U":2
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
+								 "SOC:W-U":self.num_replications_per_condition,
+								 "OVF:W-U":1
 								 }
 		# Derrived Quantities
 		self.num_overflow_experiments = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
@@ -302,7 +303,7 @@ class UWPFWP(Experiment):
 			chosen_network = self.get_network_for_existing_participant(participant, participant_nodes)
 
 		if chosen_network is not None:
-			self.log("Assigned to network: {}; Condition: {}; Replication: {};".format(chosen_network.id, chosen_network.condition, chosen_network.replication), key)
+			self.log("Assigned to network: {}; Condition: {}; Replication: {}; Decsion Index: {};".format(chosen_network.id, chosen_network.condition, chosen_network.replication, chosen_network.decision_index), key)
 
 		else:
 			self.log("Requested a network but was assigned None.".format(len(participant_nodes)), key)
@@ -573,6 +574,7 @@ class UWPFWP(Experiment):
 		
 	def attention_check(self, participant=None):
 		"""Check a participant paid attention."""
+		key = "experiment.py >> data_check: "
 		infos = participant.infos()
 
 		if not infos:
@@ -581,28 +583,30 @@ class UWPFWP(Experiment):
 		passed =  np.any([info.passed for info in infos if info.type == 'comprehensiontest'])
 
 		if not passed:
-			self.log("failed", "--** attentioncheck for participant: {} ** -->>".format(participant.id))
+			self.log("Participant {} failed".format(participant.id), key)
 
 		return passed
 
+	@pysnooper.snoop()
 	def data_check(self, participant):
 		"""Check a participants data."""
+		key = "experiment.py >> data_check: "
 		nodes = Node.query.filter_by(participant_id=participant.id).all()
 
 		if not nodes:
 			return False
 
-		self.log("Node type {} submitted".format(nodes[0].type), "experiment.py >> data_check")
+		self.log("Node type {} submitted".format(nodes[0].type), key)
 
 		if len(nodes) != self.num_practice_networks_per_experiment + self.num_experimental_networks_per_experiment:
-			print("Error: self.models.Participant has {} nodes. Data check failed"
-				  .format(len(nodes)))
+			self.log("Error: self.models.Participant has {} nodes. Data check failed"
+				  .format(len(nodes)), key)
 			return False
 
 		nets = [n.network_id for n in nodes]
 		if len(nets) != len(set(nets)):
-			print("Error: self.models.Participant participated in the same network \
-				   multiple times. Data check failed")
+			self.log("Error: self.models.Participant participated in the same network \
+				   multiple times. Data check failed", key)
 			return False
 
 		return True
@@ -632,7 +636,6 @@ def getnet(network_id):
 		return Response(status=403, mimetype='application/json')
 
 @extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
-#@pysnooper.snoop()
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
@@ -663,7 +666,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		
 		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 
-	#@pysnooper.snoop()
+	@pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
 
 		# establish whether we're dealing with an overflow node or not
@@ -684,19 +687,21 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# estblish the incentivised colors for this node
 		node_payout = payout_colors[str(node_slot)]
 
-		previous_generation_choices = np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] for node in previous_generation_nodes])
+		previous_generation_choices = np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] for node in previous_generation_nodes if node.infos(type = Meme)])
 
-		previous_generation_utilities = np.array([payout_colors[str(node.slot)] for node in previous_generation_nodes])
+		previous_generation_utilities = np.array([payout_colors[str(node.slot)] for node in previous_generation_nodes if node.infos(type = Meme)])
 		
 		# make a list of whether each parent node chose blue or not
 		chose_blue = previous_generation_choices == "blue"
 
 		# count how many parents selected their incentivised color
-		k = (previous_generation_choices == previous_generation_utilities).sum()
+		# k = (previous_generation_choices == previous_generation_utilities).sum()
+		k = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == payout_colors[str(node.slot)] for node in previous_generation_nodes if node.infos(type = Meme)]))
 
 		# count the number who did choose blue
 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
-		b = sum(chose_blue)
+		# b = sum(chose_blue)
+		b = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == "blue"] for node in previous_generation_nodes if node.infos(type = Meme)]))
 
 		# count the generation size and check it liens up with the exp
 		n = exp.generation_size

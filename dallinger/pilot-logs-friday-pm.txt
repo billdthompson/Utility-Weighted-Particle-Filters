@@ -1,0 +1,100 @@
+2019-08-23T21:52:27.764828+00:00 app[worker.1]: File "/app/.heroku/src/dallinger/dallinger/recruiters.py", line 654, in approve_hit
+2019-08-23T21:52:27.764830+00:00 app[worker.1]: return self.mturkservice.approve_assignment(assignment_id)
+2019-08-23T21:52:27.764832+00:00 app[worker.1]: File "/app/.heroku/src/dallinger/dallinger/mturk.py", line 582, in approve_assignment
+2019-08-23T21:52:27.764834+00:00 app[worker.1]: assignment_id, str(assignment), str(ex)
+2019-08-23T21:52:27.766769+00:00 app[worker.1]: dallinger.mturk.MTurkServiceException: Failed to approve assignment 3I0BTBYZAZ95K4VGA3KXJSS8NJD0YC, {'id': '3I0BTBYZAZ95K4VGA3KXJSS8NJD0YC', 'status': 'Approved', 'hit_id': '32TZXEA1OM8N624KRDUOTOCO94F14A', 'worker_id': 'A3141EW4WZT4Q0'}: An error occurred (RequestError) when calling the ApproveAssignment operation: This operation can be called with a status of: Submitted (1566597147602)
+2019-08-23T21:52:27.794247+00:00 app[worker.1]: >>>> experiment.py >> data_check Node type overflowparticle submitted
+2019-08-23T21:52:27.926248+00:00 app[worker.1]: >>>> ----- Bonus = 0.7: paying bonus
+2019-08-23T21:52:27.927107+00:00 app[worker.1]: 2019-08-23 21:52:27,926 Initializing MTurkRecruiter...
+2019-08-23T21:52:27.932792+00:00 app[worker.1]: 2019-08-23 21:52:27,932 Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+2019-08-23T21:52:27.954057+00:00 app[worker.1]: 2019-08-23 21:52:27,953 Changing event name from before-call.apigateway to before-call.api-gateway
+2019-08-23T21:52:27.959470+00:00 app[worker.1]: 2019-08-23 21:52:27,958 Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+2019-08-23T21:52:27.973815+00:00 app[worker.1]: 2019-08-23 21:52:27,973 Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+2019-08-23T21:52:27.974743+00:00 app[worker.1]: 2019-08-23 21:52:27,974 Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+2019-08-23T21:52:27.978012+00:00 app[worker.1]: 2019-08-23 21:52:27,977 Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+2019-08-23T21:52:27.986327+00:00 app[worker.1]: 2019-08-23 21:52:27,984 Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+2019-08-23T21:52:28.002586+00:00 app[worker.1]: 2019-08-23 21:52:28,001 Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+2019-08-23T21:52:28.003172+00:00 app[worker.1]: 2019-08-23 21:52:28,003 Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+2019-08-23T21:52:28.003543+00:00 app[worker.1]: 2019-08-23 21:52:28,003 Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+2019-08-23T21:52:28.004127+00:00 app[worker.1]: 2019-08-23 21:52:28,003 Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+2019-08-23T21:52:28.004841+00:00 app[worker.1]: 2019-08-23 21:52:28,004 Setting config variable for region to 'us-east-1'
+2019-08-23T21:52:28.011589+00:00 app[worker.1]: 2019-08-23 21:52:28,011 Loading JSON file: /app/.heroku/python/lib/python3.6/site-packages/botocore/data/endpoints.json
+2019-08-23T21:52:28.035705+00:00 app[worker.1]: 2019-08-23 21:52:28,035 Event choose-service-name: calling handler <function handle_service_name_alias at 0x7f7b8c9d9ea0>
+2019-08-23T21:52:28.057771+00:00 app[worker.1]: 2019-08-23 21:52:28,057 Loading JSON file: /app/.heroku/python/lib/python3.6/site-packages/botocore/data/mturk/2017-01-17/service-2.json
+2019-08-23T21:52:28.068968+00:00 app[worker.1]: 2019-08-23 21:52:28,068 Event creating-client-class.mturk: calling handler <function add_generate_presigned_url at 0x7f7b8c9c6950>
+2019-08-23T21:52:28.069537+00:00 app[worker.1]: 2019-08-23 21:52:28,069 The s3 config key is not a dictionary type, ignoring its value of: None
+2019-08-23T21:52:28.073991+00:00 app[worker.1]: 2019-08-23 21:52:28,073 Setting mturk-requester timeout as (60, 60)
+2019-08-23T21:52:28.075710+00:00 app[worker.1]: 2019-08-23 21:52:28,075 Loading JSON file: /app/.heroku/python/lib/python3.6/site-packages/botocore/data/_retry.json
+2019-08-23T21:52:28.077114+00:00 app[worker.1]: 2019-08-23 21:52:28,076 Registering retry handlers for service: mturk
+2019-08-23T21:52:28.079397+00:00 app[worker.1]: 2019-08-23 21:52:28,079 Event before-parameter-build.mturk.GetAssignment: calling handler <function generate_idempotent_uuid at 0x7f7b8c979268>
+2019-08-23T21:52:28.080050+00:00 app[worker.1]: 2019-08-23 21:52:28,079 Event before-call.mturk.GetAssignment: calling handler <function inject_api_version_header_if_needed at 0x7f7b8c97abf8>
+2019-08-23T21:52:28.080301+00:00 app[worker.1]: 2019-08-23 21:52:28,080 Making request for OperationModel(name=GetAssignment) with params: {'url_path': '/', 'query_string': '', 'method': 'POST', 'headers': {'X-Amz-Target': 'MTurkRequesterServiceV20170117.GetAssignment', 'Content-Type': 'application/x-amz-json-1.1', 'User-Agent': 'Boto3/1.9.80 Python/3.6.6 Linux/4.4.0-1048-aws Botocore/1.12.215'}, 'body': b'{"AssignmentId": "3I0BTBYZAZ95K4VGA3KXJSS8NJD0YC"}', 'url': 'https://mturk-requester.us-east-1.amazonaws.com/', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7f7b655772b0>, 'has_streaming_input': False, 'auth_type': None}}
+2019-08-23T21:52:28.080908+00:00 app[worker.1]: 2019-08-23 21:52:28,080 Event request-created.mturk.GetAssignment: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f7b65577278>>
+2019-08-23T21:52:28.081562+00:00 app[worker.1]: 2019-08-23 21:52:28,081 Event choose-signer.mturk.GetAssignment: calling handler <function set_operation_specific_signer at 0x7f7b8c979158>
+2019-08-23T21:52:28.082691+00:00 app[worker.1]: 2019-08-23 21:52:28,082 Calculating signature using v4 auth.
+2019-08-23T21:52:28.082915+00:00 app[worker.1]: 2019-08-23 21:52:28,082 CanonicalRequest:
+2019-08-23T21:52:28.082918+00:00 app[worker.1]: POST
+2019-08-23T21:52:28.082921+00:00 app[worker.1]: /
+2019-08-23T21:52:28.082923+00:00 app[worker.1]: 
+2019-08-23T21:52:28.082925+00:00 app[worker.1]: content-type:application/x-amz-json-1.1
+2019-08-23T21:52:28.082927+00:00 app[worker.1]: host:mturk-requester.us-east-1.amazonaws.com
+2019-08-23T21:52:28.082929+00:00 app[worker.1]: x-amz-date:20190823T215228Z
+2019-08-23T21:52:28.082932+00:00 app[worker.1]: x-amz-target:MTurkRequesterServiceV20170117.GetAssignment
+2019-08-23T21:52:28.082933+00:00 app[worker.1]: 
+2019-08-23T21:52:28.082935+00:00 app[worker.1]: content-type;host;x-amz-date;x-amz-target
+2019-08-23T21:52:28.082937+00:00 app[worker.1]: c0c287c56e4b9304eacd03a8a1209f13f39752a695048af27cc804d48e949e98
+2019-08-23T21:52:28.083121+00:00 app[worker.1]: 2019-08-23 21:52:28,082 StringToSign:
+2019-08-23T21:52:28.083124+00:00 app[worker.1]: AWS4-HMAC-SHA256
+2019-08-23T21:52:28.083126+00:00 app[worker.1]: 20190823T215228Z
+2019-08-23T21:52:28.083128+00:00 app[worker.1]: 20190823/us-east-1/mturk-requester/aws4_request
+2019-08-23T21:52:28.083135+00:00 app[worker.1]: 5938fc9336281a8fd4a98befcf0651e196accadbf28ee87ea2c6741021eb70f7
+2019-08-23T21:52:28.086322+00:00 app[worker.1]: 2019-08-23 21:52:28,083 Signature:
+2019-08-23T21:52:28.086326+00:00 app[worker.1]: 662729c490767eca8a517edd15cc91cc6ebb201edd7d53a206edc790a5df1217
+2019-08-23T21:52:28.086329+00:00 app[worker.1]: 2019-08-23 21:52:28,083 Sending http request: <AWSPreparedRequest stream_output=False, method=POST, url=https://mturk-requester.us-east-1.amazonaws.com/, headers={'X-Amz-Target': b'MTurkRequesterServiceV20170117.GetAssignment', 'Content-Type': b'application/x-amz-json-1.1', 'User-Agent': b'Boto3/1.9.80 Python/3.6.6 Linux/4.4.0-1048-aws Botocore/1.12.215', 'X-Amz-Date': b'20190823T215228Z', 'Authorization': b'AWS4-HMAC-SHA256 Credential=AKIAITNHUZPRDTRWG3NQ/20190823/us-east-1/mturk-requester/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-target, Signature=662729c490767eca8a517edd15cc91cc6ebb201edd7d53a206edc790a5df1217', 'Content-Length': '50'}>
+2019-08-23T21:52:28.086331+00:00 app[worker.1]: 2019-08-23 21:52:28,085 Converted retries value: False -> Retry(total=False, connect=None, read=None, redirect=0, status=None)
+2019-08-23T21:52:28.086333+00:00 app[worker.1]: 2019-08-23 21:52:28,085 Starting new HTTPS connection (1): mturk-requester.us-east-1.amazonaws.com:443
+2019-08-23T21:52:28.166644+00:00 app[worker.1]: 2019-08-23 21:52:28,166 https://mturk-requester.us-east-1.amazonaws.com:443 "POST / HTTP/1.1" 200 2073
+2019-08-23T21:52:28.167708+00:00 app[worker.1]: 2019-08-23 21:52:28,167 Response headers: {'x-amzn-RequestId': '2cf7da4a-7459-42ca-92ee-5f3fab968954', 'Content-Type': 'application/x-amz-json-1.1', 'Content-Length': '2073', 'Date': 'Fri, 23 Aug 2019 21:52:28 GMT'}
+2019-08-23T21:52:28.168232+00:00 app[worker.1]: 2019-08-23 21:52:28,168 Response body:
+2019-08-23T21:52:28.168277+00:00 app[worker.1]: b'{"Assignment":{"AcceptTime":1.566596504E9,"Answer":"<?xml version=\\"1.0\\" encoding=\\"ASCII\\"?><QuestionFormAnswers xmlns=\\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2005-10-01/QuestionFormAnswers.xsd\\"><Answer><QuestionIdentifier>workerId</QuestionIdentifier><FreeText>A3141EW4WZT4Q0</FreeText></Answer></QuestionFormAnswers>","ApprovalTime":1.566597143E9,"AssignmentId":"3I0BTBYZAZ95K4VGA3KXJSS8NJD0YC","AssignmentStatus":"Approved","AutoApprovalTime":1.566597127E9,"HITId":"32TZXEA1OM8N624KRDUOTOCO94F14A","SubmitTime":1.566597127E9,"WorkerId":"A3141EW4WZT4Q0"},"HIT":{"AssignmentDurationInSeconds":900,"AutoApprovalDelayInSeconds":0,"CreationTime":1.566591577E9,"Description":"Judge dot displays","Expiration":1.568674177E9,"HITGroupId":"3LUMOMQJCZKNQ2SJ0CF5QJICWF4LPO","HITId":"32TZXEA1OM8N624KRDUOTOCO94F14A","HITReviewStatus":"NotReviewed","HITStatus":"Unassignable","HITTypeId":"3K1KXTVNBL9N0J19R900ZYMFHSIM1U","Keywords":"Psychology,decision,dots,game","MaxAssignments":40,"NumberOfAssignmentsAvailable":0,"NumberOfAssignmentsCompleted":39,"NumberOfAssignmentsPending":1,"QualificationRequirements":[{"ActionsGuarded":"PreviewAndAccept","Comparator":"GreaterThanOrEqualTo","IntegerValues":[95],"QualificationTypeId":"000000000000000000L0","RequiredToPreview":true},{"ActionsGuarded":"PreviewAndAccept","Comparator":"EqualTo","LocaleValues":[{"Country":"US"}],"QualificationTypeId":"00000000000000000071","RequiredToPreview":true},{"ActionsGuarded":"PreviewAndAccept","Comparator":"DoesNotExist","QualificationTypeId":"3BERVBF4PAQY8PNESZB3MJJTXENYPF","RequiredToPreview":true}],"Question":"<ExternalQuestion xmlns=\\"http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd\\"><ExternalURL>https://dlgr-00b09016.herokuapp.com/ad?recruiter=mturk</ExternalURL><FrameHeight>600</FrameHeight></ExternalQuestion>","RequesterAnnotation":"00b09016-4556-a6bc-38a1-e44f93349a77","Reward":"0.50","Title":"Psychology Experiment: Judge Blue and Green Dots (< 7 mins, $1.10 average pay inc. bonus, no mobile please)"}}'
+2019-08-23T21:52:28.171900+00:00 app[worker.1]: 2019-08-23 21:52:28,171 Event needs-retry.mturk.GetAssignment: calling handler <botocore.retryhandler.RetryHandler object at 0x7f7b65577668>
+2019-08-23T21:52:28.172095+00:00 app[worker.1]: 2019-08-23 21:52:28,171 No retry needed.
+2019-08-23T21:52:28.173052+00:00 app[worker.1]: 2019-08-23 21:52:28,172 Event before-parameter-build.mturk.SendBonus: calling handler <function generate_idempotent_uuid at 0x7f7b8c979268>
+2019-08-23T21:52:28.173911+00:00 app[worker.1]: 2019-08-23 21:52:28,173 Event before-call.mturk.SendBonus: calling handler <function inject_api_version_header_if_needed at 0x7f7b8c97abf8>
+2019-08-23T21:52:28.174335+00:00 app[worker.1]: 2019-08-23 21:52:28,174 Making request for OperationModel(name=SendBonus) with params: {'url_path': '/', 'query_string': '', 'method': 'POST', 'headers': {'X-Amz-Target': 'MTurkRequesterServiceV20170117.SendBonus', 'Content-Type': 'application/x-amz-json-1.1', 'User-Agent': 'Boto3/1.9.80 Python/3.6.6 Linux/4.4.0-1048-aws Botocore/1.12.215'}, 'body': b'{"WorkerId": "A3141EW4WZT4Q0", "BonusAmount": "0.70", "AssignmentId": "3I0BTBYZAZ95K4VGA3KXJSS8NJD0YC", "Reason": "Thank for participating! Here is your bonus.", "UniqueRequestToken": "1566597148.1723936"}', 'url': 'https://mturk-requester.us-east-1.amazonaws.com/', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7f7b655772b0>, 'has_streaming_input': False, 'auth_type': None}}
+2019-08-23T21:52:28.174848+00:00 app[worker.1]: 2019-08-23 21:52:28,174 Event request-created.mturk.SendBonus: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f7b65577278>>
+2019-08-23T21:52:28.175271+00:00 app[worker.1]: 2019-08-23 21:52:28,175 Event choose-signer.mturk.SendBonus: calling handler <function set_operation_specific_signer at 0x7f7b8c979158>
+2019-08-23T21:52:28.176057+00:00 app[worker.1]: 2019-08-23 21:52:28,175 Calculating signature using v4 auth.
+2019-08-23T21:52:28.176243+00:00 app[worker.1]: 2019-08-23 21:52:28,176 CanonicalRequest:
+2019-08-23T21:52:28.176246+00:00 app[worker.1]: POST
+2019-08-23T21:52:28.176249+00:00 app[worker.1]: /
+2019-08-23T21:52:28.176251+00:00 app[worker.1]: 
+2019-08-23T21:52:28.176253+00:00 app[worker.1]: content-type:application/x-amz-json-1.1
+2019-08-23T21:52:28.176255+00:00 app[worker.1]: host:mturk-requester.us-east-1.amazonaws.com
+2019-08-23T21:52:28.176257+00:00 app[worker.1]: x-amz-date:20190823T215228Z
+2019-08-23T21:52:28.176259+00:00 app[worker.1]: x-amz-target:MTurkRequesterServiceV20170117.SendBonus
+2019-08-23T21:52:28.176261+00:00 app[worker.1]: 
+2019-08-23T21:52:28.176263+00:00 app[worker.1]: content-type;host;x-amz-date;x-amz-target
+2019-08-23T21:52:28.176297+00:00 app[worker.1]: d56685972a16145b72bd95f8ce1153346d78c441e8fd74479e2a9717a0b984f5
+2019-08-23T21:52:28.176514+00:00 app[worker.1]: 2019-08-23 21:52:28,176 StringToSign:
+2019-08-23T21:52:28.176517+00:00 app[worker.1]: AWS4-HMAC-SHA256
+2019-08-23T21:52:28.176519+00:00 app[worker.1]: 20190823T215228Z
+2019-08-23T21:52:28.176521+00:00 app[worker.1]: 20190823/us-east-1/mturk-requester/aws4_request
+2019-08-23T21:52:28.176568+00:00 app[worker.1]: 998803d5836c757f3deaccf166eace4ff6782d75b6ab4b460c1808450726a58f
+2019-08-23T21:52:28.176916+00:00 app[worker.1]: 2019-08-23 21:52:28,176 Signature:
+2019-08-23T21:52:28.176983+00:00 app[worker.1]: 829f1ef41b1003d640feb3505e33180159c3a291e684d8f78785de094bb20033
+2019-08-23T21:52:28.177497+00:00 app[worker.1]: 2019-08-23 21:52:28,177 Sending http request: <AWSPreparedRequest stream_output=False, method=POST, url=https://mturk-requester.us-east-1.amazonaws.com/, headers={'X-Amz-Target': b'MTurkRequesterServiceV20170117.SendBonus', 'Content-Type': b'application/x-amz-json-1.1', 'User-Agent': b'Boto3/1.9.80 Python/3.6.6 Linux/4.4.0-1048-aws Botocore/1.12.215', 'X-Amz-Date': b'20190823T215228Z', 'Authorization': b'AWS4-HMAC-SHA256 Credential=AKIAITNHUZPRDTRWG3NQ/20190823/us-east-1/mturk-requester/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-target, Signature=829f1ef41b1003d640feb3505e33180159c3a291e684d8f78785de094bb20033', 'Content-Length': '205'}>
+2019-08-23T21:52:28.178294+00:00 app[worker.1]: 2019-08-23 21:52:28,178 Converted retries value: False -> Retry(total=False, connect=None, read=None, redirect=0, status=None)
+2019-08-23T21:52:28.291269+00:00 app[worker.1]: 2019-08-23 21:52:28,291 https://mturk-requester.us-east-1.amazonaws.com:443 "POST / HTTP/1.1" 200 2
+2019-08-23T21:52:28.292008+00:00 app[worker.1]: 2019-08-23 21:52:28,291 Response headers: {'x-amzn-RequestId': '6a521632-c627-4675-9fd6-dc6b9c55f62c', 'Content-Type': 'application/x-amz-json-1.1', 'Content-Length': '2', 'Date': 'Fri, 23 Aug 2019 21:52:28 GMT'}
+2019-08-23T21:52:28.292167+00:00 app[worker.1]: 2019-08-23 21:52:28,292 Response body:
+2019-08-23T21:52:28.292175+00:00 app[worker.1]: b'{}'
+2019-08-23T21:52:28.292896+00:00 app[worker.1]: 2019-08-23 21:52:28,292 Event needs-retry.mturk.SendBonus: calling handler <botocore.retryhandler.RetryHandler object at 0x7f7b65577668>
+2019-08-23T21:52:28.293127+00:00 app[worker.1]: 2019-08-23 21:52:28,292 No retry needed.
+2019-08-23T21:52:28.363376+00:00 app[worker.1]: >>>> ----- All checks passed.
+2019-08-23T21:52:28.402525+00:00 app[worker.1]: >>>> experiment.py >> recruit:  Generation in Progress: 2; Experimental nodes (particles) approved: 96; Required: 96
+2019-08-23T21:52:28.402539+00:00 app[worker.1]: >>>> experiment.py >> recruit:  End of generation: True
+2019-08-23T21:52:28.428370+00:00 app[worker.1]: >>>> experiment.py >> recruit:  All experimental networks are full. Overflow networks are not full (there are 84 overflow particles, but there should be 96). Waiting...
+2019-08-23T21:52:28.430825+00:00 app[worker.1]: 2019-08-23 21:52:28,430 Session complete, db session closed
+2019-08-23T21:52:28.435061+00:00 app[worker.1]: 2019-08-23 21:52:28,434 default: Job OK (c01a8015-3caa-491e-8740-fe69bf414892)
+2019-08-23T21:52:28.435274+00:00 app[worker.1]: 2019-08-23 21:52:28,435 Result is kept for 500 seconds
