@@ -259,8 +259,6 @@ class UWPFWP(Experiment):
 		not_saturated = dict(filter(lambda count: count[1] < self.generation_size, network_counts.items()))
 		self.log("These networks have some participants, but are not saturated: {}".format(not_saturated), key)
 
-		self.log("dict(network_counts).keys(): {}; dict(network_counts): {}; net_ids: {}".format(network_counts.keys(), network_counts, net_ids), key)
-
 		# And networks that have no participants yet
 		not_started = list(filter(lambda net_id: net_id not in network_counts.keys(), net_ids))
 		self.log("These networks do not have any participants yet this generation: {}".format(not_started), key)
@@ -701,7 +699,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# count the number who did choose blue
 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
 		# b = sum(chose_blue)
-		b = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == "blue"] for node in previous_generation_nodes if node.infos(type = Meme)]))
+		b = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == "blue" for node in previous_generation_nodes if node.infos(type = Meme)]))
 
 		# count the generation size and check it liens up with the exp
 		n = exp.generation_size
