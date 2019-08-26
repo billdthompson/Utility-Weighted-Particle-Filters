@@ -18,6 +18,7 @@ var num_test_trials = parseInt(localStorage.getItem('num_test')) //int
 var decision_index = parseInt(localStorage.getItem('decision_index')) //int
 var net_decision_index = parseInt(localStorage.getItem('net_decision_index'));
 var include_numbers = localStorage.getItem('include_numbers')=='true';
+var condition_replication = parseInt(localStorage.getItem('condition_replication'));
 
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
@@ -597,7 +598,8 @@ report = function (color) {
                   net_decision_index: net_decision_index,
                   is_overflow: is_overflow,
                   is_equal:is_equal,
-                  info_green:info_green
+                  info_green:info_green,
+                  condition_replication: condition_replication
                 }
 
   dallinger.createInfo(my_node_id, {

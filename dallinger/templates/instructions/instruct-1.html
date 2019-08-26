@@ -69,6 +69,9 @@
                         var condition_info = netresp.network.property5;
                         localStorage.setItem('condition_info',condition_info)
 
+                        var condition_replication = netresp.network.property3;
+                        localStorage.setItem('condition_replication',condition_replication)
+
                         var social_condition = condition_info.substring(0,3);
                         if (social_condition=='ASO' || social_condition=='OVF'){
                             localStorage.setItem("social_condition",'asocial');
