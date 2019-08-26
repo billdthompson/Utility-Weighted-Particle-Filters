@@ -152,7 +152,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       color_code = '#0084ff'
     }
     
-    $('#SWI_info').html('<b>DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
+    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
     $('#SWI_info').css('display','block')
   }
   
@@ -169,7 +169,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       ]
     },
     options: {
-      cutoutPercentage: 80,
+      cutoutPercentage: 79.5,
       responsive:true,
       maintainAspectRatio: false,
       animation:false,
@@ -498,7 +498,7 @@ function regenerateDisplay (propUtility) {
       }
     }
     presentDisplay();
-  },1250)
+  },1000)
   
 }
 
