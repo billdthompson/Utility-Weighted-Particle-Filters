@@ -6,6 +6,13 @@ var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
 
+var is_equal = false;
+var is_green = false;
+
+var k_chose_blue = -1;
+var k_chose_green = -1;
+
+
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
 var payout_condition = localStorage.getItem('payout_condition') // string, true/false
@@ -93,6 +100,7 @@ if (generation=='0' || social_condition=='asocial'){
 function make_bar_plot(num_green,num_blue,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (num_green>num_blue){
+    is_equal = false;
     data_vec = [num_blue,num_green]
     color_vec = ["#dbdbdb", "#009500"]
     percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
@@ -105,6 +113,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
    $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
    
   } else if (num_blue>num_green){
+    is_equal = false;
      data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
@@ -117,8 +126,9 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
     
   } else{
+    is_equal = true;
     if (Math.random()<0.5){
-      console.log('here')
+      is_green = true;
       data_vec = [num_blue,num_green]
       color_vec = ["#dbdbdb", "#009500"]
       percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
@@ -130,6 +140,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       $('#percentage').html(percentage_num + '%')
      $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
     } else{
+      is_green=false;
       data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
