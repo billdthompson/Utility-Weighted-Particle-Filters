@@ -1,4 +1,0 @@
-- which condition is a node assigned to?
-- how much of the overflow is being used
-- what replication are individuals in? add netwrok.property5 (replication) to frontend in isntruct1
-- make blue green decison eqUL
