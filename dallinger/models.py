@@ -403,7 +403,7 @@ class NetworkRandomAttributes(Node):
 
     def sample_payout_colors(self):
         n = float(self.network.generation_size)
-        return dict(zip(range(int(n)), (["blue"] * int(n / 2.)) + (["green"] * int(n / 2.))))
+        return dict(zip(range(int(n)), (["green"] * int(n / 2.)) + (["green"] * int(n / 2.))))
 
     def sample_button_order(self):
         n = float(self.network.generation_size)
