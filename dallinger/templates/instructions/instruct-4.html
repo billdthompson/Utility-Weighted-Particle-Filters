@@ -76,22 +76,22 @@
         
         if (social_condition=='social'){
             if (cover_story==false || payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will see the decisions made by another set of participants. '  +
-                'These participants viewed an '+filler_word+' with the same number of '+first+' dots and '+second+' dots as the one you will see.</p>')
+                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will see the decisions made by another set of MTurk workers '  +
+                'on the same area as the one you will see.</p>')
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
-                    'These participants viewed an area with the same number of sapphire dots and grass dots as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
+                    'on the same area as the one you will see.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
-            'These participants viewed an area with the same number of emerald dots and water dots as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
+            'on the same area as the one you will see.</p>')
             }
         }
 
         } else if (social_condition=='social_with_info'){
             if (cover_story==false){
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by a set of participants '  +
             'These participants viewed an image with the same number of blue dots and green dots as the one you will see, and <b>like you were paid for blue dots.</b></p>')
                 } else if (payout_condition=='green'){
                     $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
@@ -99,11 +99,11 @@
                 }
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
-            'These participants viewed an area with the same number of sapphire dots and grass dots as the one you will see, and <b>like you were paid for sapphire dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
+            'on the same area as the one you will see. <b>Like you, these workers were paid for sapphire dots.</b></p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
-            'These participants viewed an area with the same number of emerald dots and water dots as the one you will see, and <b>like you were paid for emerald dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
+            'on the same area as the one you will see. <b>Like you, these workers were paid for emerald dots.</b></p>')
                 }
             }
         }
