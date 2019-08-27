@@ -58,6 +58,9 @@
                 localStorage.setItem("prop_utility",prop_utility);
 
                 var condition_info = resp.node.property5;
+
+                var curr_practice  = true;
+                localStorage.setItem('curr_practice',curr_practice)
                 
                 var network_string = '/network/' + String(network_id) + '/getnet/'
                 dallinger.get(network_string)

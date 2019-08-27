@@ -1,7 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
 is_equal,info_green;
-var trial = 0;
 var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
@@ -11,6 +10,10 @@ var is_green = false;
 
 var k_chose_blue = -1;
 var k_chose_green = -1;
+
+
+
+
 
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
@@ -42,6 +45,20 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+
+
+var curr_rounds_practice = localStorage.getItem('curr_practice')=='true'
+if (curr_rounds_practice==true){
+  var trial = 0;
+  $('#round_info').html('Practice round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
+  $("#total-trial-number").html(num_practice_trials);
+
+} else {
+  var trial = num_practice_trials;
+  $('#round_info').html('Test round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
+  $("#total-trial-number").html(num_test_trials);
+
+}
 
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
@@ -84,13 +101,13 @@ if (social_condition=='social_with_info'){
 
 $("#continue_social").css('display','none')
 
-$('#big_wrapper').css('margin-top','-40px')
+$('#big_wrapper').css('margin-top','-30px')
 $('#other_text').css('padding-top','30px')
 
 $('#instructions').css('font-size','19px')
 var is_practice = true;
 
-if (generation=='0' || social_condition=='asocial'){
+if (social_condition=='asocial'){
   var learning_strategy = "asocial";
 } else{
   var learning_strategy = "social";
@@ -110,7 +127,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       inner_word = 'grass'
     }
     $('#percentage').html(percentage_num + '%')
-   $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
+   $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
    
   } else if (num_blue>num_green){
     is_equal = false;
@@ -123,7 +140,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       inner_word = 'water'
     }
     $('#percentage').html(percentage_num + '%')
-    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
+    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#0084ff">'+inner_word+'</span></b> dots')
     
   } else{
     is_equal = true;
@@ -138,7 +155,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
         inner_word = 'grass'
       }
       $('#percentage').html(percentage_num + '%')
-     $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
+     $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
     } else{
       is_green=false;
       data_vec = [num_green,num_blue]
@@ -150,21 +167,21 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       inner_word = 'water'
     }
     $('#percentage').html(percentage_num + '%')
-    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
+    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' workers <br>thought there were more<br><b><span style="color:#0084ff">'+inner_word+'</span></b> dots')
     }
     
   }
   
   if (is_SWI==true){
     if (payout_condition=='green'){
-      payout_word = 'emeralds'
+      payout_word = 'emerald'
       color_code = '#009500'
     } else {
-      payout_word = 'sapphires'
+      payout_word = 'sapphire'
       color_code = '#0084ff'
     }
     
-    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
+    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br> These workers were paid for <br><b> <span style="color:'+color_code+'">' + payout_word +'</span></b> dots')
     $('#SWI_info').css('display','block')
   }
   
@@ -181,7 +198,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       ]
     },
     options: {
-      cutoutPercentage: 79.5,
+      cutoutPercentage: 81,
       responsive:true,
       maintainAspectRatio: false,
       animation:false,
@@ -212,7 +229,6 @@ $('#more-blue').css('outline','none')
 
 
 $(".center_div").css("display", "none");
-$("#total-trial-number").html(num_practice_trials + num_test_trials);
 
 if (cover_story==true){
   if (payout_condition=='blue'){
@@ -300,10 +316,15 @@ create_agent = function() {
   // if this is the first trial, then dallinger.createAgent has already been 
   // called by instruct
   if (trial != 1){
-    // console.log("Calling createAgent")
+    if (trial!=num_practice_trials+1){
+      // console.log("Calling createAgent")
     dallinger.createAgent()
     .done(function (resp) {
-      $("#trial-number").html(trial);
+      if (curr_rounds_practice==true){
+        $("#trial-number").html(trial);
+      } else{
+        $("#trial-number").html(trial-num_practice_trials);
+      }
       is_practice = trial<=num_practice_trials;
 
       my_node_id = parseInt(resp.node.id);
@@ -329,16 +350,10 @@ create_agent = function() {
             dallinger.error(rejection);
           }
       }); 
-    })
-    .fail(function (rejection) {
-        // A 403 is our signal that it's time to go to the questionnaire
-        if (rejection.status === 403) {
-            dallinger.allowExit();
-            dallinger.goToPage('questionnaire');
-          } else {
-            dallinger.error(rejection);
-          }
-      }); 
+    }) 
+    } else {
+      display_test_info()
+    }
   }
   else {
     // first trial
@@ -352,11 +367,6 @@ get_received_infos = function() {
 
     $(".center_div").css("display", "block");
     $("#instructions").show()
-    if (is_practice) {
-      $("#practice-trial").html("This is a practice trial");
-    } else {
-      $("#practice-trial").html("This is NOT a practice trial");
-    }
 
     // Show the participant the stimulus.
     if (learning_strategy === "asocial") {
@@ -376,7 +386,7 @@ get_received_infos = function() {
       make_bar_plot(k_chose_green,k_chose_blue,social_condition=='social_with_info')
       $("#big_wrapper").css('display','block');
       
-      var timeoutDuration = 4000;
+      var timeoutDuration = 2750;
 
       setTimeout(function() {
         $("#continue_social").removeClass('disabled')
@@ -529,7 +539,9 @@ function randi(min, max,random_generator) {
   //random_number = (generation_random(generation_seed)+network_random(network_id_seed) + addition)/3
   //console.log(random_number)
   //random_number = Math.random();
-  random_number = random_generator()
+  
+  //random_number = random_generator()
+  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
@@ -537,7 +549,9 @@ function shuffle(o,random_generator){
   //generation_seed = generation_seed + 0.05;
   //network_id_seed = network_id_seed + 0.05;
   //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
-  random_number = random_generator()
+  
+  //random_number = random_generator()
+  random_number = Math.random();
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -874,23 +888,21 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     if (trial==num_practice_trials){
       $(".outcome").html("")
       $('.outcome').css('text-align','center')
-      $('.outcome').css('margin-top','20px')
-      $('#continue_button').html('Start test rounds')
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
-        "Points from these rounds will be added to your final pay."+
-        "<br><br>Unlike the practice rounds, you will not recieve feedback about your score after each round. "+
-        "Instead, you will view your earnings at the end of the experiment.</p>")
-      $('#topResult').css('font-size','19px')
-      $('.button-wrapper').css('margin-top','40px')
-
+        $('.outcome').css('margin-top','90px')
+        $('#continue_button').html('Take quiz')
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>You will now take a practice quiz to test your comprehension.</p>")
+        $('#topResult').css('font-size','19px')
+        $('.button-wrapper').css('margin-top','40px')
+      
       $('#continue_button').unbind('click').click(function(){
+        $('#continue_button').html('Start test rounds')
         $(".outcome").css("display", "none");
         $(".button-wrapper").css("display", "none");
         $('#continue_button').html('Next round')
         $(".outcome").html("")
         $("#instructions").html("")
-      create_agent();
+        dallinger.goToPage('instructions/pregame-questions')
       });
     } else if (trial==num_practice_trials+num_test_trials){
       display_earnings()
@@ -916,7 +928,8 @@ function display_practice_info(){
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
-        "Points from these rounds will not be added to your final pay.</p> ")
+        "Points from these rounds will not be added to your final pay.</p> " +
+        "<p>After finishing, you will take a short quiz to test your understanding before starting the test rounds.</p>")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
           $(".outcome").css("display", "none");
@@ -925,6 +938,60 @@ function display_practice_info(){
           $(".outcome").html("")
           $("#instructions").html("")
           get_social_info();
+      });
+}
+
+function display_test_info(){
+  $(".outcome").html("")
+      $('.outcome').css('margin','0 auto')
+      $('.outcome').css('margin-top','20px')
+      $('.outcome').css('width','300px')
+      $('#continue_button').html('Start practice rounds')
+      $(".outcome").css("display", "block");
+      //$(".button-wrapper").css("text-align", "right");
+      $(".button-wrapper").css("display", "block");
+      $('.outcome').css('text-align','center')
+      $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
+          "Points from these rounds will be added to your final pay."+
+          "<br><br>Unlike the practice rounds, you will not recieve feedback about your score after each round. "+
+          "Instead, you will view your earnings at the end of the experiment.</p>")
+      $('#topResult').css('font-size','19px')
+      $('#continue_button').unbind('click').click(function(){
+          $(".outcome").css("display", "none");
+          $(".button-wrapper").css("display", "none");
+          $('#continue_button').html('Next round')
+          $(".outcome").html("")
+          $("#instructions").html("")
+          dallinger.createAgent()
+            .done(function (resp) {
+              $("#trial-number").html(trial-num_practice_trials);
+              is_practice = trial<=num_practice_trials;
+
+              my_node_id = parseInt(resp.node.id);
+              network_id = parseInt(resp.node.network_id)
+
+              node_slot = parseInt(resp.node.property1);
+              generation = parseInt(resp.node.property2);
+              decision_index = parseFloat(resp.node.property3)
+              proportion_utility = parseFloat(resp.node.property4);
+
+              network_string = '/network/' + String(network_id) + "/getnet/"
+              dallinger.get(network_string).done(function(netresp) {
+                net_decision_index = parseInt(netresp.network.property4);
+                // console.log("** Inside get net -- net decision_index: ", net_decision_index)
+                get_social_info();
+              })
+              .fail(function (rejection) {
+                // A 403 is our signal that it's time to go to the questionnaire
+                if (rejection.status === 403) {
+                    dallinger.allowExit();
+                    dallinger.goToPage('questionnaire');
+                  } else {
+                    dallinger.error(rejection);
+                  }
+              }); 
+    }) 
       });
 }
 

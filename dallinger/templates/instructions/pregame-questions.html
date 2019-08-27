@@ -141,20 +141,13 @@
   var num_failed = 0;
   var max_num_failed = 3;
   var cover_story = localStorage.getItem('cover_story')=='true';
-  var generation = parseInt(localStorage.getItem('generation'));
   var payout_condition = localStorage.getItem('payout_condition');
   var social_condition = localStorage.getItem('social_condition');
   var include_gems = localStorage.getItem('include_gems')=='true';
   // hacky but gets the job done
-  if (generation==0 || social_condition=='asocial'){
-    social_condition='asocial'
+  if (social_condition=='asocial'){
     $('#question-7-wrapper').css('display','none')
   }
-  /*
-  if (social_condition=='social_with_info'){
-    $('#h3-thing').html('')
-  }
-  */
 
   if (include_gems==false || cover_story==false){
     if (Math.random()<=0.5){
@@ -652,6 +645,7 @@ if (cover_story==true){
 
 
   beginExperiment = function () {
+    localStorage.setItem('curr_practice',false)
     var green_left = localStorage.getItem('green_left')=='true';
     if (green_left==true){
       dallinger.goToPage('stage_green_left')
