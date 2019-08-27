@@ -101,7 +101,7 @@ if (social_condition=='social_with_info'){
 
 $("#continue_social").css('display','none')
 
-$('#big_wrapper').css('margin-top','-40px')
+$('#big_wrapper').css('margin-top','-30px')
 $('#other_text').css('padding-top','30px')
 
 $('#instructions').css('font-size','19px')

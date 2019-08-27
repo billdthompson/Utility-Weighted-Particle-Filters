@@ -109,7 +109,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition
 		}
 		# Derrived Quantities
 		self.num_overflow_experiments = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
