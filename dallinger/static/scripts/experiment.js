@@ -891,7 +891,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         $('.outcome').css('margin-top','90px')
         $('#continue_button').html('Take quiz')
         $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>You will now take a practice quiz to test your comprehension.</p>")
+        "<p class = 'computer_number' id = 'topResult'>You will now take a quiz to test your comprehension.</p>")
         $('#topResult').css('font-size','19px')
         $('.button-wrapper').css('margin-top','40px')
       
