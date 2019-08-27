@@ -93,6 +93,7 @@ class UWPFWP(Experiment):
 		self.num_random_order_experimental_networks_per_experiment = self.public_properties['num_random_order_experimental_networks_per_experiment']
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
+		# self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
 		self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
 		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
@@ -663,7 +664,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		node_button_order = button_orders[str(node_slot)]
 
 		# practice + fixed + random
-		ks = [0, 8, 4, 12]  + [12, 8, 0, 4] + [12, 0, 4, 8]
+		ks = [12, 8, 0, 4]  + [8, 12, 4, 0] + [12, 0, 4, 8]
 
 		n = 12
 
