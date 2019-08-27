@@ -6760,21 +6760,17 @@ button.close {
 #percentage {
     font-size:50px;
     font-weight:bold;
-}
-
-#other_text {
-    font-size:20px;
+  }
+  
+  #other_text {
+    font-size:18px;
     line-height:1.25;
-}
-
-#SWI_info {
+  }
+  
+  #SWI_info {
     display:none;
-    font-size:20px;
+    font-size:18px;
     line-height:1.4;
-    margin-top:15px;
+    margin-top:10px;
     text-align:center;
-}
-
-#disclaimer {
-    font-size:23px;
-}
+  }

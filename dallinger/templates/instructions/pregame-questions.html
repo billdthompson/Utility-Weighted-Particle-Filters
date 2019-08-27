@@ -190,237 +190,9 @@
     small_word = 'in'
   }
 
-  if (cover_story==false){
-    // without cover
-    if (social_condition=='asocial'){
-      $('#question-5-wrapper').css('display','none')
-      $('#question-6-wrapper').css('display','none')
-      //asocial
-      if (payout_condition=='blue'){
-        // Asocial, without cover, payout blue
-        $('#q1').html('<option value="1">Judge whether there are more blue dots or more green dots</option>'+
-                              '<option value="2">Judge how many green dots are in the image</option>'+
-                              '<option value="3">Judge how many blue dots are in the image</option>'+
-	                            '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="2">Green</option>'+
-                        '<option value="1">Blue</option>'+
-                        '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').css('display','none')
-        $('#question-5').css('display','none')
-        $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more blue dots or more green dots in the image.')
-        $('#instructions-text-3').html('2). You will get a bonus for every blue dot in the image.')
-        $('#instructions-text-4').html('3). You will get this bonus for blue dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').css('display','none')
-        $('#instructions-text-6').css('display','none')
-      } else if (payout_condition=='green'){
-          // Asocial, without cover, payout green
-          $('#q1').html('<option value="1">Judge whether there are more green dots or more blue dots</option>'+
-                                '<option value="2">Judge how many green dots are in the image</option>'+
-                                '<option value="3">Judge how many blue dots are in the image</option>'+
-                                '<option value="4" SELECTED>None of these options</option>')
-          $('#q2').html('<option value="1">Green</option>'+
-                          '<option value="2">Blue</option>'+
-                          '<option value="3" SELECTED>None of these options</option>')
-          $('#question-4').css('display','none')
-          $('#question-5').css('display','none')
-          $('#instructions-text-2').html('1). On every round, you must judge '+
-          'whether there are more green dots or more blue dots in the image.')
-          $('#instructions-text-3').html('2). You will get a bonus for every green dot in the image.')
-          $('#instructions-text-4').html('3). You will get this bonus for green dots regardless of whether your decision is correct.')
-          $('#instructions-text-5').css('display','none')
-          $('#instructions-text-6').css('display','none')
-      } else if (payout_condition=='no-utility'){
-          // Asocial, without cover, payout no-u
-          $('#q1').html('<option value="1">Judge whether there are more '+first+' dots or more '+second+' dots</option>'+
-                                '<option value="2">Judge how many green dots are in the image</option>'+
-                                '<option value="3">Judge how many blue dots are in the image</option>'+
-                                '<option value="4" SELECTED>None of these options</option>')
-          
-          $('#question-2').html('')
-          $('#question-3').html('')
-          $('#question-2').css('display','none')
-          $('#question-3').css('display','none')
-          $('#question-4').css('display','none')
-          $('#question-5').css('display','none')
-          $('#instructions-text-2').html('1). On every round, you must judge '+
-          'whether there are more '+first+' dots or more '+second+' dots in the image.')
-          $('#question-3-wrapper').css('display','none')
-          $('#question-4-wrapper').css('display','none')
-          $('#question-5-wrapper').css('display','none')
-          $('#question-6-wrapper').css('display','none')
-      }
-    } else if (social_condition=='social_with_info'){
-      //social with info
-      if (payout_condition=='blue'){
-        // social with info, no cover story, payout blue
-        $('#q1').html('<option value="1">Judge whether there are more blue dots or more green dots</option>'+
-                              '<option value="2">Judge how many green dots are in the image</option>'+
-                              '<option value="3">Judge how many blue dots are in the image</option>'+
-	                            '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="2">Green</option>'+
-                        '<option value="1">Blue</option>'+
-                        '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div id="social-info">'+
-	                        'Before viewing an image, what information will you get?'+
-	                    '</div>'+
-	                    '<div>'+
-	                        '<select id="q4" name="q4">'+
-                              "<option value='2'>A participant's decision in a different image</option>"+
-                              '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
-                              '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br>')
-        $('#question-5').html('<div id="social-info">'+
-                  'Was this participant also paid for blue dots?'+
-              '</div>'+
-              '<div>'+
-                  '<select id="q5" name="q5">'+
-                      "<option value='1'>Yes</option>"+
-                      '<option value="3">No</option>'+
-                      "<option value='4'>Sometimes</option>"+
-                      '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br>')
-        $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more blue dots or more green dots in the image.')
-        $('#instructions-text-3').html('2). You will get a bonus for every blue dot in the image.')
-        $('#instructions-text-4').html('3). You will get this bonus for blue dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
-        'viewing an image with the same number of blue dots and green dots.')
-        $('#instructions-text-6').html('5). This participant was also paid for every blue dot in the image.')
-      } else if (payout_condition=='green') {
-      // social with info, no cover story, payout green
-      $('#q1').html('<option value="1">Judge whether there are more green dots or more blue dots</option>'+
-                              '<option value="2">Judge how many green dots are in the image</option>'+
-                              '<option value="3">Judge how many blue dots are in the image</option>'+
-	                            '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="1">Green</option>'+
-                        '<option value="2">Blue</option>'+
-                        '<option value="3" SELECTED>None of these options</option>')
-        $('#question-4').html('<div id="social-info">'+
-	                        'Before viewing an image, what information will you get?'+
-	                    '</div>'+
-	                    '<div>'+
-	                        '<select id="q4" name="q4">'+
-                              "<option value='2'>A participant's decision in a different image</option>"+
-                              '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A participant's decision on an image with equal numbers of green and blue dots</option>"+
-                              '<option value="5" SELECTED>None of these options</option>'+
-                          '</select></div><br>')
-        $('#question-5').html('<div id="social-info">'+
-                  'Was this participant also paid for green dots?'+
-              '</div>'+
-              '<div>'+
-                  '<select id="q5" name="q5">'+
-                      "<option value='1'>Yes</option>"+
-                      '<option value="3">No</option>'+
-                      "<option value='4'>Sometimes</option>"+
-                      '<option value="5" SELECTED>None of these options</option>'+
-                  '</select></div><br>')
-        $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more green dots or more blue dots in the image.')
-        $('#instructions-text-3').html('2). You will get a bonus for every green dot in the image.')
-        $('#instructions-text-4').html('3). You will get this bonus for green dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
-        'viewing an image with the same number of green dots and blue dots.')
-        $('#instructions-text-6').html('5). This participant was also paid for every green dot in the image.')
-    } else if (payout_condition=='no-utility'){
-      //makes no sense
-        }
-    } else if (social_condition=='social'){
-        $('#question-6-wrapper').css('display','none')
-        //social without info
-        if (payout_condition=='blue'){
-            //social without info, no cover, payout blue
-            $('#q1').html('<option value="1">Judge whether there are more blue dots or more green dots</option>'+
-                                '<option value="2">Judge how many green dots are in the image</option>'+
-                                '<option value="3">Judge how many blue dots are in the image</option>'+
-                                    '<option value="4" SELECTED>None of these options</option>')
-            $('#q2').html('<option value="2">Green</option>'+
-                            '<option value="1">Blue</option>'+
-                            '<option value="3" SELECTED>None of these options</option>')
-            $('#question-4').html('<div id="social-info">'+
-                                'Before viewing an image, what information will you get?'+
-                            '</div>'+
-                            '<div>'+
-                                '<select id="q4" name="q4">'+
-                                "<option value='2'>A participant's decision in a different image</option>"+
-                                '<option value="3">A previous decision you made</option>'+
-                                "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
-                                '<option value="5" SELECTED>None of these options</option>'+
-                            '</select></div><br>')
-            $('#question-5').css('display','none')
-            $('#instructions-text-2').html('1). On every round, you must judge '+
-            'whether there are more blue dots or more green dots in the image.')
-            $('#instructions-text-3').html('2). You will get a bonus for every blue dot in the image.')
-            $('#instructions-text-4').html('3). You will get this bonus for blue dots regardless of whether your decision is correct.')
-            $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
-            'viewing an image with the same number of blue dots and green dots.')
-            $('#instructions-text-6').css('display','none')
-        } else if (payout_condition=='green'){
-            //social without info, no cover, payout green
-            $('#q1').html('<option value="1">Judge whether there are more green dots or more blue dots</option>'+
-                                '<option value="2">Judge how many green dots are in the image</option>'+
-                                '<option value="3">Judge how many blue dots are in the image</option>'+
-                                    '<option value="4" SELECTED>None of these options</option>')
-            $('#q2').html('<option value="1">Green</option>'+
-                            '<option value="2">Blue</option>'+
-                            '<option value="3" SELECTED>None of these options</option>')
-            $('#question-4').html('<div id="social-info">'+
-                                'Before viewing an image, what information will you get?'+
-                            '</div>'+
-                            '<div>'+
-                                '<select id="q4" name="q4">'+
-                                "<option value='2'>A participant's decision in a different image</option>"+
-                                '<option value="3">A previous decision you made</option>'+
-                                "<option value='1'>A participant's decision on an image with equal numbers of blue and green dots</option>"+
-                                '<option value="5" SELECTED>None of these options</option>'+
-                            '</select></div><br>')
-            $('#question-5').css('display','none')
-            $('#instructions-text-2').html('1). On every round, you must judge '+
-            'whether there are more green dots or more blue dots in the image.')
-            $('#instructions-text-3').html('2). You will get a bonus for every green dot in the image.')
-            $('#instructions-text-4').html('3). You will get this bonus for green dots regardless of whether your decision is correct.')
-            $('#instructions-text-5').html('4). Before viewing an image, you will view the decision made by another participant '+
-            'viewing an image with the same number of green dots and blue dots.')
-            $('#instructions-text-6').css('display','none')
-        } else if (payout_condition=='no-utility'){
-            $('#question-3-wrapper').css('display','none')
-            $('#question-4-wrapper').css('display','none')
-            $('#q1').html('<option value="1">Judge whether there are more '+first+' dots or more '+second+' dots</option>'+
-            '<option value="2">Judge how many green dots are in the image</option>'+
-            '<option value="3">Judge how many blue dots are in the image</option>'+
-            '<option value="4" SELECTED>None of these options</option>')
-            $('#question-2').css('display','none')
-            $('#question-2').html('')
-            $('#question-3').html('')
-            $('#question-3').css('display','none')
-            $('#question-4').html('<div id="social-info">'+
-                'Before viewing an image, what information will you get?'+
-            '</div>'+
-            '<div>'+
-                '<select id="q4" name="q4">'+
-                    "<option value='2'>A participant's decision in a different image</option>"+
-                    '<option value="3">A previous decision you made</option>'+
-                    "<option value='1'>A participant's decision on an image with equal numbers of "+first+" and "+second+" dots</option>"+
-                    '<option value="5" SELECTED>None of these options</option>'+
-                '</select></div><br>')
-            $('#question-5').css('display','none')
-            $('#instructions-text-2').html('1). On every round, you must judge '+
-            'whether there are more '+first+' dots or more '+second+' dots in the image.')
-            $('#instructions-text-3').css('display','none')
-            $('#instructions-text-4').html('display','none')
-            $('#instructions-text-5').html('2). Before viewing an image, you will view the decision made by another participant '+
-            'viewing an image with the same number of '+first+' dots and '+second+' dots.')
-            $('#instructions-text-6').css('display','none')
-        }
-    }
-}
-
-
 
 if (cover_story==true){
-  $('#question-text-2').html('Which type of dots gives you a bonus?')
+  $('#question-text-2').html('When do you get an area bonus?')
   // with cover
   if (social_condition=='asocial'){
       $('#question-5-wrapper').css('display','none')
@@ -432,15 +204,15 @@ if (cover_story==true){
                               '<option value="2">Judge how many grass dots are in the area</option>'+
                               '<option value="3">Judge how many sapphire dots are in the area</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="2">Grass</option>'+
-                        '<option value="1">Sapphire</option>'+
+        $('#q2').html('<option value="2">When the area has more grass dots than sapphire dots</option>'+
+                        '<option value="1">When the area has more sapphire dots than grass dots</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
         $('#question-4').css('display','none')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more sapphire (blue) dots or more gras (green) dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
+        $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more sapphire dots than grass dots.')
+        $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
         $('#instructions-text-5').css('display','none')
         $('#instructions-text-6').css('display','none')
       } else if (payout_condition=='green'){
@@ -449,15 +221,15 @@ if (cover_story==true){
                                 '<option value="2">Judge how many emerald dots are in the area</option>'+
                                 '<option value="3">Judge how many water dots are in the area</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-          $('#q2').html('<option value="1">Emerald</option>'+
-                          '<option value="2">Water</option>'+
+          $('#q2').html('<option value="1">When the area has more water dots than emerald dots</option>'+
+                          '<option value="2">When the area has more emerald dots than water dots</option>'+
                           '<option value="3" SELECTED>None of these options</option>')
           $('#question-4').css('display','none')
           $('#question-5').css('display','none')
           $('#instructions-text-2').html('1). On every round, you must judge '+
           'whether there are more emerald (green) dots or more water (blue) dots in the area.')
-          $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-          $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+          $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more emerald dots than water dots.')
+          $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
           $('#instructions-text-5').css('display','none')
           $('#instructions-text-6').css('display','none')
       } else if (payout_condition=='no-utility'){
@@ -487,9 +259,10 @@ if (cover_story==true){
                               '<option value="2">Judge how many grass dots are in the area</option>'+
                               '<option value="3">Judge how many sapphire dots are in the area</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="2">Grass</option>'+
-                        '<option value="1">Sapphire</option>'+
+        $('#q2').html('<option value="2">When the area has more grass dots than sapphire dots</option>'+
+                        '<option value="1">When the area has more sapphire dots than grass dots</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
+        $('#question-4').css('display','none')
         $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
                         '</div>'+
@@ -501,7 +274,7 @@ if (cover_story==true){
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
         $('#question-5').html('<div id="social-info">'+
-                  'Were these participants also paid for sapphire dots?'+
+                  'Were these participants also paid a bonus for areas with more sapphires?'+
               '</div>'+
               '<div>'+
                   '<select id="q5" name="q5">'+
@@ -510,22 +283,22 @@ if (cover_story==true){
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br>')
-        $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
+          $('#instructions-text-2').html('1). On every round, you must judge '+
+        'whether there are more sapphire (blue) dots or more gras (green) dots in the area.')
+        $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more sapphire dots than grass dots.')
+        $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decisions made by a set of participants '+
         'viewing an area with the same number of sapphire dots and grass dots as the one you will see.')
-        $('#instructions-text-6').html('5). These participants were also paid for every sapphire dot in the area.')
+        $('#instructions-text-6').html('5). These participants were also paid an area bonus for areas with more sapphire dots than grass dots.')
       } else if (payout_condition=='green') {
       // social with info, with cover story, payout green
       $('#q1').html('<option value="1">Judge whether there are more emerald dots or more water dots</option>'+
                               '<option value="2">Judge how many emerald dots are in the image</option>'+
                               '<option value="3">Judge how many water dots are in the image</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="1">Emerald</option>'+
-                        '<option value="2">Water</option>'+
-                        '<option value="3" SELECTED>None of these options</option>')
+      $('#q2').html('<option value="1">When the area has more water dots than emerald dots</option>'+
+                          '<option value="2">When the area has more emerald dots than water dots</option>'+
+                          '<option value="3" SELECTED>None of these options</option>')
         $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
                         '</div>'+
@@ -537,7 +310,7 @@ if (cover_story==true){
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
         $('#question-5').html('<div id="social-info">'+
-                  'Were these participants also paid for emerald dots?'+
+          ' Were these participants also paid a bonus for areas with more emeralds?'+
               '</div>'+
               '<div>'+
                   '<select id="q5" name="q5">'+
@@ -546,13 +319,13 @@ if (cover_story==true){
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br>')
-        $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more emerald (green) dots or more water (blue) dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+         $('#instructions-text-2').html('1). On every round, you must judge '+
+          'whether there are more emerald (green) dots or more water (blue) dots in the area.')
+          $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more emerald dots than water dots.')
+          $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decisions made by a set of participants '+
         'viewing an area with the same number of emerald dots and water dots as the one you will see.')
-        $('#instructions-text-6').html('5). These participants were also paid for every emerald dot in the area.')
+        $('#instructions-text-6').html('5). TTese participants were also paid an area bonus for areas with more emerald dots than water dots.')
     } else if (payout_condition=='no-utility'){
       //makes no sense
         }
@@ -565,8 +338,8 @@ if (cover_story==true){
                               '<option value="2">Judge how many grass dots are in the image</option>'+
                               '<option value="3">Judge how many sapphire dots are in the image</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="1">Sapphire</option>'+
-                        '<option value="2">Grass</option>'+
+         $('#q2').html('<option value="2">When the area has more grass dots than sapphire dots</option>'+
+                        '<option value="1">When the area has more sapphire dots than grass dots</option>'+
                         '<option value="3" SELECTED>None of these options</option>')
         $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
@@ -580,9 +353,9 @@ if (cover_story==true){
                           '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
+        'whether there are more sapphire (blue) dots or more gras (green) dots in the area.')
+        $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more sapphire dots than grass dots.')
+        $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decisions made by a set of participants '+
         'viewing an area with the same number of sapphire dots and grass dots as the one you will see.')
         $('#instructions-text-6').css('display','none')
@@ -592,9 +365,9 @@ if (cover_story==true){
                               '<option value="2">Judge how many emerald dots are in the area</option>'+
                               '<option value="3">Judge how many water dots are in the area</option>'+
                                 '<option value="4" SELECTED>None of these options</option>')
-        $('#q2').html('<option value="1">Emerald</option>'+
-                        '<option value="2">Water</option>'+
-                        '<option value="3" SELECTED>None of these options</option>')
+        $('#q2').html('<option value="1">When the area has more water dots than emerald dots</option>'+
+                          '<option value="2">When the area has more emerald dots than water dots</option>'+
+                          '<option value="3" SELECTED>None of these options</option>')
         $('#question-4').html('<div id="social-info">'+
                             'Before viewing an area, what information will you get?'+
                         '</div>'+
@@ -607,9 +380,9 @@ if (cover_story==true){
                           '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
-        'whether there are more emerald (green) dots or more water (blue) dots in the area.')
-        $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
-        $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
+          'whether there are more emerald (green) dots or more water (blue) dots in the area.')
+          $('#instructions-text-3').html('2). You will get an area bonus every time you view an area with more emerald dots than water dots.')
+          $('#instructions-text-4').html('3). You will get this area bonus regardless of whether your decision is correct.')
         $('#instructions-text-5').html('4). Before viewing an area, you will view the decisions made by a set of participants '+
         'viewing an area with the same number of emerald dots and water dots as the one you will see.')
         $('#instructions-text-6').css('display','none')
@@ -649,10 +422,9 @@ if (cover_story==true){
 
 
 
-
-
   beginExperiment = function () {
     var green_left = localStorage.getItem('green_left')=='true';
+    localStorage.setItem('practice_trials',false)
     if (green_left==true){
       dallinger.goToPage('stage_green_left')
     } else{

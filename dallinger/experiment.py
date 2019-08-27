@@ -41,7 +41,7 @@ class UWPFWP(Experiment):
 		'generation_size':8, 
 		'generations': 6, 
 		'num_replications_per_condition':2,
-		'num_fixed_order_experimental_networks_per_experiment': 4,
+		'num_fixed_order_experimental_networks_per_experiment': 4
 		'num_random_order_experimental_networks_per_experiment': 4,
 		'num_practice_networks_per_experiment': 4,
 		'cover_story': 'true',

@@ -27,7 +27,6 @@ var net_decision_index = parseInt(localStorage.getItem('net_decision_index'));
 var include_numbers = localStorage.getItem('include_numbers')=='true';
 var condition_replication = parseInt(localStorage.getItem('condition_replication'));
 
-
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
 var proportion_utility = parseFloat(localStorage.getItem("prop_utility")); //string/float
@@ -37,6 +36,7 @@ var network_id = parseInt(localStorage.getItem("network_id")); //string/int
 var green_left = localStorage.getItem('green_left')=='true'
 var include_gems = localStorage.getItem('include_gems')=='true';
 
+var practice_trials = localStorage.getItem('practice_trials')=='true';
 
 var num_test_correct = 0;
 var total_dots = 0;
@@ -97,10 +97,11 @@ if (generation=='0' || social_condition=='asocial'){
 }
 
 
+Chart.defaults.global.defaultFontColor =  "#333333";
+
 function make_bar_plot(num_green,num_blue,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (num_green>num_blue){
-    is_equal = false;
     data_vec = [num_blue,num_green]
     color_vec = ["#dbdbdb", "#009500"]
     percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
@@ -113,7 +114,6 @@ function make_bar_plot(num_green,num_blue,is_SWI){
    $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
    
   } else if (num_blue>num_green){
-    is_equal = false;
      data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
@@ -123,12 +123,12 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       inner_word = 'water'
     }
     $('#percentage').html(percentage_num + '%')
-    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#0084ff">'+inner_word+'</span></b>')
+    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#0084ff">'+inner_word+'</span></b> dots')
     
   } else{
-    is_equal = true;
+    is_equal=true
     if (Math.random()<0.5){
-      is_green = true;
+      info_green=true
       data_vec = [num_blue,num_green]
       color_vec = ["#dbdbdb", "#009500"]
       percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
@@ -140,7 +140,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       $('#percentage').html(percentage_num + '%')
      $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' MTurk workers <br> chose <b><span style="color:#009500">'+inner_word+'</span></b>')
     } else{
-      is_green=false;
+      info_green=false
       data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
     percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
@@ -157,14 +157,14 @@ function make_bar_plot(num_green,num_blue,is_SWI){
   
   if (is_SWI==true){
     if (payout_condition=='green'){
-      payout_word = 'emeralds'
+      payout_word = 'emerald'
       color_code = '#009500'
     } else {
-      payout_word = 'sapphires'
+      payout_word = 'sapphire'
       color_code = '#0084ff'
     }
     
-    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br> These workers were paid for <b> <span style="color:'+color_code+'">' + payout_word +'</span></b>')
+    $('#SWI_info').html('<b>DISCLAIMER</b><br> These workers were also paid if there were more <b> <span style="color:'+color_code+'">' + payout_word +'</span></b> dots')
     $('#SWI_info').css('display','block')
   }
   
@@ -181,7 +181,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
       ]
     },
     options: {
-      cutoutPercentage: 79.5,
+      cutoutPercentage: 81,
       responsive:true,
       maintainAspectRatio: false,
       animation:false,
@@ -195,7 +195,6 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     }
 });
 }
-
 
 $('#more-green').css('background-color','#009500')
 $('#more-green').css('border-color','#009500')
@@ -669,28 +668,21 @@ function getBonusAmount(truth,response){
   var numBlue = getBlueDots(proportion_utility);
   var numGreen = 100-numBlue;
 
-  if (cover_story==true){
-    if (payout_condition=='blue'){
-      dotStr = 'This area has <span>' + numBlue + '</span> sapphire dots'
-      condition_bonus = numBlue;
-    } else if (payout_condition=='green'){
-      dotStr = 'This area has <span>' + numGreen + '</span> emerald dots'
-      condition_bonus = numGreen;
-    } else if (payout_condition=='no-utility'){
-      dotStr = ''
-      condition_bonus=0
+  if (payout_condition=='blue'){
+    if (proportion_blue > 0.5)
+      condition_bonus = 100;
+    else{
+      condition_bonus = 0;
     }
-  } else{
-    if (payout_condition=='blue'){
-      dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
-      condition_bonus = numBlue;
-    } else if (payout_condition=='green'){
-      dotStr = 'This image has <span>' + numGreen + '</span> green dots'
-      condition_bonus = numGreen;
-    } else if (payout_condition=='no-utility'){
-      dotStr = ''
-      condition_bonus=0
+  } else if (payout_condition=='green'){
+    if (proportion_blue > 0.5)
+      condition_bonus = 0;
+    else{
+      condition_bonus = 100;
     }
+  } else if (payout_condition=='no-utility'){
+    dotStr = ''
+    condition_bonus=0
   }
     return [accuracy_bonus,condition_bonus,dotStr]
   }
@@ -732,71 +724,39 @@ function getBonusAmount(truth,response){
 function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus){
 
   if (trial<=num_practice_trials){
-    if (cover_story==false){
-      if (payout_condition=='blue'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-        "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Blue dot bonus (points): </p> &nbsp;" + 
-        "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
-        "</div>")
-
-      } else if (payout_condition=='green'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-        "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Green dot bonus (points): </p> &nbsp;" + 
-        "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total image points: </p>" +
-        "</div>")
+    if (payout_condition=='blue'){
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus: </p>" + 
+      "<p class = 'computer_number' id = 'numDots'>(Pays if area has more sapphire than grass)</p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+      "</div>")
+    } else if (payout_condition=='green'){
+      $(".outcome").html("<div class='titleOutcome'>"+
+      "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+      "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
+      "<p class = 'computer_number' id = 'goodAreaPay'>Area bonus (paid if more emerald than water): </p> &nbsp;" + 
+      "<p class = 'computer_number' id = 'numDots'>(Pays if area has more emerald than grass)</p> &nbsp;" + 
+      "<hr class='hr_block'>"+
+      "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+      "</div>")
       } else if (payout_condition=='no-utility'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-        "</div>")
-      }
-
-    } else{
-      if (payout_condition=='blue'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-        "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Sapphire (blue dot) bonus: </p> &nbsp;" + 
-        "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
-        "</div>")
-      } else if (payout_condition=='green'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-        "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus: </p> &nbsp;" +
-        "<p class = 'computer_number' id = 'numDots'></p>" + 
-        "<p class = 'computer_number' id = 'goodAreaPay'>Emerald (green dot) bonus: </p> &nbsp;" + 
-        "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
-        "</div>")
-        } else if (payout_condition=='no-utility'){
-          if (include_gems==true){
-            $(".outcome").html("<div class='titleOutcome'>"+
-            "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
-            "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-            "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p>" +
-            "</div>")
-          } else{
-            $(".outcome").html("<div class='titleOutcome'>"+
-            "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
-            "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
-            "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> " +
-            "</div>")
-          }
+        if (include_gems==true){
+          $(".outcome").html("<div class='titleOutcome'>"+
+          "<p class = 'computer_number' id = 'topResult'>This area has more </p> " +
+          "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+          "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p>" +
+          "</div>")
+        } else{
+          $(".outcome").html("<div class='titleOutcome'>"+
+          "<p class = 'computer_number' id = 'topResult'>This image has more </p> " +
+          "<p class = 'computer_number' id = 'responseResult'> You said it has more </p> " +
+          "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> " +
+          "</div>")
         }
       }
 
@@ -829,7 +789,6 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     var p2_html = document.getElementById('responseResult');
     var p3_html = document.getElementById('accuracy');
     if (payout_condition!='no-utility'){
-      var p4_html = document.getElementById('numDots');
       var p5_html = document.getElementById('goodAreaPay');
       var p6_html = document.getElementById('total');
     }
@@ -837,7 +796,6 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
     p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
     if (payout_condition!='no-utility'){
-      p4_html.innerHTML =  dotStr
       p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
       p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
     }
@@ -931,30 +889,28 @@ function display_practice_info(){
 
 function display_earnings(){
   $('#big_wrapper').css('padding-top','0px')
-  if (cover_story==false){
-    if (payout_condition=='blue'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total blue dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total blue dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-      "</div>" +
-      "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-      "<p class = 'computer_number' id = 'continue_info'></p></div>")
-  
-    } else if (payout_condition=='green'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total green dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total green dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-      "</div>" +
-      "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-      "<p class = 'computer_number' id = 'continue_info'></p></div>")
+  if (payout_condition=='blue'){
+    $(".outcome").html("<div class='titleOutcome'>"+
+    "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
+    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+    "<p class = 'computer_number' id = 'numDots'> Areas with more sapphires than grass:  </p>" + 
+    "<p class = 'computer_number' id = 'goodAreaPay'> Total area bonus (points): </p> &nbsp;" + 
+    "<hr class='hr_block'>"+
+    "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
+    "</div>" +
+    "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
+    "<p class = 'computer_number' id = 'continue_info'></p></div>")
+  } else if (payout_condition=='green'){
+    $(".outcome").html("<div class='titleOutcome'>"+
+    "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
+    "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
+    "<p class = 'computer_number' id = 'numDots'> Areas with more emeralds than water:  </p>" + 
+    "<p class = 'computer_number' id = 'goodAreaPay'>Total area bonus: </p> &nbsp;" + 
+    "<hr class='hr_block'>"+
+    "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
+    "</div>" +
+    "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
+    "<p class = 'computer_number' id = 'continue_info'></p></div>")
     } else if (payout_condition=='no-utility'){
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
@@ -965,42 +921,6 @@ function display_earnings(){
       "</div>" +
       "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
       "<p class = 'computer_number' id = 'continue_info'></p></div>")
-    }
-  
-  } else{
-    if (payout_condition=='blue'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total sapphire dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total sapphire dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-      "</div>" +
-      "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-      "<p class = 'computer_number' id = 'continue_info'></p></div>")
-    } else if (payout_condition=='green'){
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-      "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-      "<p class = 'computer_number' id = 'numDots'> Total emerald dot number:  </p>" + 
-      "<p class = 'computer_number' id = 'goodAreaPay'> Total emerald dot bonus (points): </p> &nbsp;" + 
-      "<hr class='hr_block'>"+
-      "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-      "</div>" +
-      "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-      "<p class = 'computer_number' id = 'continue_info'></p></div>")
-      } else if (payout_condition=='no-utility'){
-        $(".outcome").html("<div class='titleOutcome'>"+
-        "<p class = 'computer_number' id = 'topResult'>Number of correct judgements: </p> " +
-        "<p class = 'computer_number' id = 'accuracy'> Accuracy bonus (points): </p> &nbsp;" +
-        "<p class = 'computer_number' id = 'numDots'> Completion bonus (points): </p> &nbsp;" + 
-        "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total experiment bonus (points): </p>" +
-        "</div>" +
-        "<p class = 'computer_number' id = 'total_dollars'> Total experiment bonus (dollars): </p>&nbsp;" +
-        "<p class = 'computer_number' id = 'continue_info'></p></div>")
-      }
     }
   
     topResult_str = String(num_test_correct)
@@ -1030,8 +950,8 @@ function display_earnings(){
     p1_html.innerHTML +=  '<span class = "computer_number">' + topResult_str + "</span>"
     p3_html.innerHTML += '<span class = "computer_number">' + accuracy_str + "</span>"
     if (payout_condition!='no-utility'){
-      p4_html.innerHTML +=  '<span class = "computer_number">' + numDots_str + "</span>"
-      p5_html.innerHTML += '<span class = "computer_number">' + goodAreaPay_str + "</span>"
+      p4_html.innerHTML +=  '<span class = "computer_number">4</span>'
+      p5_html.innerHTML += '<span class = "computer_number">400 </span>"
     } else{
       p4_html.innerHTML += '<span class = "computer_number">400</span>'
     }
