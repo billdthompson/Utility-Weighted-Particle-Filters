@@ -24,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
@@ -41,9 +41,9 @@ class UWPFWP(Experiment):
 		'generation_size':4, 
 		'generations': 6, 
 		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 2,
-		'num_random_order_experimental_networks_per_experiment': 2,
-		'num_practice_networks_per_experiment': 2,
+		'num_fixed_order_experimental_networks_per_experiment': 4,
+		'num_random_order_experimental_networks_per_experiment': 4,
+		'num_practice_networks_per_experiment': 4,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
