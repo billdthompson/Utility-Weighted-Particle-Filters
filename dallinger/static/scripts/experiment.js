@@ -951,8 +951,8 @@ function display_earnings(){
     p3_html.innerHTML += '<span class = "computer_number">' + accuracy_str + "</span>"
     if (payout_condition!='no-utility'){
       p4_html.innerHTML +=  '<span class = "computer_number">4</span>'
-      p5_html.innerHTML += '<span class = "computer_number">400 </span>"
-    } else{
+      p5_html.innerHTML += '<span class = "computer_number">400 </span>'
+    } else
       p4_html.innerHTML += '<span class = "computer_number">400</span>'
     }
     p6_html.innerHTML += '<span class = "computer_number">' + total_str + "</span>"
@@ -966,7 +966,6 @@ function display_earnings(){
     $(".outcome").css("display", "block");
     $("#continue-info").css("text-align", "center");
     $('.button-wrapper').css('margin-top','50px')
-    
 
     $('#continue_button').html('Finish experiment')
 

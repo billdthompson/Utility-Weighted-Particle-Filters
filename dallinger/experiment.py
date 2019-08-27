@@ -24,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = False
+DEBUG = True
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
@@ -38,12 +38,12 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':8, 
+		'generation_size':4, 
 		'generations': 6, 
-		'num_replications_per_condition':2,
-		'num_fixed_order_experimental_networks_per_experiment': 4
-		'num_random_order_experimental_networks_per_experiment': 4,
-		'num_practice_networks_per_experiment': 4,
+		'num_replications_per_condition':1,
+		'num_fixed_order_experimental_networks_per_experiment': 2,
+		'num_random_order_experimental_networks_per_experiment': 2,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -109,10 +109,8 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
-								 "SOC:W-U":self.num_replications_per_condition,
-								 "OVF:W-U":1
-								 }
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition}
+		
 		# Derrived Quantities
 		self.num_overflow_experiments = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
 		self.planned_overflow = self.num_overflow_experiments * self.generation_size
@@ -258,8 +256,6 @@ class UWPFWP(Experiment):
 		# Find networks that have some participants but are not full
 		not_saturated = dict(filter(lambda count: count[1] < self.generation_size, network_counts.items()))
 		self.log("These networks have some participants, but are not saturated: {}".format(not_saturated), key)
-
-		self.log("dict(network_counts).keys(): {}; dict(network_counts): {}; net_ids: {}".format(network_counts.keys(), network_counts, net_ids), key)
 
 		# And networks that have no participants yet
 		not_started = list(filter(lambda net_id: net_id not in network_counts.keys(), net_ids))
@@ -701,7 +697,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# count the number who did choose blue
 		# this is the nunmbr of current gen participants whose social information was "someone chose blue"
 		# b = sum(chose_blue)
-		b = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == "blue"] for node in previous_generation_nodes if node.infos(type = Meme)]))
+		b = sum(np.array([json.loads(node.infos(type = Meme)[0].contents)["choice"] == "blue" for node in previous_generation_nodes if node.infos(type = Meme)]))
 
 		# count the generation size and check it liens up with the exp
 		n = exp.generation_size

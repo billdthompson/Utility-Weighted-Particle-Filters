@@ -91,6 +91,7 @@
                                     $('#instructions-div').html('<p>You will observe '+String(num_practice+num_test) + ' ' + filler_word + ' in total. '+
                                         'Depending on how many '+filler_word+' you judge correctly, you can earn a bonus of up to $' + max_bonus + 
                                         '. The first '+ String(num_practice) + ' '+filler_word+' are for practice and will not count towards your bonus.</p> &nbsp;')
+                                    }
                             })
                             .fail(function (rejection) {
                                 // A 403 is our signal that it's time to go to the questionnaire
