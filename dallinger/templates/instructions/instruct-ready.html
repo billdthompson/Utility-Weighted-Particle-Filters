@@ -30,7 +30,12 @@
     $('#next_button').css('outline','none')
 
     function advance(){
-        dallinger.goToPage('instructions/pregame-questions')
+        var green_left = localStorage.getItem('green_left')=='true';
+            if (green_left==true){
+        dallinger.goToPage('stage_green_left')
+        } else{
+            dallinger.goToPage('stage_blue_left')
+        }
     }
 
     var num_practice, num_test_fixed,num_test_random

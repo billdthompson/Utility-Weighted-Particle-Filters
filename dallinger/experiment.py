@@ -24,7 +24,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = False
+DEBUG = True
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
@@ -38,12 +38,12 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':8, 
+		'generation_size':4, 
 		'generations': 6, 
-		'num_replications_per_condition':2,
-		'num_fixed_order_experimental_networks_per_experiment': 4,
-		'num_random_order_experimental_networks_per_experiment': 4,
-		'num_practice_networks_per_experiment': 4,
+		'num_replications_per_condition':1,
+		'num_fixed_order_experimental_networks_per_experiment': 2,
+		'num_random_order_experimental_networks_per_experiment': 2,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -109,10 +109,8 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
-								 "SOC:W-U":self.num_replications_per_condition,
-								 "OVF:W-U":1
-								 }
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
+		}
 		# Derrived Quantities
 		self.num_overflow_experiments = sum([self.condition_counts[overflow_key] for overflow_key in filter(lambda k: "OVF" in k, self.condition_counts.keys())])
 		self.planned_overflow = self.num_overflow_experiments * self.generation_size

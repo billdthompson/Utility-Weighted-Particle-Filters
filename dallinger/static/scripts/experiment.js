@@ -1,7 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
 is_equal,info_green;
-var trial = 0;
 var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
@@ -11,6 +10,11 @@ var is_green = false;
 
 var k_chose_blue = -1;
 var k_chose_green = -1;
+
+
+
+var curr_rounds_practice = localStorage.getItem('curr_practice')=='true'
+
 
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
@@ -42,6 +46,13 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+
+var curr_rounds_practice = localStorage.getItem('curr_practice')=='true'
+if (curr_rounds_practice==true){
+  var trial = 0;
+} else {
+  var trial = num_practice_trials+num_test_trials;
+}
 
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
@@ -90,7 +101,7 @@ $('#other_text').css('padding-top','30px')
 $('#instructions').css('font-size','19px')
 var is_practice = true;
 
-if (generation=='0' || social_condition=='asocial'){
+if (social_condition=='asocial'){
   var learning_strategy = "asocial";
 } else{
   var learning_strategy = "social";
@@ -876,22 +887,39 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $('.outcome').css('text-align','center')
       $('.outcome').css('margin-top','20px')
       $('#continue_button').html('Start test rounds')
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
-        "Points from these rounds will be added to your final pay."+
-        "<br><br>Unlike the practice rounds, you will not recieve feedback about your score after each round. "+
-        "Instead, you will view your earnings at the end of the experiment.</p>")
-      $('#topResult').css('font-size','19px')
+      if (curr_rounds_practice==true){
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>You will now complete a practice quiz to test your comprehension.</p>")
+        $('#topResult').css('font-size','19px')
       $('.button-wrapper').css('margin-top','40px')
-
+      
       $('#continue_button').unbind('click').click(function(){
         $(".outcome").css("display", "none");
         $(".button-wrapper").css("display", "none");
         $('#continue_button').html('Next round')
         $(".outcome").html("")
         $("#instructions").html("")
-      create_agent();
+        dallinger.goToPage('instructions/pregame-questions')
       });
+      } else {
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'topResult'>You will now complete "+String(num_test_trials)+" test trials. "+
+          "Points from these rounds will be added to your final pay."+
+          "<br><br>Unlike the practice rounds, you will not recieve feedback about your score after each round. "+
+          "Instead, you will view your earnings at the end of the experiment.</p>")
+        $('#topResult').css('font-size','19px')
+        $('.button-wrapper').css('margin-top','40px')
+        
+        $('#continue_button').unbind('click').click(function(){
+          $(".outcome").css("display", "none");
+          $(".button-wrapper").css("display", "none");
+          $('#continue_button').html('Next round')
+          $(".outcome").html("")
+          $("#instructions").html("")
+        create_agent();
+        });
+
+      }
     } else if (trial==num_practice_trials+num_test_trials){
       display_earnings()
     }else{
@@ -916,7 +944,8 @@ function display_practice_info(){
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
       "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
-        "Points from these rounds will not be added to your final pay.</p> ")
+        "Points from these rounds will not be added to your final pay.</p> " +
+        "<p>After finishing the practice rounds, you will take a short quiz to test your understanding before starting the test rounds.</p>")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
           $(".outcome").css("display", "none");
