@@ -627,7 +627,7 @@ def getnet(network_id):
 
 		net = exp.getnet(network_id)
 
-		return Response(json.dumps({"network":{"property4":net.__json__()["property4"],"property5": net.__json__()["property5"]}}), status=200, mimetype="application/json")
+		return Response(json.dumps({"network":{"property4":net.__json__()["property4"],"property5": net.__json__()["property5"], "property3": net.__json__()["property3"]}}), status=200, mimetype="application/json")
 
 	except Exception:
 		db.logger.exception('Error fetching network info')
@@ -661,8 +661,17 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 		# Button order randomisation
 		node_button_order = button_orders[str(node_slot)]
+
+		# practice + fixed + random
+		ks = [0, 8, 4, 12]  + [12, 8, 0, 4] + [12, 0, 4, 8]
+
+		n = 12
+
+		i = int(net.decision_index)
+
+		return Response(json.dumps({"k":ks[i], "n":12, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 		
-		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
+		# return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 
 	@pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
