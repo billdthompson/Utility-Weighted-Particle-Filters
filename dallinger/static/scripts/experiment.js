@@ -213,9 +213,9 @@ function make_bar_plot(num_green,num_blue,is_SWI){
           $("#instructions").text(instructionsText);
           regenerateDisplay(proportion_utility);
         })
-    },1300)
+    },2500)
     
-  },1300)
+  },2500)
   } else{
     $('#big_wrapper').css('margin-top','0px')
     $(".social_button_wrapper").css("margin-top", "50px");
@@ -229,7 +229,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
           $("#instructions").text(instructionsText);
           regenerateDisplay(proportion_utility);
         })
-    },2600)
+    },2500)
   }
  
   
