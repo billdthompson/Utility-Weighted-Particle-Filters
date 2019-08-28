@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':16, 
+		'generation_size':4, 
 		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -97,10 +97,7 @@ class UWPFWP(Experiment):
 		self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
 		# self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		self.fixed_order_experimental_network_proportions = []
-		if random.uniform(0, 1) < .5:
-			self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
-		else:
-			self.random_order_experimental_network_proportions = [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
+		self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
@@ -115,8 +112,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
-								 "SOC:W-U":self.num_replications_per_condition
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
 								 }
 
 
@@ -337,7 +333,7 @@ class UWPFWP(Experiment):
 
 			node_type = self.models.OverflowParticle if isinstance(node, self.models.OverflowParticle) else self.models.Particle
 			
-			node.proportion = float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
+			node.proportion = float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) if node.slot < (self.generation_size / 2.) else 1 - float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
 			# keep track of how which order the participant is doing neteworks
 			completed_decisions = node_type.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
