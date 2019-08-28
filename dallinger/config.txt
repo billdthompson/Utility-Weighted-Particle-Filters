@@ -4,12 +4,12 @@ auto_recruit = true
 loglevel = 0
 
 [MTurk]
-title = Psychology Experiment: Judge Blue and Green Dots ($1.10 average pay inc. bonus, < 7 mins, no mobile please)
+title = Psychology Experiment: Judge Blue and Green Dots ($1.20 average pay inc. bonus, < 7 mins, no mobile please)
 description = Judge dot displays
 keywords = Psychology, decision, dots, game
-base_payment = .5
+base_payment = .6
 lifetime = 24
-duration = 0.25
+duration = 0.5
 us_only = true
 contact_email_on_error = wdt@princeton.edu
 organization_name = Princeton University
@@ -25,7 +25,7 @@ database_size = standard-2
 
 [Server]
 dyno_type = standard-2x
-num_dynos_web = 4
-num_dynos_worker = 4
+num_dynos_web = 3
+num_dynos_worker = 3
 host = 0.0.0.0
 clock_on = false
