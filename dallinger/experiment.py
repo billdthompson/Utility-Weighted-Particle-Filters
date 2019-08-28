@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
+		'generation_size':24, 
 		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -112,7 +112,8 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
+								 "SOC:W-U":self.num_replications_per_condition
 								 }
 
 
@@ -333,10 +334,11 @@ class UWPFWP(Experiment):
 
 			node_type = self.models.OverflowParticle if isinstance(node, self.models.OverflowParticle) else self.models.Particle
 			
-			node.proportion = float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) if node.slot < (self.generation_size / 2.) else 1 - float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
 			# keep track of how which order the participant is doing neteworks
 			completed_decisions = node_type.query.filter_by(participant_id=node.participant_id, failed = False, type = 'particle').count()
 			node.decision_index = completed_decisions
+
+			node.proportion = 1- float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) if ((node.slot < (self.generation_size / 2.)) and (int(node.decision_index) > self.num_practice_networks_per_experiment)) else float(self.models.GenerativeModel.query.filter_by(network_id = network.id).one().property5) # property5 = proportion
 
 		if node.generation > 0 and not ("OVF" in node.condition):
 
