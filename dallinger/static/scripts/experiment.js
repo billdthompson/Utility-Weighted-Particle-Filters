@@ -10,6 +10,7 @@ var is_green = false;
 
 var k_chose_blue = -1;
 var k_chose_green = -1;
+var show_SWI = false;
 
 
 
@@ -84,7 +85,7 @@ $('#format_div').css('left','0')
 $('#format_div').css('margin','auto')
 
 $('.outcome').css('margin-top','80px')
-$("#instructions").css('margin-top','110px')
+$("#instructions").css('margin-top','140px')
 
 $(".button-wrapper").css("width", "300px");
 $(".button-wrapper").css("margin", "0 auto");
@@ -117,6 +118,11 @@ if (social_condition=='asocial'){
 function make_bar_plot(num_green,num_blue,is_SWI){
   Chart.defaults.global.defaultFontColor =  "#333333";
   if (num_green>num_blue){
+    if (is_SWI==true){
+      show_SWI = true;
+    } else{
+      show_SWI = false;
+    }
     is_equal = false;
     data_vec = [num_blue,num_green]
     color_vec = ["#dbdbdb", "#009500"]
@@ -130,6 +136,7 @@ function make_bar_plot(num_green,num_blue,is_SWI){
    $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
    
   } else if (num_blue>num_green){
+    show_SWI = false;
     is_equal = false;
      data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
@@ -145,18 +152,24 @@ function make_bar_plot(num_green,num_blue,is_SWI){
   } else{
     is_equal = true;
     if (Math.random()<0.5){
+      if (is_SWI==true){
+        show_SWI = true;
+      } else{
+        show_SWI = false;
+      }
       is_green = true;
       data_vec = [num_blue,num_green]
       color_vec = ["#dbdbdb", "#009500"]
       percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
       if (payout_condition=='green'|| payout_condition=='no-utility'){
         inner_word = 'emerald'
-      } else{
+      } else {
         inner_word = 'grass'
       }
       $('#percentage').html(percentage_num + '%')
      $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
     } else{
+      show_SWI=false;
       is_green=false;
       data_vec = [num_green,num_blue]
     color_vec = ["#dbdbdb", "#0084ff"]
@@ -171,19 +184,54 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     }
     
   }
-  
-  if (is_SWI==true){
-    if (payout_condition=='green'){
-      payout_word = 'emerald'
-      color_code = '#009500'
-    } else {
-      payout_word = 'sapphire'
-      color_code = '#0084ff'
-    }
-    
-    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br> These workers were paid for <br><b> <span style="color:'+color_code+'">' + payout_word +'</span></b> dots')
-    $('#SWI_info').css('display','block')
+
+  $("#big_wrapper").css('display','block');
+  if (show_SWI==true){
+  $(".social_button_wrapper").css("margin-top", "30px");
+  $('#big_wrapper').css('margin-top','-30px')
+      if (payout_condition=='green'){
+    payout_word = 'emerald'
+    color_code = '#009500'
+  } else {
+    payout_word = 'sapphire'
+    color_code = '#0084ff'
   }
+  setTimeout(function(){
+    $('#SWI_info').html('<b id="disclaimer">POSSIBLE CONFLICT OF INTEREST DETECTED:</b><br> All workers profited from <br><b> <span style="color:'+color_code+'">' + payout_word +'</span></b> dots')
+    $('#SWI_info').css('display','block')
+    $('#small_wrapper').css('opacity','0.2')
+    setTimeout(function(){
+      $('#small_wrapper').css('opacity','1')
+      $("#continue_social").removeClass('disabled')
+        $("#continue_social").css('display','block')
+        $("#continue_social").click(function(){
+          $('#SWI_info').css('display','none')
+          $('#SWI_info').html('')
+          $("#continue_social").addClass('disabled')
+          $("#continue_social").css('display','none')
+          $("#big_wrapper").css('display','none');
+          $("#instructions").text(instructionsText);
+          regenerateDisplay(proportion_utility);
+        })
+    },1300)
+    
+  },1300)
+  } else{
+    $('#big_wrapper').css('margin-top','0px')
+    $(".social_button_wrapper").css("margin-top", "50px");
+    setTimeout(function(){
+      $("#continue_social").removeClass('disabled')
+        $("#continue_social").css('display','block')
+        $("#continue_social").click(function(){
+          $("#continue_social").addClass('disabled')
+          $("#continue_social").css('display','none')
+          $("#big_wrapper").css('display','none');
+          $("#instructions").text(instructionsText);
+          regenerateDisplay(proportion_utility);
+        })
+    },2600)
+  }
+ 
   
   doughnut_chart = new Chart(document.getElementById("myChart"), {
     type: 'doughnut',
@@ -212,7 +260,6 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     }
 });
 }
-
 
 $('#more-green').css('background-color','#009500')
 $('#more-green').css('border-color','#009500')
@@ -384,20 +431,7 @@ get_received_infos = function() {
       $("#button-div").hide()
 
       make_bar_plot(k_chose_green,k_chose_blue,social_condition=='social_with_info')
-      $("#big_wrapper").css('display','block');
       
-      var timeoutDuration = 2750;
-
-      setTimeout(function() {
-        $("#continue_social").removeClass('disabled')
-        $("#continue_social").css('display','block')
-        $("#continue_social").click(function(){
-          $("#continue_social").addClass('disabled')
-          $("#big_wrapper").css('display','none');
-          $("#instructions").text(instructionsText);
-          regenerateDisplay(proportion_utility);
-        })
-      }, timeoutDuration);
     }
   })
 
@@ -426,7 +460,6 @@ function presentDisplay () {
       doughnut_chart.destroy() 
 
     }
-    $("#continue_social").css('display','none')
     $("#more-blue").removeClass('disabled');
     $("#more-green").removeClass('disabled');
     $("#instructions").show()
@@ -520,7 +553,7 @@ function regenerateDisplay (propUtility) {
       }
     }
     presentDisplay();
-  },1000)
+  },900)
   
 }
 
@@ -862,7 +895,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $('.outcome').css('margin-top','85px')
     } else{
       $('.outcome').css('margin','0 auto')
-      $('.outcome').css('margin-top','25px')
+      $('.outcome').css('margin-top','80px')
       $('.outcome').css('text-align','right')
       $('.button-wrapper').css('margin-top','40px')
     }
@@ -873,7 +906,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       }
       $('.outcome').css('text-align','center')
       $('.outcome').css('margin','0 auto')
-      $('.outcome').css('margin-top','95px')
+      $('.outcome').css('margin-top','120px')
       $('.button-wrapper').css('margin-top','70px')
       $(".outcome").html("<div class='titleOutcome'>"+
       "&nbsp;&nbsp;<p class = 'computer_number' id = 'topResult'> <font size='+2'> Test round " + String(trial-num_practice_trials) + " of " + String(num_test_trials)+ " complete.</font></p></div>")
@@ -888,7 +921,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     if (trial==num_practice_trials){
       $(".outcome").html("")
       $('.outcome').css('text-align','center')
-        $('.outcome').css('margin-top','90px')
+        $('.outcome').css('margin-top','120px')
         $('#continue_button').html('Take quiz')
         $(".outcome").html("<div class='titleOutcome'>"+
         "<p class = 'computer_number' id = 'topResult'>You will now take a quiz to test your comprehension.</p>")
@@ -919,7 +952,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
 function display_practice_info(){
   $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
-      $('.outcome').css('margin-top','80px')
+      $('.outcome').css('margin-top','90px')
       $('.outcome').css('width','300px')
       $('#continue_button').html('Start practice rounds')
       $(".outcome").css("display", "block");
@@ -944,7 +977,7 @@ function display_practice_info(){
 function display_test_info(){
   $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
-      $('.outcome').css('margin-top','20px')
+      $('.outcome').css('margin-top','60px')
       $('.outcome').css('width','300px')
       $('#continue_button').html('Start practice rounds')
       $(".outcome").css("display", "block");
@@ -1108,7 +1141,7 @@ function display_earnings(){
 
     $('.outcome').css('text-align','right')
     $('.outcome').css('margin','0 auto')
-    //$('.outcome').css('margin-top','0px')
+    $('.outcome').css('margin-top','20px')
     $('.outcome').css('width','300px')
     $(".outcome").css("display", "block");
     $("#continue-info").css("text-align", "center");
