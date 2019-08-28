@@ -61,13 +61,11 @@
 
 
                                 // look at figuring out this stuff exactly and/or calling it from back end
-                                if (payout_condition=='no-utility'){
-                                    var max_bonus = num_test*(0.05)+0.4
-                                    var max_bonus = max_bonus.toFixed(2)
-                                } else{
-                                    var max_bonus = num_test*(0.1)
-                                    var max_bonus = max_bonus.toFixed(2)
-                                }
+                                var accuracy_bonus = parseInt(localStorage.getItem('accuracy_bonus'))
+                                var dot_bonus = parseInt(localStorage.getItem('dot_bonus'))
+
+                                var max_bonus = ((dot_bonus*50/1000) + accuracy_bonus/1000)*num_test
+                                var max_bonus = max_bonus.toFixed(2)
 
                                 if (Math.random()<=0.5){
                                     first = 'blue'

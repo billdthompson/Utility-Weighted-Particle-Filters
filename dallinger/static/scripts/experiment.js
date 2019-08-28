@@ -31,6 +31,8 @@ var net_decision_index = parseInt(localStorage.getItem('net_decision_index'));
 var include_numbers = localStorage.getItem('include_numbers')=='true';
 var condition_replication = parseInt(localStorage.getItem('condition_replication'));
 
+var accuracy_bonus = parseInt(localStorage.getItem('accuracy_bonus'));
+var dot_bonus = parseInt(localStorage.getItem('dot_bonus'));
 
 var my_node_id = parseInt(localStorage.getItem("node_id")); //string/int "37"
 var generation = parseInt(localStorage.getItem("generation")); //string/int "10"
@@ -64,14 +66,14 @@ if (curr_rounds_practice==true){
 $('#continue_button').css('background-color','#5c5c5c')
 $('#continue_button').css('border','none')
 $('#continue_button').css('outline','none')
-$("#continue_button").css("width", "300px");
+$("#continue_button").css("width", "320px");
 $("#continue_button").css("text-align", "center");
 
 
 $('#continue_social').css('background-color','#5c5c5c')
 $('#continue_social').css('border','none')
 $('#continue_social').css('outline','none')
-$("#continue_social").css("width", "300px");
+$("#continue_social").css("width", "320px");
 $("#continue_social").css("text-align", "center");
 
 $('#big_wrapper').css('padding-top','0px')
@@ -87,11 +89,11 @@ $('#format_div').css('margin','auto')
 $('.outcome').css('margin-top','80px')
 $("#instructions").css('margin-top','140px')
 
-$(".button-wrapper").css("width", "300px");
+$(".button-wrapper").css("width", "320px");
 $(".button-wrapper").css("margin", "0 auto");
 $(".button-wrapper").css("margin-top", "50px");
 
-$(".social_button_wrapper").css("width", "300px");
+$(".social_button_wrapper").css("width", "320px");
 $(".social_button_wrapper").css("margin", "0 auto");
 
 if (social_condition=='social_with_info'){
@@ -695,6 +697,8 @@ $(document).ready(function() {
 });
 
 
+
+
 function getBonusAmount(truth,response){
     // truth is a string: 'green' or 'blue'
   // response also a string: 'green' or 'blue'
@@ -702,15 +706,15 @@ function getBonusAmount(truth,response){
   
   if (truth == 'green'){
     if (response=="green"){
-        var accuracy_bonus = 50;
+        var correct_bonus = accuracy_bonus;
     } else {                                                           
-        var accuracy_bonus = 0;
+        var correct_bonus = 0;
     }
   } else {
       if (response == "blue"){
-          var accuracy_bonus = 50;
+          var correct_bonus = accuracy_bonus;
       } else {
-          var accuracy_bonus = 0;
+          var correct_bonus = 0;
       }
   }
   var numBlue = getBlueDots(proportion_utility);
@@ -719,10 +723,10 @@ function getBonusAmount(truth,response){
   if (cover_story==true){
     if (payout_condition=='blue'){
       dotStr = 'This area has <span>' + numBlue + '</span> sapphire dots'
-      condition_bonus = numBlue;
+      condition_bonus = numBlue*dot_bonus;
     } else if (payout_condition=='green'){
       dotStr = 'This area has <span>' + numGreen + '</span> emerald dots'
-      condition_bonus = numGreen;
+      condition_bonus = numGreen*dot_bonus;
     } else if (payout_condition=='no-utility'){
       dotStr = ''
       condition_bonus=0
@@ -730,16 +734,16 @@ function getBonusAmount(truth,response){
   } else{
     if (payout_condition=='blue'){
       dotStr = 'This image has <span>' + numBlue + '</span> blue dots'
-      condition_bonus = numBlue;
+      condition_bonus = numBlue*dot_bonus;
     } else if (payout_condition=='green'){
       dotStr = 'This image has <span>' + numGreen + '</span> green dots'
-      condition_bonus = numGreen;
+      condition_bonus = numGreen*dot_bonus;
     } else if (payout_condition=='no-utility'){
       dotStr = ''
       condition_bonus=0
     }
   }
-    return [accuracy_bonus,condition_bonus,dotStr]
+    return [correct_bonus,condition_bonus,dotStr]
   }
 
 
@@ -818,7 +822,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'numDots'></p>" + 
         "<p class = 'computer_number' id = 'goodAreaPay'>Sapphire (blue dot) bonus: </p> &nbsp;" + 
         "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+        "<p class = 'computer_number' id = 'total'> Total area pay: </p>" +
         "</div>")
       } else if (payout_condition=='green'){
         $(".outcome").html("<div class='titleOutcome'>"+
@@ -828,7 +832,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
         "<p class = 'computer_number' id = 'numDots'></p>" + 
         "<p class = 'computer_number' id = 'goodAreaPay'>Emerald (green dot) bonus: </p> &nbsp;" + 
         "<hr class='hr_block'>"+
-        "<p class = 'computer_number' id = 'total'> Total area points: </p>" +
+        "<p class = 'computer_number' id = 'total'> Total area pay: </p>" +
         "</div>")
         } else if (payout_condition=='no-utility'){
           if (include_gems==true){
@@ -861,7 +865,9 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     
     accuracyStr = accuracy_bonus.toFixed(0)
     conditionStr = condition_bonus.toFixed(0)
-    netStr = (accuracy_bonus+condition_bonus).toFixed(0)
+    netStr = (accuracy_bonus+condition_bonus).toFixed(0) + ' points'
+    centsStr = ' ($'+((accuracy_bonus+condition_bonus)/1000).toFixed(2) +')'
+    netStr = netStr + centsStr
   
     total_str = total_points.toFixed(0)
     $('#total_earnings').html('Total points: '+ total_str)
@@ -882,10 +888,10 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     }
     p1_html.innerHTML +=  '<span class = "computer_number">' + true_state + "</span>"
     p2_html.innerHTML += '<span class = "computer_number">' + responseStr + "</span>"
-    p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + "</span>"
+    p3_html.innerHTML += '<span class = "computer_number">' + accuracyStr + " points</span>"
     if (payout_condition!='no-utility'){
       p4_html.innerHTML =  dotStr
-      p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + "</span>"
+      p5_html.innerHTML += '<span class = "computer_number">' + conditionStr + " points</span>"
       p6_html.innerHTML += '<span class = "computer_number">' + netStr + "</span>"
     }
     if (payout_condition=='no-utility'){
@@ -912,7 +918,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       "&nbsp;&nbsp;<p class = 'computer_number' id = 'topResult'> <font size='+2'> Test round " + String(trial-num_practice_trials) + " of " + String(num_test_trials)+ " complete.</font></p></div>")
   }
 
-  $('.outcome').css('width','300px')
+  $('.outcome').css('width','320px')
   $(".outcome").css("display", "block");
   $(".button-wrapper").css("display", "block");
   $(".center_div").css("display", "none");
@@ -953,7 +959,7 @@ function display_practice_info(){
   $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','90px')
-      $('.outcome').css('width','300px')
+      $('.outcome').css('width','320px')
       $('#continue_button').html('Start practice rounds')
       $(".outcome").css("display", "block");
       //$(".button-wrapper").css("text-align", "right");
@@ -978,7 +984,7 @@ function display_test_info(){
   $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','60px')
-      $('.outcome').css('width','300px')
+      $('.outcome').css('width','320px')
       $('#continue_button').html('Start practice rounds')
       $(".outcome").css("display", "block");
       //$(".button-wrapper").css("text-align", "right");
@@ -1142,7 +1148,7 @@ function display_earnings(){
     $('.outcome').css('text-align','right')
     $('.outcome').css('margin','0 auto')
     $('.outcome').css('margin-top','20px')
-    $('.outcome').css('width','300px')
+    $('.outcome').css('width','320px')
     $(".outcome").css("display", "block");
     $("#continue-info").css("text-align", "center");
     $('.button-wrapper').css('margin-top','50px')
@@ -1154,7 +1160,7 @@ function display_earnings(){
       $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','80px')
-      $('.outcome').css('width','300px')
+      $('.outcome').css('width','320px')
       $(".outcome").css("display", "block");
       $('.button-wrapper').html('');
       $('.button-wrapper').hide();

@@ -33,6 +33,11 @@
             
             .done(function (resp) {
 
+                var accuracy_bonus = 100;
+                var dot_bonus = 2;
+                localStorage.setItem('accuracy_bonus',accuracy_bonus)
+                localStorage.setItem('dot_bonus',dot_bonus)
+
                 var include_gems = true;
                 localStorage.setItem('include_gems',include_gems)
 

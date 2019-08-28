@@ -50,6 +50,16 @@
         //var payout_blue = localStorage.getItem("payout_blue")=='true';
         var payout_condition = localStorage.getItem('payout_condition');
         var include_gems = localStorage.getItem('include_gems')=='true';
+
+        var accuracy_bonus = parseInt(localStorage.getItem('accuracy_bonus'));
+        var dot_bonus = parseInt(localStorage.getItem('dot_bonus'));
+
+        if (dot_bonus==1){
+            point_str = 'point'
+        } else{
+            point_str = 'points'
+        }
+
         
         //$('#story-instructions').hide()
 
@@ -92,18 +102,18 @@
                     if (cover_story==true){
                         if (payout_condition=='blue'){
                             $('#story-instructions').html('<p>'+
-                            'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
+                            'On each round, you will get a '+String(accuracy_bonus)+' point bonus if you are correct in judging the area as '+
                             'containing more sapphire dots or more grass dots. </p>' +
-                            '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every sapphire (blue dot) '+
+                            '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid '+String(dot_bonus)+' '+point_str+' for every sapphire (blue dot) '+
                             'in the area</b>, regardless of the size of the sapphire. Because the sapphires will always be collected, you will <b>always</b> get this bonus, '+
                             'whether your decision is right or wrong. </p>'+
                             '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
 
                         } else if (payout_condition=='green'){ 
                             $('#story-instructions').html('<p>'+
-                            'On each round, you will get a 50 point bonus if you are correct in judging the area as '+
+                            'On each round, you will get a '+String(accuracy_bonus)+' point bonus if you are correct in judging the area as '+
                             'containing more emerald dots or more water dots. </p>' +
-                            '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid 1 point for every emerald (green dot) '+
+                            '<p id="utility-information">In addition to this accuracy bonus, <b>you will be paid '+String(dot_bonus)+' '+point_str+' for every emerald (green dot) '+
                             'in the area</b>, regardless of the size of the emerald. Because the emeralds will always be collected, you will <b>always</b> get this bonus, '+
                             'whether your decision is right or wrong.</p>' +
                             '<p id="terminal-info">At the end of the experiment, your points will be paid to you as a bonus with 10 points equal to one cent. </p>')
