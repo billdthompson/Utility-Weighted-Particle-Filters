@@ -199,7 +199,8 @@ function make_bar_plot(num_green,num_blue,is_SWI){
     color_code = '#0084ff'
   }
   setTimeout(function(){
-    $('#SWI_info').html('<b id="disclaimer">DISCLAIMER:</b><br><span id="second-paragraph">Workers in this group tended to <b>overestimate</b> the number of emeralds.</span>')
+
+    $('#SWI_info').html("<b id='disclaimer'>DISCLAIMER:</b><br><span id='second-paragraph'>Workers in this group chose emerald at an <b>increased rate.</b> <br> (Relative to workers who weren't paid for emeralds.)</span>")
     $('#SWI_info').css('display','block')
     $('#small_wrapper').css('opacity','0.2')
     setTimeout(function(){
