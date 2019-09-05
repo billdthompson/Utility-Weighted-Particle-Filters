@@ -14,9 +14,6 @@ var show_SWI = false;
 
 
 
-
-
-
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
 var payout_condition = localStorage.getItem('payout_condition') // string, true/false
@@ -76,9 +73,6 @@ $('#continue_social').css('outline','none')
 $("#continue_social").css("width", "320px");
 $("#continue_social").css("text-align", "center");
 
-$('#big_wrapper').css('padding-top','0px')
-$('#big_wrapper').css('margin','auto')
-$("#big_wrapper").css('display','none');
 
 $('#format_div').css('top','0')
 $('#format_div').css('bottom','0')
@@ -93,6 +87,8 @@ $(".button-wrapper").css("width", "320px");
 $(".button-wrapper").css("margin", "0 auto");
 $(".button-wrapper").css("margin-top", "50px");
 
+$('#container').css('margin-top','50px')
+
 $(".social_button_wrapper").css("width", "320px");
 $(".social_button_wrapper").css("margin", "0 auto");
 
@@ -104,7 +100,6 @@ if (social_condition=='social_with_info'){
 
 $("#continue_social").css('display','none')
 
-$('#big_wrapper').css('margin-top','-30px')
 $('#other_text').css('padding-top','30px')
 
 $('#instructions').css('font-size','19px')
@@ -117,150 +112,169 @@ if (social_condition=='asocial'){
 }
 
 
-function make_bar_plot(num_green,num_blue,is_SWI){
-  Chart.defaults.global.defaultFontColor =  "#333333";
-  if (num_green>num_blue){
-    if (is_SWI==true){
-      show_SWI = true;
-    } else{
-      show_SWI = false;
-    }
-    is_equal = false;
-    data_vec = [num_blue,num_green]
-    color_vec = ["#dbdbdb", "#009500"]
-    percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
-    if (payout_condition=='green'|| payout_condition=='no-utility'){
-      inner_word = 'emerald'
-    } else{
-      inner_word = 'grass'
-    }
-    $('#percentage').html(percentage_num + '%')
-   $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
-   
-  } else if (num_blue>num_green){
-    show_SWI = false;
-    is_equal = false;
-     data_vec = [num_green,num_blue]
-    color_vec = ["#dbdbdb", "#0084ff"]
-    percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
-    if (payout_condition=='blue'|| payout_condition=='no-utility'){
-      inner_word = 'sapphire'
-    } else{
-      inner_word = 'water'
-    }
-    $('#percentage').html(percentage_num + '%')
-    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#0084ff">'+inner_word+'</span></b> dots')
+function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
+  if (n_green==1){
+    green_worker_str = ' worker'
+  } else{
+    green_worker_str = ' workers'
+  }
+  
+  if (n_blue==1){
+    blue_worker_str = ' worker'
+  } else{
+    blue_worker_str = ' workers'
+  }
+  
+  if (n_green==0){
+    n_green_str = 'No'
+  } else{
+    n_green_str = String(n_green)
+  }
+  
+  if (n_blue==0){
+    n_blue_str = 'No'
+  } else{
+    n_blue_str = String(n_blue)
+  }
+  
+  if (payout_c=='green'){
+    green_fn_str = 'emerald'
+    blue_fn_str = 'water'
+  } else if (payout_c=='blue'){
+    green_fn_str = 'grass'
+    blue_fn_str = 'sapphire'
+  } else if (payout_c=='no-utility'){
+    green_fn_str = 'emerald'
+    blue_fn_str = 'sapphire'
+  }
+  
+  if (green_l==true){
+      left_str = '<p class = "choice-text">' + n_green_str +
+        green_worker_str + ' chose '+green_fn_str+'</p>' +
+        '<p class = "choice-text">' + n_blue_str +
+        blue_worker_str + ' chose '+blue_fn_str+'</p>'
+      $('#left-div').html(left_str)
+      right_str = '<p class = "icon-paragraph">'
+      for (greeni=0;greeni<n_green;greeni++){
+        right_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
+      }
+      if (greeni==0){
+        right_str += '<br>'
+      }
+      right_str += '</p>'
+      right_str += '<p class = "icon-paragraph">'
+      for (bluei=0;bluei<n_blue;bluei++){
+        right_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
+      }
+      right_str += '</p>'
+      $('#right-div').html(right_str)
     
   } else{
-    is_equal = true;
-    if (Math.random()<0.5){
-      if (is_SWI==true){
-        show_SWI = true;
-      } else{
-        show_SWI = false;
+      left_str = '<p class = "choice-text">' + n_blue_str +
+        blue_worker_str + ' chose '+blue_fn_str+'</p>' +
+        '<p class = "choice-text">' + n_green_str +
+        green_worker_str + ' chose '+green_fn_str+'</p>'
+      $('#left-div').html(left_str)
+      right_str = '<p class = "icon-paragraph">'
+      for (bluei=0;bluei<n_blue;bluei++){
+        right_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
       }
-      is_green = true;
-      data_vec = [num_blue,num_green]
-      color_vec = ["#dbdbdb", "#009500"]
-      percentage_num = ((num_green/(num_green+num_blue))*100).toFixed(0)
-      if (payout_condition=='green'|| payout_condition=='no-utility'){
-        inner_word = 'emerald'
-      } else {
-        inner_word = 'grass'
+      if (bluei==0){
+        right_str += '<br>'
       }
-      $('#percentage').html(percentage_num + '%')
-     $('#other_text').html(String(num_green)+' of '+String(num_green+num_blue)+' workers<br>thought there were more<br><b><span style="color:#009500">'+inner_word+'</span></b> dots')
-    } else{
-      show_SWI=false;
-      is_green=false;
-      data_vec = [num_green,num_blue]
-    color_vec = ["#dbdbdb", "#0084ff"]
-    percentage_num = ((num_blue/(num_green+num_blue))*100).toFixed(0)
-    if (payout_condition=='blue'|| payout_condition=='no-utility'){
-      inner_word = 'sapphire'
-    } else{
-      inner_word = 'water'
-    }
-    $('#percentage').html(percentage_num + '%')
-    $('#other_text').html(String(num_blue)+' of '+String(num_green+num_blue)+' workers <br>thought there were more<br><b><span style="color:#0084ff">'+inner_word+'</span></b> dots')
-    }
-    
+      right_str += '</p>'
+      right_str += '<p class = "icon-paragraph">'
+      for (greeni=0;greeni<n_green;greeni++){
+        right_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
+      }
+      right_str += '</p>'
+      $('#right-div').html(right_str)
   }
 
-  $("#big_wrapper").css('display','block');
-  if (show_SWI==true){
-  $(".social_button_wrapper").css("margin-top", "30px");
-  $('#big_wrapper').css('margin-top','-30px')
-      if (payout_condition=='green'){
-    payout_word = 'emerald'
-    color_code = '#009500'
-  } else {
-    payout_word = 'sapphire'
-    color_code = '#0084ff'
-  }
-  setTimeout(function(){
-    $('#SWI_info').html("<b id='disclaimer'>DISCLAIMER:</b><br><span id='second-paragraph'>Workers in this group chose emerald at an <b>increased rate.</b> <br> (Relative to workers who weren't paid for emeralds.)</span>")
-    $('#SWI_info').css('display','block')
-    $('#small_wrapper').css('opacity','0.2')
-    setTimeout(function(){
-      $('#small_wrapper').css('opacity','1')
-      $("#continue_social").removeClass('disabled')
-        $("#continue_social").css('display','block')
-        $("#continue_social").click(function(){
-          $('#SWI_info').css('display','none')
-          $('#SWI_info').html('')
-          $("#continue_social").addClass('disabled')
-          $("#continue_social").css('display','none')
-          $("#big_wrapper").css('display','none');
-          $("#instructions").text(instructionsText);
-          regenerateDisplay(proportion_utility);
-        })
-    },2500)
-    
-  },2500)
-  } else{
-    $('#big_wrapper').css('margin-top','0px')
-    $(".social_button_wrapper").css("margin-top", "50px");
-    setTimeout(function(){
-      $("#continue_social").removeClass('disabled')
-        $("#continue_social").css('display','block')
-        $("#continue_social").click(function(){
-          $("#continue_social").addClass('disabled')
-          $("#continue_social").css('display','none')
-          $("#big_wrapper").css('display','none');
-          $("#instructions").text(instructionsText);
-          regenerateDisplay(proportion_utility);
-        })
-    },2500)
-  }
- 
-  
-  doughnut_chart = new Chart(document.getElementById("myChart"), {
-    type: 'doughnut',
-    data: {
-      labels: ['a','b'],
-      datasets: [
-        {
-          backgroundColor: color_vec,
-          data: data_vec,
-          borderWidth: 4
-        }
-      ]
-    },
-    options: {
-      cutoutPercentage: 81,
-      responsive:true,
-      maintainAspectRatio: false,
-      animation:false,
-      tooltips: {enabled: false},
-      scaleShowVerticalLines: false,
-      hover: {mode: null},
-      legend: { display: false },
-      title: {
-        display: false,
-      },
+  if (is_SWI==true){
+    if (payout_c=='blue'){
+      if (n_blue>n_green){
+        display_SWI = true;
+      } else{
+        display_SWI = false;
+      }
+      SWI_str = 'sapphire'
+      SWI_strs = 'sapphires'
+    } else if (payout_c=='green'){
+      if (n_green>n_blue){
+        display_SWI = true
+      } else{
+        display_SWI = false
+      }
+      SWI_str = 'emerald'
+      SWI_strs = 'emeralds'
     }
-});
+  } else{
+    display_SWI = false;
+  }
+
+  if (display_SWI==true){
+    setTimeout(function(){
+       // condition is SWI, display info
+       $(".outcome").css("display", "none");
+       $('#container').css('margin-top','60px')
+       $('#continue_social').css('margin-top','30px')
+       SWI_html = '<div id = "SWI-disclaimer">' +
+       'DISCLAIMER:</div>' + 
+       '<div id="SWI-text">' +
+       'Workers that are paid for ' + SWI_strs +  ' (such as these) tend to think there are more ' +
+       SWI_strs + '.</div>'
+       $('#container').css('display','block')
+       $('#SWI-info').html(SWI_html)
+       if (include_animation==true){
+         setTimeout(function(){
+           $('#SWI-info').css('display','block')
+           $('#container').css('opacity','0.2')
+           setTimeout(function(){
+             $('#container').css('opacity','1')
+             $("#continue_social").removeClass('disabled')
+             $("#continue_social").css('display','block')
+             $("#continue_social").click(function(){
+               $('#SWI-info').css('display','none')
+               $('#SWI-info').html('')
+               $("#continue_social").addClass('disabled')
+               $("#continue_social").css('display','none')
+               $("#container").css('display','none');
+               $("#instructions").text(instructionsText);
+             regenerateDisplay(proportion_utility);
+           })
+           },2500)
+           
+         },2500)
+         
+       }else{
+         $('#container').css('display','block')
+         $('#SWI-info').css('display','block')
+       } 
+
+    },425)
+  } else{
+        // no SWI info
+        setTimeout(function(){
+          $(".outcome").css("display", "none");
+          $('#container').css('margin-top','85px')
+          $('#continue_social').css('margin-top','45px')
+          $('#container').css('display','block')
+          setTimeout(function(){
+            $("#continue_social").removeClass('disabled')
+            $("#continue_social").css('display','block')
+            $("#continue_social").click(function(){
+              $('#SWI-info').css('display','none')
+              $('#SWI-info').html('')
+              $("#continue_social").addClass('disabled')
+              $("#continue_social").css('display','none')
+              $("#container").css('display','none');
+              $("#instructions").text(instructionsText);
+            regenerateDisplay(proportion_utility);
+        })
+          },2500)
+      },425)
+  }
 }
 
 $('#more-green').css('background-color','#009500')
@@ -432,7 +446,8 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      make_bar_plot(k_chose_green,k_chose_blue,social_condition=='social_with_info')
+      console.log('here')
+      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,social_condition=='social_with_info',true)
       
     }
   })
@@ -458,10 +473,6 @@ function presentDisplay () {
       dots[i].hide();
     }
     $('svg').remove() // remove the annoying disabled version of the screen from the dot display
-    if (learning_strategy=='social'){
-      doughnut_chart.destroy() 
-
-    }
     $("#more-blue").removeClass('disabled');
     $("#more-green").removeClass('disabled');
     $("#instructions").show()
@@ -925,7 +936,6 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
 
   $('#continue_button').unbind('click').click(function(){
     if (trial==num_practice_trials){
-      $(".outcome").html("")
       $('.outcome').css('text-align','center')
         $('.outcome').css('margin-top','120px')
         $('#continue_button').html('Take quiz')
@@ -946,9 +956,11 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     } else if (trial==num_practice_trials+num_test_trials){
       display_earnings()
     }else{
-      $(".outcome").css("display", "none");
+      //$(".outcome").css("display", "none");
       $(".button-wrapper").css("display", "none");
-      $(".outcome").html("")
+      $(".outcome").css("text-align",'center')
+      $('.outcome').css('margin-top','150px')
+      $(".outcome").html("<b>Loading next round ...</b>")
       $("#instructions").html("")
       create_agent();
     }
@@ -971,10 +983,11 @@ function display_practice_info(){
         "<p>After finishing, you will take a short quiz to test your understanding before starting the test rounds.</p>")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
-          $(".outcome").css("display", "none");
+          //$(".outcome").css("display", "none");
           $(".button-wrapper").css("display", "none");
           $('#continue_button').html('Next round')
-          $(".outcome").html("")
+          $('.outcome').css('margin-top','150px')
+          $(".outcome").html("<b>Loading next round ...</b>")
           $("#instructions").html("")
           get_social_info();
       });
@@ -1036,7 +1049,6 @@ function display_test_info(){
 
 
 function display_earnings(){
-  $('#big_wrapper').css('padding-top','0px')
   if (cover_story==false){
     if (payout_condition=='blue'){
       $(".outcome").html("<div class='titleOutcome'>"+
