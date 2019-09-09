@@ -76,34 +76,45 @@
         
         if (social_condition=='social'){
             if (cover_story==false || payout_condition=='no-utility'){
-                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will see the decisions made by another set of MTurk workers '  +
-                'on the same area as the one you will see.</p>')
+                $('#story-instructions').html('<p>To help you make a decision, before viewing an '+filler_word+' you will see the decision made by another MTurk worker '  +
+                'on the same area as the one you will see.</p>' + 
+                '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.</p>')
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
-                    'on the same area as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another MTurk worker '  +
+                    'on the same area as the one you will see.</p>' +
+                    '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
-            'on the same area as the one you will see.</p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another MTurk worker '  +
+            'on the same area as the one you will see.</p>' +
+            '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.</p>')
             }
         }
 
         } else if (social_condition=='social_with_info'){
             if (cover_story==false){
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by a set of participants '  +
-            'These participants viewed an image with the same number of blue dots and green dots as the one you will see, and <b>like you were paid for blue dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another participant. '  +
+            'This participant viewed an image with the same number of blue dots and green dots as the one you will see, and <b>like you was paid for blue dots.</b></p>' + 
+            '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.' +
+                'These participants were also paid for blue dots.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of participants. '  +
-            'These participants viewed an image with the same number of green dots and blue dots as the one you will see, and <b>like you were paid for green dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another participants. '  +
+            'This participant viewed an image with the same number of green dots and blue dots as the one you will see, and <b>like you was paid for green dots.</b></p>' +
+            '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.' +
+                'These participants were also paid for green dots.</p>')
                 }
             } else{
                 if (payout_condition=='blue'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
-            'on the same area as the one you will see. <b>Like you, these workers were paid for sapphire dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another MTurk worker '  +
+            'on the same area as the one you will see. <b>Like you, this worker was paid for sapphire dots.</b></p>' + 
+            '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.' +
+                'These participants were also paid for sapphire dots.</p>')
                 } else if (payout_condition=='green'){
-                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decisions made by another set of MTurk workers '  +
-            'on the same area as the one you will see. <b>Like you, these workers were paid for emerald dots.</b></p>')
+                    $('#story-instructions').html('<p>To help you make a decision, before viewing an area you will see the decision made by another MTurk worker '  +
+            'on the same area as the one you will see. <b>Like you, this worker was paid for emerald dots.</b></p>' +
+            '<p>After viewing an area, you can either make a choice or view the decisions made by a set of 12 workers before making your choice.' +
+                'These participants were also paid for emerald dots.</p>')
                 }
             }
         }

@@ -260,13 +260,13 @@ if (cover_story==true){
                         '</div>'+
                         '<div>'+
                             '<select id="q4" name="q4">'+
-                              "<option value='2'>A set of participants' decisions in a random area</option>"+
+                              "<option value='2'>Another participant's decision in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in the same area</option>"+
+                              "<option value='1'>Another participant's decision in the same area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
         $('#question-5').html('<div id="social-info">'+
-                  'Were these participants also paid for sapphire dots?'+
+                  'Was this participant also paid for sapphire dots?'+
               '</div>'+
               '<div>'+
                   '<select id="q5" name="q5">'+
@@ -275,13 +275,26 @@ if (cover_story==true){
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br>')
+        $('#question-6').html('<div id="social-info">'+
+                  'After viewing an area, what information can you choose to observe?'+
+              '</div>'+
+              '<div>'+
+                  '<select id="q6" name="q6">'+
+                      "<option value='2'>A set of participant's decisions in a random area</option>"+
+                      "<option value=1>A set of participant's decisions in the same area</option>"+
+                      "<option value='3'>The number of sapphire dots in the area</option>"+
+                      '<option value="5" SELECTED>None of these options</option>'+
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
         $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an area, you will see the decisions made by a set of participants '+
+        $('#instructions-text-5').html('4). Before viewing an area, you will see the decision made by a participant '+
         'viewing the same area as the one you will see.')
-        $('#instructions-text-6').html('5). These participants were also paid for every sapphire dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every sapphire dot in the area.')
+        $('#instructions-text-7').html('6). After viewing an area, you can either make a decision ' +
+        'or first view the decisions made by a set of 12 other participants. ' + 
+        'Note that these participants were also paid for sapphire dots.')
       } else if (payout_condition=='green') {
       // social with info, with cover story, payout green
       $('#q1').html('<option value="1">Judge whether there are more emerald dots or more water dots</option>'+
@@ -296,13 +309,13 @@ if (cover_story==true){
                         '</div>'+
                         '<div>'+
                             '<select id="q4" name="q4">'+
-                              "<option value='2'>A set of participants' decisions in a random area</option>"+
+                              "<option value='2'>Another participant's decision in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in the same area</option>"+
+                              "<option value='1'>Another participant's decision in the same area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
         $('#question-5').html('<div id="social-info">'+
-                  'Were these participants also paid for emerald dots?'+
+                  'Was this participant also paid for emerald dots?'+
               '</div>'+
               '<div>'+
                   '<select id="q5" name="q5">'+
@@ -311,13 +324,26 @@ if (cover_story==true){
                       "<option value='4'>Sometimes</option>"+
                       '<option value="5" SELECTED>None of these options</option>'+
                   '</select></div><br>')
+        $('#question-6').html('<div id="social-info">'+
+                  'After viewing an area, what information can you choose to observe?'+
+              '</div>'+
+              '<div>'+
+                  '<select id="q6" name="q6">'+
+                      "<option value='2'>A set of participant's decisions in a random area</option>"+
+                      "<option value=1>A set of participant's decisions in the same area</option>"+
+                      "<option value='3'>The number of emerald dots in the area</option>"+
+                      '<option value="5" SELECTED>None of these options</option>'+
+                  '</select></div><br>')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more emerald (green) dots or more water (blue) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
         $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an area, you will see the decisions made by a set of participants '+
+        $('#instructions-text-5').html('4). Before viewing an area, you will see the decision made by a participant '+
         'viewing the same area as the one you will see.')
-        $('#instructions-text-6').html('5). These participants were also paid for every emerald dot in the area.')
+        $('#instructions-text-6').html('5). This participant was also paid for every emerald dot in the area.')
+        $('#instructions-text-7').html('6). After viewing an area, you can either make a decision ' +
+        'or first view the decisions made by a set of 12 other participants. ' + 
+        'Note that these participants were also paid for emerald dots.')
     } else if (payout_condition=='no-utility'){
       //makes no sense
         }
@@ -338,19 +364,31 @@ if (cover_story==true){
                         '</div>'+
                         '<div>'+
                             '<select id="q4" name="q4">'+
-                              "<option value='2'>A set of participants' decisions in a random area</option>"+
+                              "<option value='2'>Another participant's decision in a random area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in the same area</option>"+
+                              "<option value='1'>Another participant's decision in the same area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
+        $('#question-6').html('<div id="social-info">'+
+                  'After viewing an area, what information can you choose to observe?'+
+              '</div>'+
+              '<div>'+
+                  '<select id="q6" name="q6">'+
+                      "<option value='2'>A set of participant's decisions in a random area</option>"+
+                      "<option value=1>A set of participant's decisions in the same area</option>"+
+                      "<option value='3'>The number of sapphire dots in the area</option>"+
+                      '<option value="5" SELECTED>None of these options</option>'+
+                  '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more sapphire (blue) dots or more grass (green) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every sapphire dot in the area.')
         $('#instructions-text-4').html('3). You will get this bonus for sapphire dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an area, you will see the decisions made by a set of participants '+
+        $('#instructions-text-5').html('4). Before viewing an area, you will see the decision made by a participant '+
         'viewing the same area as the one you will see.')
         $('#instructions-text-6').css('display','none')
+        $('#instructions-text-7').html('6). After viewing an area, you can either make a decision ' +
+        'or first view the decisions made by a set of 12 other participants.')
       } else if (payout_condition=='green'){
         //social without info, no cover, payout green
         $('#q1').html('<option value="1">Judge whether there are more emerald dots or more water dots</option>'+
@@ -365,19 +403,31 @@ if (cover_story==true){
                         '</div>'+
                         '<div>'+
                             '<select id="q4" name="q4">'+
-                              "<option value='2'>A set of participants' decisions in a random area area</option>"+
+                              "<option value='2'>Another participant's decision in a random area area</option>"+
                               '<option value="3">A previous decision you made</option>'+
-                              "<option value='1'>A set of participants' decisions in the same area</option>"+
+                              "<option value='1'>Another participant's decision in the same area</option>"+
                               '<option value="5" SELECTED>None of these options</option>'+
                           '</select></div><br>')
+        $('#question-6').html('<div id="social-info">'+
+                  'After viewing an area, what information can you choose to observe?'+
+              '</div>'+
+              '<div>'+
+                  '<select id="q6" name="q6">'+
+                      "<option value='2'>A set of participant's decisions in a random area</option>"+
+                      "<option value=1>A set of participant's decisions in the same area</option>"+
+                      "<option value='3'>The number of emerald dots in the area</option>"+
+                      '<option value="5" SELECTED>None of these options</option>'+
+                  '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more emerald (green) dots or more water (blue) dots in the area.')
         $('#instructions-text-3').html('2). You will get a bonus for every emerald dot in the area.')
         $('#instructions-text-4').html('3). You will get this bonus for emerald dots regardless of whether your decision is correct.')
-        $('#instructions-text-5').html('4). Before viewing an area, you will see the decisions made by a set of participants '+
+        $('#instructions-text-5').html('4). Before viewing an area, you will see the decision made by a participant '+
         'viewing the same area as the one you will see.')
         $('#instructions-text-6').css('display','none')
+        $('#instructions-text-7').html('6). After viewing an area, you can either make a decision ' +
+        'or first view the decisions made by a set of 12 other participants.')
       } else if (payout_condition=='no-utility'){
         $('#question-3-wrapper').css('display','none')
         $('#question-4-wrapper').css('display','none')
@@ -394,19 +444,31 @@ if (cover_story==true){
         '</div>'+
         '<div>'+
             '<select id="q4" name="q4">'+
-                "<option value='2'>A set of participants' decisions "+small_word+" a random "+filler_word+"</option>"+
+                "<option value='2'>Another participant's decision "+small_word+" a random "+filler_word+"</option>"+
                 '<option value="3">A previous decision you made</option>'+
-                "<option value='1'>A set of participants' decisions in the same "+filler_word+"</option>"+
+                "<option value='1'>Another participant's decision "+small_word+" the same "+filler_word+"</option>"+
                 '<option value="5" SELECTED>None of these options</option>'+
             '</select></div><br>')
+        $('#question-6').html('<div id="social-info">'+
+                  'After viewing an area, what information can you choose to observe?'+
+              '</div>'+
+              '<div>'+
+                  '<select id="q6" name="q6">'+
+                      "<option value='2'>A set of participant's decisions "+small_word+" a random "+filler_word+"</option>"+
+                      "<option value=1>A set of participant's decisions "+small_word+" the same "+filler_word+"</option>"+
+                      "<option value='3'>The number of dots "+small_word+" the "+filler_word+"</option>"+
+                      '<option value="5" SELECTED>None of these options</option>'+
+                  '</select></div><br>')
         $('#question-5').css('display','none')
         $('#instructions-text-2').html('1). On every round, you must judge '+
         'whether there are more '+first+' '+ parenthesis_first+' dots or more '+second+' '+parenthesis_first+' dots in the '+filler_word+'.')
         $('#instructions-text-3').css('display','none')
         $('#instructions-text-4').html('display','none')
-        $('#instructions-text-5').html('2). Before viewing an '+filler_word+', you will view the decisions made by a set of participants '+
+        $('#instructions-text-5').html('2). Before viewing an '+filler_word+', you will see the decision made by a participant '+
         'viewing the same '+filler_word+ ' as the one you will see.')
         $('#instructions-text-6').css('display','none')
+        $('#instructions-text-7').html('6). After viewing an area, you can either make a decision ' +
+        'or first view the decisions made by a set of 12 other participants.')
       }
   }
 }

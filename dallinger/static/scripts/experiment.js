@@ -60,28 +60,8 @@ if (curr_rounds_practice==true){
 
 }
 
-$('#continue_button').css('background-color','#5c5c5c')
-$('#continue_button').css('border','none')
-$('#continue_button').css('outline','none')
-$("#continue_button").css("width", "320px");
-$("#continue_button").css("text-align", "center");
-
-
-$('#continue_social').css('background-color','#5c5c5c')
-$('#continue_social').css('border','none')
-$('#continue_social').css('outline','none')
-$("#continue_social").css("width", "320px");
-$("#continue_social").css("text-align", "center");
-
-
-$('#format_div').css('top','0')
-$('#format_div').css('bottom','0')
-$('#format_div').css('right','0')
-$('#format_div').css('left','0')
-$('#format_div').css('margin','auto')
-
 $('.outcome').css('margin-top','80px')
-$("#instructions").css('margin-top','140px')
+$("#instructions").css('margin-top','160px')
 
 $(".button-wrapper").css("width", "320px");
 $(".button-wrapper").css("margin", "0 auto");
@@ -110,6 +90,8 @@ if (social_condition=='asocial'){
 } else{
   var learning_strategy = "social";
 }
+
+$(".center_div").css("display", "none");
 
 
 function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
@@ -241,7 +223,10 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
                $("#continue_social").css('display','none')
                $("#container").css('display','none');
                $("#instructions").text(instructionsText);
-             regenerateDisplay(proportion_utility);
+               $("#more-blue").removeClass('disabled');
+                $("#more-green").removeClass('disabled');
+                $("#instructions").show()
+                $("#button-div").show()
            })
            },2500)
            
@@ -270,28 +255,16 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
               $("#continue_social").css('display','none')
               $("#container").css('display','none');
               $("#instructions").text(instructionsText);
-            regenerateDisplay(proportion_utility);
+              $("#more-blue").removeClass('disabled');
+              $("#more-green").removeClass('disabled');
+              $("#instructions").show()
+              $("#button-div").show()
         })
           },2500)
       },425)
   }
 }
 
-$('#more-green').css('background-color','#009500')
-$('#more-green').css('border-color','#009500')
-$('#more-green').css('font-size','16px')
-$('#more-green').css('width','160px')
-$('#more-green').css('outline','none')
-
-
-$('#more-blue').css('background-color','#0084ff')
-$('#more-blue').css('border-color','#0084ff')
-$('#more-blue').css('font-size','16px')
-$('#more-blue').css('width','160px')
-$('#more-blue').css('outline','none')
-
-
-$(".center_div").css("display", "none");
 
 if (cover_story==true){
   if (payout_condition=='blue'){
@@ -299,68 +272,112 @@ if (cover_story==true){
       var greenStr = 'Grass';
       var blueStr = 'Sapphire'
       if (green_left==true){
-        var instructionsText = 'Are there more grass dots or more sapphire dots?'
+        var instructionsText = 'Were there more grass dots or more sapphire dots?'
       } else{
-        var instructionsText = 'Are there more sapphire dots or more grass dots?'
+        var instructionsText = 'Were there more sapphire dots or more grass dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Sapphire')
       $('#more-green').html('Grass')
+      if (social_condition=='social'){
+        var green_filepath = '/static/images/blue_green_social.jpg'
+        var blue_filepath = '/static/images/blue_blue_social.jpg'
+      } else if (social_condition=='social_with_info'){
+        var green_filepath = '/static/images/blue_green_SWI.jpg'
+        var blue_filepath = '/static/images/blue_blue_SWI.jpg'
+      }
   }
   if (payout_condition=='green'){
       // with story, payout green
       var greenStr = 'Emerald';
       var blueStr = 'Water'
       if (green_left==true){
-        var instructionsText = 'Are there more emerald dots or more water dots?'
+        var instructionsText = 'Were there more emerald dots or more water dots?'
       } else{
-        var instructionsText = 'Are there more water dots or more emerald dots?'
+        var instructionsText = 'Were there more water dots or more emerald dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Water')
       $('#more-green').html('Emerald')
+      if (social_condition=='social'){
+        var green_filepath = '/static/images/green_green_social.jpg'
+        var blue_filepath = '/static/images/green_blue_social.jpg'
+      } else if (social_condition=='social_with_info'){
+        var green_filepath = '/static/images/green_green_SWI.jpg'
+        var blue_filepath = '/static/images/green_blue_SWI.jpg'
+      }
   }
   if (payout_condition=='no-utility'){
     if (include_gems==true){
       var greenStr = 'Emerald'
       var blueStr = 'Sapphire'
       if (green_left==true){
-        var instructionsText = 'Are there more emerald dots or more sapphire dots?'
+        var instructionsText = 'Were there more emerald dots or more sapphire dots?'
       } else{
-        var instructionsText = 'Are there more sapphire dots or more emerald dots?'
+        var instructionsText = 'Were there more sapphire dots or more emerald dots?'
       }
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Sapphire')
       $('#more-green').html('Emerald')
+      if (social_condition=='social'){
+        var green_filepath = '/static/images/green_green_social.jpg' // emeralds
+        var blue_filepath = '/static/images/blue_blue_social.jpg'  // sapphires
+      }
     } else if (include_gems==false){
       var greenStr = 'Green';
       var blueStr = 'Blue'
       if (green_left==true){
-        var instructionsText = 'Are there more green dots or more blue dots?'
+        var instructionsText = 'Were there more green dots or more blue dots?'
       } else{
-        var instructionsText = 'Are there more blue dots or more green dots?'
+        var instructionsText = 'Were there more blue dots or more green dots?'
       } 
       $('#instructions').html(instructionsText)
       $('#more-blue').html('Blue')
       $('#more-green').html('Green')
-
+      if (social_condition=='social'){
+          var green_filepath = '/static/images/green_green_NC.jpg'
+          var blue_filepath = '/static/images/blue_blue_NC.jpg'
     }
   }
 }
+}
+
 
 if (cover_story==false){
   // without story
   var greenStr = 'Green';
   var blueStr = 'Blue'
   if (green_left==true){
-    var instructionsText = 'Are there more green dots or more blue dots?';
+    var instructionsText = 'Were there more green dots or more blue dots?';
   } else{
-    var instructionsText = 'Are there more blue dots or more green dots?'
+    var instructionsText = 'Were there more blue dots or more green dots?'
   }
   $('#instructions').html(instructionsText)
   $('#more-blue').html('Blue')
   $('#more-green').html('Green')
 
+  if (payout_condition=='green'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/green_green_NC.jpg'
+      var blue_filepath = '/static/images/green_blue_NC.jpg'
+    } else if (social_condition=='social_with_info'){
+      var green_filepath = '/static/images/green_green_NCWI.jpg'
+      var blue_filepath = '/static/images/green_blue_NCWI.jpg'
+    }
+  } else if (payout_condition=='blue'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/blue_green_NC.jpg'
+      var blue_filepath = '/static/images/blue_blue_NC.jpg'
+    } else if (social_condition=='social_with_info'){
+      var green_filepath = '/static/images/blue_green_NCWI.jpg'
+      var blue_filepath = '/static/images/blue_blue_NCWI.jpg'
+    }
+  } else if (payout_condition=='no-utility'){
+    if (social_condition=='social'){
+      var green_filepath = '/static/images/blue_green_NC.jpg'
+      var blue_filepath = '/static/images/blue_blue_NC.jpg'
+  }
+}
 }
 
 
@@ -445,12 +462,38 @@ get_received_infos = function() {
     if (learning_strategy === "social") {
       $("#instructions").hide()
       $("#button-div").hide()
+      $(".outcome").css("display", "none");
+      parent_chose_utility = true;
 
-      console.log('here')
-      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,social_condition=='social_with_info',true)
-      
-    }
-  })
+      if (randomization_color=='blue'){
+        if (parent_chose_utility==true){
+          $("#stimulus").attr("src", blue_filepath);
+          pre_stimulus_social_info = 'blue'
+        } else{
+          $("#stimulus").attr("src", green_filepath);
+          pre_stimulus_social_info = 'green'
+        }
+      }
+
+      if (randomization_color=='green'){
+        if (parent_chose_utility==true){
+          $("#stimulus").attr("src", green_filepath);
+          pre_stimulus_social_info = 'green'
+        } else{
+          $("#stimulus").attr("src", blue_filepath);
+          pre_stimulus_social_info = 'blue'
+        }
+      }
+          $('#stimulus').css('padding-top','10px')
+          $("#stimulus").show();
+          setTimeout(function() {
+            $("#stimulus").hide();
+            $("#instructions").text(instructionsText);
+            regenerateDisplay(proportion_utility);
+          }, 4000);
+          
+        }
+      })
 
   .fail(function (rejection) {
       // A 403 is our signal that it's time to go to the questionnaire
@@ -460,8 +503,8 @@ get_received_infos = function() {
         } else {
           dallinger.error(rejection);
         }
-  }); 
-};
+    }); 
+  };
 
 function presentDisplay () {
   for (var i = dots.length - 1; i >= 0; i--) {
@@ -472,12 +515,30 @@ function presentDisplay () {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
     }
+
     $('svg').remove() // remove the annoying disabled version of the screen from the dot display
-    $("#more-blue").removeClass('disabled');
-    $("#more-green").removeClass('disabled');
-    $("#instructions").show()
-    $("#button-div").show()
-    // console.log("clearing paper")
+    //$(".outcome").html("<div id='either'>Do you want to make a choice or view more people's choices?</div>");
+    $('#binary-div').css('margin-top','120px')
+    $('#binary-div').css('display','block')
+    //$(".outcome").css('margin-top','80px')
+    //$(".outcome").css('text-align','center')
+    //$(".outcome").css('display','block')
+    $('#make-choice').click(function(){
+      $('#binary-div').css('display','none')
+      //$(".outcome").css('display','none')
+      $("#more-blue").removeClass('disabled');
+      $("#more-green").removeClass('disabled');
+      $("#instructions").show()
+      $("#button-div").show()
+    })
+    $('#view-choices').click(function(){
+      $('#binary-div').css('display','none')
+      //$(".outcome").css('display','none')
+      $('.outcome').css('margin-top','150px')
+      $(".outcome").html("<b>Loading data ...</b>")
+      $(".outcome").css('display','block')
+      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,payout_condition=='social_with_info',true)
+    })
     paper.clear();
   }, 1000);
 }
@@ -670,7 +731,8 @@ report = function (color) {
                   is_overflow: is_overflow,
                   is_equal:is_equal,
                   info_green:info_green,
-                  condition_replication: condition_replication
+                  condition_replication: condition_replication,
+                  pre_stimulus_social_info: pre_stimulus_social_info
                 }
 
   dallinger.createInfo(my_node_id, {
@@ -958,9 +1020,11 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
     }else{
       //$(".outcome").css("display", "none");
       $(".button-wrapper").css("display", "none");
-      $(".outcome").css("text-align",'center')
-      $('.outcome').css('margin-top','150px')
-      $(".outcome").html("<b>Loading next round ...</b>")
+      //$(".outcome").css("text-align",'center')
+      //$('.outcome').css('margin-top','150px')
+      //$(".outcome").html("<b>Loading next round ...</b>")
+      $(".outcome").css("display",'none')
+      $(".outcome").html("")
       $("#instructions").html("")
       create_agent();
     }
@@ -983,11 +1047,12 @@ function display_practice_info(){
         "<p>After finishing, you will take a short quiz to test your understanding before starting the test rounds.</p>")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
-          //$(".outcome").css("display", "none");
           $(".button-wrapper").css("display", "none");
           $('#continue_button').html('Next round')
-          $('.outcome').css('margin-top','150px')
-          $(".outcome").html("<b>Loading next round ...</b>")
+          //$('.outcome').css('margin-top','150px')
+          //$(".outcome").html("<b>Loading next round ...</b>")
+          $(".outcome").css("display", "none");
+          $(".outcome").html("")
           $("#instructions").html("")
           get_social_info();
       });
