@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
-is_equal,info_green;
+is_equal,info_green,parent_chose_utility;
 var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
@@ -11,6 +11,10 @@ var is_green = false;
 var k_chose_blue = -1;
 var k_chose_green = -1;
 var show_SWI = false;
+var icon_timeout_duration = 500;
+var always_show_SWI = true;
+
+
 
 
 
@@ -82,7 +86,7 @@ $("#continue_social").css('display','none')
 
 $('#other_text').css('padding-top','30px')
 
-$('#instructions').css('font-size','19px')
+$('#instructions').css('font-size','20px')
 var is_practice = true;
 
 if (social_condition=='asocial'){
@@ -93,8 +97,7 @@ if (social_condition=='asocial'){
 
 $(".center_div").css("display", "none");
 
-
-function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
+function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation,always_display_SWI){
   if (n_green==1){
     green_worker_str = ' worker'
   } else{
@@ -173,41 +176,53 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
       $('#right-div').html(right_str)
   }
 
-  if (is_SWI==true){
-    if (payout_c=='blue'){
-      if (n_blue>n_green){
-        display_SWI = true;
-      } else{
-        display_SWI = false;
-      }
-      SWI_str = 'sapphire'
-      SWI_strs = 'sapphires'
-    } else if (payout_c=='green'){
-      if (n_green>n_blue){
-        display_SWI = true
-      } else{
-        display_SWI = false
-      }
+  if (always_display_SWI==true && is_SWI==true){
+    display_SWI = true;
+    if (payout_c=='green'){
       SWI_str = 'emerald'
-      SWI_strs = 'emeralds'
+        SWI_strs = 'emeralds'
+    } else{
+      SWI_str = 'sapphire'
+        SWI_strs = 'sapphires'
     }
+
   } else{
-    display_SWI = false;
+    if (is_SWI==true){
+      if (payout_c=='blue'){
+        if (n_blue>n_green){
+          display_SWI = true;
+        } else{
+          display_SWI = false;
+        }
+        SWI_str = 'sapphire'
+        SWI_strs = 'sapphires'
+      } else if (payout_c=='green'){
+        if (n_green>n_blue){
+          display_SWI = true
+        } else{
+          display_SWI = false
+        }
+        SWI_str = 'emerald'
+        SWI_strs = 'emeralds'
+      }
+    } else{
+      display_SWI = false;
+    }
   }
 
+
+
   if (display_SWI==true){
-    setTimeout(function(){
-       // condition is SWI, display info
-       $(".outcome").css("display", "none");
-       $('#container').css('margin-top','60px')
-       $('#continue_social').css('margin-top','30px')
-       SWI_html = '<div id = "SWI-disclaimer">' +
+    SWI_html = '<div id = "SWI-disclaimer">' +
        'DISCLAIMER:</div>' + 
-       '<div id="SWI-text">' +
-       'Workers that are paid for ' + SWI_strs +  ' (such as these) tend to think there are more ' +
-       SWI_strs + '.</div>'
+       '<div id="SWI-text">These workers were paid ' + SWI_str +  ' dots</div>'
+    $('#SWI-info').html(SWI_html)
+    setTimeout(function(){
+      $(".outcome").css("display", "none");
+       // condition is SWI, display info
+       $('#container').css('margin-top','60px')
+       $('#continue_social').css('margin-top','20px')
        $('#container').css('display','block')
-       $('#SWI-info').html(SWI_html)
        if (include_animation==true){
          setTimeout(function(){
            $('#SWI-info').css('display','block')
@@ -233,35 +248,66 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
          },2500)
          
        }else{
-         $('#container').css('display','block')
          $('#SWI-info').css('display','block')
+         $("#continue_social").removeClass('disabled')
+         $("#continue_social").css('display','block')
+         $("#continue_social").click(function(){
+            $('#SWI-info').css('display','none')
+            $('#SWI-info').html('')
+            $("#continue_social").addClass('disabled')
+            $("#continue_social").css('display','none')
+            $("#container").css('display','none');
+            $("#instructions").text(instructionsText);
+            $("#more-blue").removeClass('disabled');
+            $("#more-green").removeClass('disabled');
+            $("#instructions").show()
+            $("#button-div").show()
+           })
        } 
 
-    },425)
+    },icon_timeout_duration)
   } else{
-        // no SWI info
-        setTimeout(function(){
-          $(".outcome").css("display", "none");
-          $('#container').css('margin-top','85px')
-          $('#continue_social').css('margin-top','45px')
-          $('#container').css('display','block')
-          setTimeout(function(){
-            $("#continue_social").removeClass('disabled')
+    if (include_animation==true){
+              // no SWI info
+              setTimeout(function(){
+                $(".outcome").css("display", "none");
+                $('#container').css('margin-top','85px')
+                $('#continue_social').css('margin-top','45px')
+                $('#container').css('display','block')
+                setTimeout(function(){
+                  $("#continue_social").removeClass('disabled')
+                  $("#continue_social").css('display','block')
+                  $("#continue_social").click(function(){
+                    $("#continue_social").addClass('disabled')
+                    $("#continue_social").css('display','none')
+                    $("#container").css('display','none');
+                    $("#instructions").text(instructionsText);
+                    $("#more-blue").removeClass('disabled');
+                    $("#more-green").removeClass('disabled');
+                    $("#instructions").show()
+                    $("#button-div").show()
+              })
+                },2500)
+            },icon_timeout_duration)
+    } else{
+      setTimeout(function(){
+        $(".outcome").css("display", "none");
+        $('#container').css('display','block')
+        $("#continue_social").removeClass('disabled')
             $("#continue_social").css('display','block')
             $("#continue_social").click(function(){
-              $('#SWI-info').css('display','none')
-              $('#SWI-info').html('')
               $("#continue_social").addClass('disabled')
               $("#continue_social").css('display','none')
               $("#container").css('display','none');
               $("#instructions").text(instructionsText);
               $("#more-blue").removeClass('disabled');
-              $("#more-green").removeClass('disabled');
-              $("#instructions").show()
-              $("#button-div").show()
-        })
-          },2500)
-      },425)
+               $("#more-green").removeClass('disabled');
+               $("#instructions").show()
+               $("#button-div").show()
+          })
+
+      },icon_timeout_duration)
+      }
   }
 }
 
@@ -463,37 +509,16 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
       $(".outcome").css("display", "none");
-      parent_chose_utility = true;
-
-      if (randomization_color=='blue'){
-        if (parent_chose_utility==true){
-          $("#stimulus").attr("src", blue_filepath);
-          pre_stimulus_social_info = 'blue'
-        } else{
-          $("#stimulus").attr("src", green_filepath);
-          pre_stimulus_social_info = 'green'
-        }
+      $('#stimulus').css('padding-top','10px')
+      $("#stimulus").show();
+      setTimeout(function() {
+        $("#stimulus").hide();
+        $("#instructions").text(instructionsText);
+        regenerateDisplay(proportion_utility);
+      }, 4000);
+        
       }
-
-      if (randomization_color=='green'){
-        if (parent_chose_utility==true){
-          $("#stimulus").attr("src", green_filepath);
-          pre_stimulus_social_info = 'green'
-        } else{
-          $("#stimulus").attr("src", blue_filepath);
-          pre_stimulus_social_info = 'blue'
-        }
-      }
-          $('#stimulus').css('padding-top','10px')
-          $("#stimulus").show();
-          setTimeout(function() {
-            $("#stimulus").hide();
-            $("#instructions").text(instructionsText);
-            regenerateDisplay(proportion_utility);
-          }, 4000);
-          
-        }
-      })
+    })
 
   .fail(function (rejection) {
       // A 403 is our signal that it's time to go to the questionnaire
@@ -536,8 +561,9 @@ function presentDisplay () {
       //$(".outcome").css('display','none')
       $('.outcome').css('margin-top','150px')
       $(".outcome").html("<b>Loading data ...</b>")
+      $(".outcome").css('text-align','center')
       $(".outcome").css('display','block')
-      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,payout_condition=='social_with_info',true)
+      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,social_condition=='social_with_info',false,always_show_SWI)
     })
     paper.clear();
   }, 1000);
@@ -732,9 +758,11 @@ report = function (color) {
                   is_equal:is_equal,
                   info_green:info_green,
                   condition_replication: condition_replication,
-                  pre_stimulus_social_info: pre_stimulus_social_info
+                  pre_stimulus_social_info: pre_stimulus_social_info,
+                  parent_chose_utility:parent_chose_utility
                 }
-
+  console.log(parent_chose_utility)
+  console.log(pre_stimulus_social_info)
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
     info_type: 'Meme'
@@ -837,7 +865,24 @@ function getBonusAmount(truth,response){
             }
           }
 
-
+          parent_chose_utility = Math.random()<(k_chose_utility/n_generation_size)
+          if (parent_chose_utility==true){
+            if (randomization_color=='blue'){
+              pre_stimulus_social_info = 'blue'
+              $("#stimulus").attr("src", blue_filepath);
+            } else{
+              pre_stimulus_social_info = 'green'
+              $("#stimulus").attr("src", green_filepath);
+            }
+          }else{
+            if (randomization_color=='blue'){
+              pre_stimulus_social_info = 'green'
+              $("#stimulus").attr("src", green_filepath);
+            } else{
+              pre_stimulus_social_info = 'blue'
+              $("#stimulus").attr("src", blue_filepath)
+            }
+          }
           get_received_infos();
         })
         .fail(function (rejection) {

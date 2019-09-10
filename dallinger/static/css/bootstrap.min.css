@@ -6799,11 +6799,11 @@ button.close {
   #SWI-disclaimer {
     margin-top:0px;
     font-weight:bold;
-    font-size:24px;
+    font-size:22px;
   }
   
   #SWI-text {
-    margin-top:10px;
+    margin-top:5px;
     font-size:20px;
   }
 
@@ -6863,8 +6863,4 @@ button.close {
 
 #either {
     font-size:19px;
-}
-
-#button-div{
-    margin-top:25px;
 }
