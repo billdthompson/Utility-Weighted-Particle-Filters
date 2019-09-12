@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
+		'generation_size':25, 
 		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -66,6 +66,7 @@ class UWPFWP(Experiment):
 
 	def set_known_classes(self):
 		self.known_classes["trialbonus"] = self.models.TrialBonus
+		self.known_classes["biasReport"] = self.models.BiasReport
 		self.known_classes["particle"] = self.models.Particle
 		self.known_classes['comprehensiontest'] = self.models.ComprehensionTest
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
@@ -114,7 +115,10 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+								 "SWU:W-U":self.num_replications_per_condition,
+								 "SWB:W-U":self.num_replications_per_condition,
+								 "SWT:W-U":self.num_replications_per_condition}
 
 
 		# Derrived Quantities
