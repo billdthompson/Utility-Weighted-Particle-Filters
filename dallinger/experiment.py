@@ -30,15 +30,13 @@ class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
 	 
 	 TODO: 
-	 - debug multiple replications ofoverflow conditions
-	 - ensure overflow conditions are handed out randomly
-	 - snoop on data_check to see why "real" participants are failing at the end of a generation
+	 - make overflow nodes robust to generation rollover
 	"""
 
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
+		'generation_size':28, 
 		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -112,8 +110,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition,
-								 "SOC:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SWI:W-U":self.num_replications_per_condition}
 
 
 		# Derrived Quantities
