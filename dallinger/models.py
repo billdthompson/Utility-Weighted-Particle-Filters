@@ -526,4 +526,15 @@ class GenerativeModel(Environment):
 
 
 
+class BiasReport(Meme):
+
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
+
+
+
 
