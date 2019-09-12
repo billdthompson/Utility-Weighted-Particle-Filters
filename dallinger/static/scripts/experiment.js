@@ -48,14 +48,16 @@ var points_per_dot = 1;
 
 if (payout_condition=='blue'){
   var inner_str = 'sapphires'
+  var inner_str_singular = 'sapphire'
 } else if (payout_condition=='green'){
   var inner_str = 'emeralds'
+  var inner_str_singular = 'emerald'
 }
 
 if (metadata_type=='utility'){
   var disclaimer_str = 'These workers were paid for '+inner_str+'.'
 } else if (metadata_type=='bias_index'){
-  var disclaimer_str = 'Compared to workers who weren’t paid for '+inner_str+', these workers chose '+inner_str+' more often.'
+  var disclaimer_str = 'Compared to workers who weren’t paid for '+inner_str+', these workers chose '+inner_str_singular+' more often.'
 } else if (metadata_type=='truth_index'){
   var disclaimer_str = 'Workers that are paid for '+inner_str+' (like those above) tend to overestimate the number of '+inner_str+'.'
 }
