@@ -108,7 +108,9 @@ class UWPFWP(Experiment):
 		# ASO:N-U
 		# ASO:W-U
 		# SWI:N-U this one doesn't exist
-		# SWI:W-U
+		# SWU:W-U original utility information
+		# SWB:W-U bias index
+		# SWT:W-U truth index
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1

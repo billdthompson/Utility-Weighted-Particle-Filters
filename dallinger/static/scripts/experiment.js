@@ -16,6 +16,7 @@ var show_SWI = false;
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
+var metadata_type = localStorage.getItem('metadata_type'); // string
 var payout_condition = localStorage.getItem('payout_condition') // string, true/false
 var node_slot = localStorage.getItem('node_slot')
 var randomization_color = localStorage.getItem('randomization_color')
@@ -45,6 +46,20 @@ var num_test_correct = 0;
 var total_dots = 0;
 var points_per_dot = 1;
 
+if (payout_condition=='blue'){
+  var inner_str = 'sapphires'
+} else if (payout_condition=='green'){
+  var inner_str = 'emeralds'
+}
+
+if (metadata_type=='utility'){
+  var disclaimer_str = 'These workers were paid for '+inner_str+'.'
+} else if (metadata_type=='bias_index'){
+  var disclaimer_str = 'Compared to workers who weren’t paid for '+inner_str+', these workers chose '+inner_str+' more often.'
+} else if (metadata_type=='truth_index'){
+  var disclaimer_str = 'Workers that are paid for '+inner_str+' (like those above) tend to overestimate the number of '+inner_str+'.'
+}
+
 
 
 var curr_rounds_practice = localStorage.getItem('curr_practice')=='true'
@@ -52,11 +67,14 @@ if (curr_rounds_practice==true){
   var trial = 0;
   $('#round_info').html('Practice round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_practice_trials);
-
+  var timeout_duration = 1000;
+  var num_seconds = '5';
 } else {
   var trial = num_practice_trials;
   $('#round_info').html('Test round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_test_trials);
+  var timeout_duration = 100;
+  var num_seconds = '4';
 
 }
 
@@ -114,47 +132,47 @@ if (social_condition=='asocial'){
 
 function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   if (n_green==1){
-    green_worker_str = ' worker'
+    var green_worker_str = ' worker'
   } else{
-    green_worker_str = ' workers'
+    var green_worker_str = ' workers'
   }
   
   if (n_blue==1){
-    blue_worker_str = ' worker'
+    var blue_worker_str = ' worker'
   } else{
-    blue_worker_str = ' workers'
+    var blue_worker_str = ' workers'
   }
   
   if (n_green==0){
-    n_green_str = 'No'
+    var n_green_str = 'No'
   } else{
-    n_green_str = String(n_green)
+    var n_green_str = String(n_green)
   }
   
   if (n_blue==0){
-    n_blue_str = 'No'
+    var n_blue_str = 'No'
   } else{
-    n_blue_str = String(n_blue)
+    var n_blue_str = String(n_blue)
   }
   
   if (payout_c=='green'){
-    green_fn_str = 'emerald'
-    blue_fn_str = 'water'
+    var green_fn_str = 'emerald'
+    var blue_fn_str = 'water'
   } else if (payout_c=='blue'){
-    green_fn_str = 'grass'
-    blue_fn_str = 'sapphire'
+    var green_fn_str = 'grass'
+    var blue_fn_str = 'sapphire'
   } else if (payout_c=='no-utility'){
-    green_fn_str = 'emerald'
-    blue_fn_str = 'sapphire'
+    var green_fn_str = 'emerald'
+    var blue_fn_str = 'sapphire'
   }
   
   if (green_l==true){
-      left_str = '<p class = "choice-text">' + n_green_str +
+    var left_str = '<p class = "choice-text">' + n_green_str +
         green_worker_str + ' chose '+green_fn_str+'</p>' +
         '<p class = "choice-text">' + n_blue_str +
         blue_worker_str + ' chose '+blue_fn_str+'</p>'
       $('#left-div').html(left_str)
-      right_str = '<p class = "icon-paragraph">'
+      var right_str = '<p class = "icon-paragraph">'
       for (greeni=0;greeni<n_green;greeni++){
         right_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
       }
@@ -170,12 +188,12 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
       $('#right-div').html(right_str)
     
   } else{
-      left_str = '<p class = "choice-text">' + n_blue_str +
+    var left_str = '<p class = "choice-text">' + n_blue_str +
         blue_worker_str + ' chose '+blue_fn_str+'</p>' +
         '<p class = "choice-text">' + n_green_str +
         green_worker_str + ' chose '+green_fn_str+'</p>'
       $('#left-div').html(left_str)
-      right_str = '<p class = "icon-paragraph">'
+      var right_str = '<p class = "icon-paragraph">'
       for (bluei=0;bluei<n_blue;bluei++){
         right_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
       }
@@ -192,25 +210,9 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   }
 
   if (is_SWI==true){
-    if (payout_c=='blue'){
-      if (n_blue>n_green){
-        display_SWI = true;
-      } else{
-        display_SWI = false;
-      }
-      SWI_str = 'sapphire'
-      SWI_strs = 'sapphires'
-    } else if (payout_c=='green'){
-      if (n_green>n_blue){
-        display_SWI = true
-      } else{
-        display_SWI = false
-      }
-      SWI_str = 'emerald'
-      SWI_strs = 'emeralds'
-    }
+    var display_SWI = true;
   } else{
-    display_SWI = false;
+    var display_SWI = false;
   }
 
   if (display_SWI==true){
@@ -219,11 +221,11 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
        $(".outcome").css("display", "none");
        $('#container').css('margin-top','60px')
        $('#continue_social').css('margin-top','30px')
-       SWI_html = '<div id = "SWI-disclaimer">' +
+       var SWI_html = '<div id = "SWI-disclaimer">' +
        'DISCLAIMER:</div>' + 
        '<div id="SWI-text">' +
-       'Workers that are paid for ' + SWI_strs +  ' (such as these) tend to think there are more ' +
-       SWI_strs + '.</div>'
+       disclaimer_str +
+       '</div>'
        $('#container').css('display','block')
        $('#SWI-info').html(SWI_html)
        if (include_animation==true){
@@ -243,9 +245,9 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
                $("#instructions").text(instructionsText);
              regenerateDisplay(proportion_utility);
            })
-           },2500)
+           },timeout_duration)
            
-         },2500)
+         },timeout_duration)
          
        }else{
          $('#container').css('display','block')
@@ -254,15 +256,22 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
 
     },425)
   } else{
+
+      var SWI_html = '<div id="SWI-text">' +
+       'Please wait '+num_seconds+' seconds to view the area.' +
+       '</div>'
         // no SWI info
         setTimeout(function(){
           $(".outcome").css("display", "none");
           $('#container').css('margin-top','85px')
           $('#continue_social').css('margin-top','45px')
           $('#container').css('display','block')
+          $('#SWI-info').html(SWI_html)
+          $('#SWI-info').css('display','block')
           setTimeout(function(){
-            $("#continue_social").removeClass('disabled')
+            $('#SWI-info').css('display','none')
             $("#continue_social").css('display','block')
+            $("#continue_social").removeClass('disabled')
             $("#continue_social").click(function(){
               $('#SWI-info').css('display','none')
               $('#SWI-info').html('')
@@ -271,8 +280,8 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
               $("#container").css('display','none');
               $("#instructions").text(instructionsText);
             regenerateDisplay(proportion_utility);
-        })
-          },2500)
+          })
+          },timeout_duration*2)
       },425)
   }
 }
@@ -670,7 +679,8 @@ report = function (color) {
                   is_overflow: is_overflow,
                   is_equal:is_equal,
                   info_green:info_green,
-                  condition_replication: condition_replication
+                  condition_replication: condition_replication,
+                  metadata_type: metadata_type
                 }
 
   dallinger.createInfo(my_node_id, {
@@ -978,9 +988,9 @@ function display_practice_info(){
       $(".button-wrapper").css("display", "block");
       $('.outcome').css('text-align','center')
       $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'topResult'>You will first complete "+String(num_practice_trials)+" practice trials. "+
+      "<p class = 'experiment_info'>You will first complete "+String(num_practice_trials)+" practice trials. "+
         "Points from these rounds will not be added to your final pay.</p> " +
-        "<p>After finishing, you will take a short quiz to test your understanding before starting the test rounds.</p>")
+        "<p class = 'experiment_info'>After finishing, you will take a short quiz to test your understanding before starting the test rounds.</p>")
       $('#topResult').css('font-size','19px')
       $('#continue_button').unbind('click').click(function(){
           //$(".outcome").css("display", "none");
@@ -1166,24 +1176,92 @@ function display_earnings(){
     $('.button-wrapper').css('margin-top','50px')
     
 
-    $('#continue_button').html('Finish experiment')
+    if (payout_condition=='no-utility'){
+      $('#continue_button').html('Finish experiment')
 
+      $('#continue_button').unbind('click').click(function(){
+        $(".outcome").html("")
+        $('.outcome').css('margin','0 auto')
+        $('.outcome').css('margin-top','80px')
+        $('.outcome').css('width','320px')
+        $(".outcome").css("display", "block");
+        $('.button-wrapper').html('');
+        $('.button-wrapper').hide();
+        //$(".button-wrapper").css("text-align", "right");
+        $('.outcome').css('text-align','center')
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'headerText'><b>Saving your data...</b></p> <br>"+
+        '<p id="topResult">If this message displays for more than about 45 seconds, something must have gone wrong '+
+        '(please accept our apologies and contact the researchers). </p> ')
+        $('#headerText').css('font-size','30px')
+        $('#topResult').css('font-size','19px')
+        dallinger.submitAssignment()
+      });
+
+    } else{
     $('#continue_button').unbind('click').click(function(){
       $(".outcome").html("")
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','80px')
-      $('.outcome').css('width','320px')
+      $('.outcome').css('width','400px')
       $(".outcome").css("display", "block");
-      $('.button-wrapper').html('');
-      $('.button-wrapper').hide();
+      //$('.button-wrapper').html('');
+      //$('.button-wrapper').hide();
       //$(".button-wrapper").css("text-align", "right");
       $('.outcome').css('text-align','center')
-      $(".outcome").html("<div class='titleOutcome'>"+
-      "<p class = 'computer_number' id = 'headerText'><b>Saving your data...</b></p> <br>"+
-      '<p id="topResult">If this message displays for more than about 45 seconds, something must have gone wrong '+
-      '(please accept our apologies and contact the researchers). </p> ')
-      $('#headerText').css('font-size','30px')
-      $('#topResult').css('font-size','19px')
-      dallinger.submitAssignment()
+      $(".outcome").html('<div class="slidecontainer">'+
+      '<p id="slider-question">On a scale from 0-100, how much do you think being paid for '+inner_str+' influenced your choices?</p>' +
+      '<input type="range" min="0" max="100" value="50" step="5" class="slider" id="myRange">'+
+      '<p id = "result"><span id="demo"></span> <span id="after">(somewhat)</span></p></div>')
+      $('#result').css('margin-top','20px')
+      var slider = document.getElementById("myRange");
+      var output = document.getElementById("demo");
+      var after = document.getElementById("after");
+      output.innerHTML = slider.value;
+      slider.oninput = function() {
+        output.innerHTML = this.value;
+        if (this.value<=10){
+          after.innerHTML = '(not at all)'
+        } else if (this.value>10 && this.value<=30){
+          after.innerHTML = '(not a lot)'
+        } else if (this.value>30 && this.value<=70){
+          after.innerHTML = '(somewhat)'
+        }
+          else if (this.value>70 && this.value<90){
+          after.innerHTML = '(a good deal)'
+          }
+            else if (this.value>=90){
+          after.innerHTML = '(a lot)'
+            }
+      }
+      $('#continue_button').html('Submit HIT')
+      $('#continue_button').unbind('click').click(function(){
+        var value_html = $('#demo').html()
+        $(".outcome").html("")
+        $('.outcome').css('margin','0 auto')
+        $('.outcome').css('margin-top','80px')
+        $('.outcome').css('width','320px')
+        $(".outcome").css("display", "block");
+        $('.button-wrapper').html('');
+        $('.button-wrapper').hide();
+        //$(".button-wrapper").css("text-align", "right");
+        $('.outcome').css('text-align','center')
+        $(".outcome").html("<div class='titleOutcome'>"+
+        "<p class = 'computer_number' id = 'headerText'><b>Saving your data...</b></p> <br>"+
+        '<p id="topResult">If this message displays for more than about 45 seconds, something must have gone wrong '+
+        '(please accept our apologies and contact the researchers). </p> ')
+        $('#headerText').css('font-size','30px')
+        $('#topResult').css('font-size','19px')
+        var final_contents = {
+          bias_value: value_html
+        }
+        dallinger.createInfo(my_node_id, {
+          contents: JSON.stringify(final_contents),
+          info_type: 'biasReport'
+        }).done(function (resp) {
+          dallinger.submitAssignment()
+        })
+      });
     });
+    }
 }

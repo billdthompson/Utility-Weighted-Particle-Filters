@@ -80,16 +80,26 @@
                         var condition_replication = netresp.network.property3;
                         localStorage.setItem('condition_replication',condition_replication)
 
-                        var social_condition = condition_info.substring(0,3);
-                        if (social_condition=='ASO' || social_condition=='OVF'){
+                        var social_condition = condition_info.substring(0,2);
+                        if (social_condition=='AS' || social_condition=='OV'){
                             localStorage.setItem("social_condition",'asocial');
-                        } else if (social_condition=='SOC'){
+                            localStorage.setItem("metadata_type",'none');
+                        } else if (social_condition=='SO'){
                             localStorage.setItem("social_condition",'social');
-                        } else if (social_condition=='SWI'){
+                            localStorage.setItem("metadata_type",'none');
+                        } else if (social_condition=='SW'){
                             localStorage.setItem("social_condition",'social_with_info');
+                            var metadata_type = condition_info.substring(2,3);
+                            if (metadata_type=='U'){
+                                localStorage.setItem("metadata_type",'utility');
+                            } else if (metadata_type=='B'){
+                                localStorage.setItem("metadata_type",'bias_index');
+                            } else if (metadata_type=='T'){
+                                localStorage.setItem("metadata_type",'truth_index');
+                            }
                         }
 
-                        if (social_condition=='OVF'){
+                        if (social_condition=='OV'){
                             localStorage.setItem("is_overflow",'true');
                         } else{
                             localStorage.setItem("is_overflow",'false');
