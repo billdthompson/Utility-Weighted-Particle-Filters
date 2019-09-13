@@ -1,6 +1,6 @@
 //
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
-is_equal,info_green;
+is_equal,info_green, green_first, tie
 var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
@@ -47,19 +47,19 @@ var total_dots = 0;
 var points_per_dot = 1;
 
 if (payout_condition=='blue'){
-  var inner_str = 'sapphires'
-  var inner_str_singular = 'sapphire'
+  var inner_strs = 'sapphires'
+  var inner_str = 'sapphire'
 } else if (payout_condition=='green'){
-  var inner_str = 'emeralds'
-  var inner_str_singular = 'emerald'
+  var inner_strs = 'emeralds'
+  var inner_str = 'emerald'
 }
 
 if (metadata_type=='utility'){
-  var disclaimer_str = 'These workers were paid for '+inner_str+'.'
+  var disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
 } else if (metadata_type=='bias_index'){
-  var disclaimer_str = 'Compared to workers who weren’t paid for '+inner_str+', these workers chose '+inner_str_singular+' more often.'
+  var disclaimer_str = 'This group <b>chose '+inner_str+' more often </b> (compared to other workers).'
 } else if (metadata_type=='truth_index'){
-  var disclaimer_str = 'Workers that were paid for '+inner_str+' (like those above) tended to overestimate the number of '+inner_str+'.'
+  var disclaimer_str = 'Workers in this group tended to <b>overestimate</b> the number of '+inner_strs+'.'
 }
 
 
@@ -74,7 +74,7 @@ if (curr_rounds_practice==true){
   var trial = num_practice_trials;
   $('#round_info').html('Test round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_test_trials);
-  var timeout_duration = 1500;
+  var timeout_duration = 2000;
   var num_seconds = '3';
 
 }
@@ -132,98 +132,86 @@ if (social_condition=='asocial'){
 
 
 function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
-  if (n_green==1){
-    var green_worker_str = ' worker'
-  } else{
-    var green_worker_str = ' workers'
-  }
-  
-  if (n_blue==1){
-    var blue_worker_str = ' worker'
-  } else{
-    var blue_worker_str = ' workers'
-  }
-  
-  if (n_green==0){
-    var n_green_str = 'No'
-  } else{
-    var n_green_str = String(n_green)
-  }
-  
-  if (n_blue==0){
-    var n_blue_str = 'No'
-  } else{
-    var n_blue_str = String(n_blue)
-  }
-  
   if (payout_c=='green'){
-    var green_fn_str = 'emerald'
-    var blue_fn_str = 'water'
+    var green_str = 'emerald'
+    var blue_str = 'water'
+    var green_strs = 'emeralds'
+    var blue_strs = 'water'
   } else if (payout_c=='blue'){
-    var green_fn_str = 'grass'
-    var blue_fn_str = 'sapphire'
+    var green_str = 'grass'
+    var blue_str = 'sapphire'
+    var green_strs = 'grass'
+    var blue_strs = 'sapphires'
   } else if (payout_c=='no-utility'){
-    var green_fn_str = 'emerald'
-    var blue_fn_str = 'sapphire'
+    var green_str = 'emerald'
+    var blue_str = 'sapphire'
+    var green_strs = 'emeralds'
+    var blue_strs = 'sapphires'
+  }
+
+  if (n_green>n_blue){
+    var display_green = true;
+    var display_blue = false;
+    tie  = false;
+    var initial_str = String(n_green) + ' workers chose ' + green_str 
+  } else if (n_blue>n_green){
+    var display_green = false;
+    var display_blue = true;
+    tie = false;
+    var initial_str = String(n_blue) + ' workers chose ' + blue_str
+  } else {
+    tie = true;
+    if (Math.random()<0.5){
+      var display_green = true;
+      var display_blue = false;
+      green_first = true
+      var initial_str = String(n_green) + ' workers chose ' + green_str
+    } else{
+      var display_green = false;
+      var display_blue = true;
+      green_first = false
+      var initial_str = String(n_blue) + ' workers chose ' + blue_str
+    }
   }
   
-  if (green_l==true){
-    var left_str = '<p class = "choice-text">' + n_green_str +
-        green_worker_str + ' chose '+green_fn_str+'</p>' +
-        '<p class = "choice-text">' + n_blue_str +
-        blue_worker_str + ' chose '+blue_fn_str+'</p>'
-      $('#left-div').html(left_str)
-      var right_str = '<p class = "icon-paragraph">'
+  if (display_green==true){
+      var icon_str = '<p id = "description">' + initial_str +'</p>'
+      icon_str += '<p class = "icon-paragraph">'
       for (greeni=0;greeni<n_green;greeni++){
-        right_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
+        icon_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
       }
-      if (greeni==0){
-        right_str += '<br>'
-      }
-      right_str += '</p>'
-      right_str += '<p class = "icon-paragraph">'
       for (bluei=0;bluei<n_blue;bluei++){
-        right_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
+        icon_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
       }
-      right_str += '</p>'
-      $('#right-div').html(right_str)
+      icon_str += '</p>'
+      $('#container').html(icon_str)
     
   } else{
-    var left_str = '<p class = "choice-text">' + n_blue_str +
-        blue_worker_str + ' chose '+blue_fn_str+'</p>' +
-        '<p class = "choice-text">' + n_green_str +
-        green_worker_str + ' chose '+green_fn_str+'</p>'
-      $('#left-div').html(left_str)
-      var right_str = '<p class = "icon-paragraph">'
-      for (bluei=0;bluei<n_blue;bluei++){
-        right_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
-      }
-      if (bluei==0){
-        right_str += '<br>'
-      }
-      right_str += '</p>'
-      right_str += '<p class = "icon-paragraph">'
-      for (greeni=0;greeni<n_green;greeni++){
-        right_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
-      }
-      right_str += '</p>'
-      $('#right-div').html(right_str)
+    var icon_str = '<p id = "description">' + initial_str +'</p>'
+    icon_str += '<p class = "icon-paragraph">'
+    for (bluei=0;bluei<n_blue;bluei++){
+      icon_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
+    }
+    for (greeni=0;greeni<n_green;greeni++){
+      icon_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
+    }
+    icon_str += '</p>'
+    $('#container').html(icon_str)
   }
 
   if (is_SWI==true){
     if (payout_c=='blue'){
-      if (n_blue>n_green){
+      if (display_blue){
         var display_SWI = true;
       } else{
         var display_SWI = false;
       }
     } else if (payout_c=='green'){
-      if (n_blue>n_green){
-        var display_SWI = false;
-      } else{
+      if (display_green){
         var display_SWI = true;
+      } else{
+        var display_SWI = false;
       }
-
     }
   }
 
@@ -270,7 +258,7 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   } else{
 
       var SWI_html = '<div id="SWI-text">' +
-       'Please wait '+num_seconds+' seconds to view the area.' +
+       'Please wait to view the area' +
        '</div>'
         // no SWI info
         setTimeout(function(){
@@ -692,7 +680,9 @@ report = function (color) {
                   is_equal:is_equal,
                   info_green:info_green,
                   condition_replication: condition_replication,
-                  metadata_type: metadata_type
+                  metadata_type: metadata_type,
+                  green_first:green_first,
+                  tie:tie
                 }
 
   dallinger.createInfo(my_node_id, {

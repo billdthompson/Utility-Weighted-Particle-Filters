@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':25, 
+		'generation_size':4, 
 		'generations': 1, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -115,7 +115,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWT:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SWB:W-U":self.num_replications_per_condition}
 
 
 		# Derrived Quantities
