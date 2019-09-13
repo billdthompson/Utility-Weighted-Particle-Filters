@@ -153,24 +153,24 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
     var display_green = true;
     var display_blue = false;
     tie  = false;
-    var initial_str = String(n_green) + ' workers chose ' + green_str 
+    var initial_str = String(n_green) + ' of ' +String(n_green+n_blue)+' workers chose ' + green_str 
   } else if (n_blue>n_green){
     var display_green = false;
     var display_blue = true;
     tie = false;
-    var initial_str = String(n_blue) + ' workers chose ' + blue_str
+    var initial_str = String(n_blue) + ' of ' +String(n_green+n_blue)+' workers chose ' + blue_str 
   } else {
     tie = true;
     if (Math.random()<0.5){
       var display_green = true;
       var display_blue = false;
       green_first = true
-      var initial_str = String(n_green) + ' workers chose ' + green_str
+      var initial_str = String(n_green) + ' of ' +String(n_green+n_blue)+' workers chose ' + green_str 
     } else{
       var display_green = false;
       var display_blue = true;
       green_first = false
-      var initial_str = String(n_blue) + ' workers chose ' + blue_str
+      var initial_str = String(n_blue) + ' of ' +String(n_green+n_blue)+' workers chose ' + blue_str 
     }
   }
   
@@ -575,7 +575,7 @@ function regenerateDisplay (propUtility) {
       }
     }
     presentDisplay();
-  },900)
+  },600)
   
 }
 
