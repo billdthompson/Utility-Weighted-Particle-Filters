@@ -6860,3 +6860,26 @@ button.close {
     text-align:center;
     font-size:19px;
   }
+
+  #social_reminder{
+      display:none;
+      margin:0 auto;
+      opacity:0.5;
+      width:500px;
+      margin-top:95px;
+  }
+
+#reminder_str {
+    font-size:21px;
+    width:200px;
+}
+
+#reminder_disclaimer{
+    font-size:19px;
+    margin-top:10px;
+}
+
+#instructions{
+    margin-top:30px;
+    font-size:21px;
+}
