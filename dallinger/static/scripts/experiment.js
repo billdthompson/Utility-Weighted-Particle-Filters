@@ -56,14 +56,14 @@ if (payout_condition=='blue'){
 }
 
 if (metadata_type=='utility'){
-  disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
-  reminder_disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
+  var disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
+  var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group were paid for '+inner_strs + '.'
 } else if (metadata_type=='bias_index'){
-  disclaimer_str = 'This group <b>chose '+inner_str+' more often </b> (compared to other workers).'
-  reminder_disclaimer_str = 'This group chose '+inner_str+' more often (compared to other workers).'
+  var disclaimer_str = 'This group <b>chose '+inner_str+' more often </b> (compared to other workers).'
+  var reminder_disclaimer_str = '<b>Reminder:</b> This group chose '+inner_str+' more than usual.'
 } else if (metadata_type=='truth_index'){
-  disclaimer_str = 'Workers in this group tended to <b>overestimate</b> the number of '+inner_strs+'.'
-  reminder_disclaimer_str = 'Workers in this group tended to overestimate the number of '+inner_strs+'.'
+  var disclaimer_str = 'Workers in this group tended to <b>overestimate</b> the number of '+inner_strs+'.'
+  var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group overestimated the number of '+inner_strs + '.'
 }
 
 
@@ -565,7 +565,7 @@ function regenerateDisplay (propUtility) {
       colors.push(1);
     }
 
-    random_string = String(generation) + String(net_decision_index) + '1'
+    random_string = String(generation) + String(net_decision_index) + String(network_id)
 
     var myrng0 = new Math.seedrandom(random_string+'_colors');
     colors = shuffle(colors,myrng0);
@@ -610,25 +610,17 @@ function getBlueDots(propUtility){
   }
 }
 
-function randi(min, max,random_generator) {
-  //generation_seed = generation_seed + 0.05;
-  //network_id_seed = network_id_seed + 0.05;
-  //random_number = (generation_random(generation_seed)+network_random(network_id_seed) + addition)/3
-  //console.log(random_number)
+function randi(min, max,random_generator) {  
+  random_number = random_generator()
   //random_number = Math.random();
-  
-  //random_number = random_generator()
-  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o,random_generator){
-  //generation_seed = generation_seed + 0.05;
-  //network_id_seed = network_id_seed + 0.05;
-  //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+
   
-  //random_number = random_generator()
-  random_number = Math.random();
+  random_number = random_generator()
+  //random_number = Math.random();
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -1288,7 +1280,11 @@ function display_earnings(){
         $('#headerText').css('font-size','30px')
         $('#topResult').css('font-size','19px')
         var final_contents = {
-          bias_value: value_html
+          bias_value: value_html,
+          social_condition: social_condition,
+          payout_condition:payout_condition,
+          metadata_type: metadata_type,
+          participant_id: dallinger.identity.participantId
         }
         dallinger.createInfo(my_node_id, {
           contents: JSON.stringify(final_contents),

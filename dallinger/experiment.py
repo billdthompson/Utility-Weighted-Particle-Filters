@@ -115,7 +115,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SWT:W-U":self.num_replications_per_condition}
 
 
 		# Derrived Quantities
