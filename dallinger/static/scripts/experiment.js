@@ -4,6 +4,7 @@ is_equal,info_green, green_first, tie
 var total_points = 500;
 var a;
 var n_generation_size; // how many people per generation?
+var display_SWI = false;
 
 var is_equal = false;
 var is_green = false;
@@ -56,10 +57,13 @@ if (payout_condition=='blue'){
 
 if (metadata_type=='utility'){
   var disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
+  var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group were paid for '+inner_strs + '.'
 } else if (metadata_type=='bias_index'){
   var disclaimer_str = 'This group <b>chose '+inner_str+' more often </b> (compared to other workers).'
+  var reminder_disclaimer_str = '<b>Reminder:</b> This group chose '+inner_str+' more than usual.'
 } else if (metadata_type=='truth_index'){
   var disclaimer_str = 'Workers in this group tended to <b>overestimate</b> the number of '+inner_strs+'.'
+  var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group overestimated the number of '+inner_strs + '.'
 }
 
 
@@ -68,13 +72,13 @@ if (curr_rounds_practice==true){
   var trial = 0;
   $('#round_info').html('Practice round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_practice_trials);
-  var timeout_duration = 2500;
+  var timeout_duration = 2000;
   var num_seconds = '5';
 } else {
   var trial = num_practice_trials;
   $('#round_info').html('Test round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_test_trials);
-  var timeout_duration = 2000;
+  var timeout_duration = 1500;
   var num_seconds = '3';
 
 }
@@ -100,7 +104,6 @@ $('#format_div').css('left','0')
 $('#format_div').css('margin','auto')
 
 $('.outcome').css('margin-top','80px')
-$("#instructions").css('margin-top','140px')
 
 $(".button-wrapper").css("width", "320px");
 $(".button-wrapper").css("margin", "0 auto");
@@ -121,11 +124,11 @@ $("#continue_social").css('display','none')
 
 $('#other_text').css('padding-top','30px')
 
-$('#instructions').css('font-size','19px')
 var is_practice = true;
 
-if (social_condition=='asocial'){
+if (social_condition=='asocial' || generation==0){
   var learning_strategy = "asocial";
+  $("#instructions").css('margin-top','140px')
 } else{
   var learning_strategy = "social";
 }
@@ -177,23 +180,29 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   if (display_green==true){
       var icon_str = '<p id = "description">' + initial_str +'</p>'
       icon_str += '<p class = "icon-paragraph">'
+      reminder_str = ''
       for (greeni=0;greeni<n_green;greeni++){
         icon_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
+        reminder_str += "<ion-icon name='person' class='person-chose-green'></ion-icon>"
       }
       for (bluei=0;bluei<n_blue;bluei++){
         icon_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
+        reminder_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
       }
       icon_str += '</p>'
       $('#container').html(icon_str)
     
   } else{
-    var icon_str = '<p id = "description">' + initial_str +'</p>'
+    reminder_str = ''
+    icon_str = '<p id = "description">' + initial_str +'</p>'
     icon_str += '<p class = "icon-paragraph">'
     for (bluei=0;bluei<n_blue;bluei++){
       icon_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
+      reminder_str += "<ion-icon name='person' class='person-chose-blue'></ion-icon>"
     }
     for (greeni=0;greeni<n_green;greeni++){
       icon_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
+      reminder_str += "<ion-icon name='person' class='person-chose-remainder'></ion-icon>"
     }
     icon_str += '</p>'
     $('#container').html(icon_str)
@@ -202,15 +211,15 @@ function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   if (is_SWI==true){
     if (payout_c=='blue'){
       if (display_blue){
-        var display_SWI = true;
+        display_SWI = true;
       } else{
-        var display_SWI = false;
+        display_SWI = false;
       }
     } else if (payout_c=='green'){
       if (display_green){
-        var display_SWI = true;
+        display_SWI = true;
       } else{
-        var display_SWI = false;
+        display_SWI = false;
       }
     }
   }
@@ -455,7 +464,6 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      console.log('here')
       draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,social_condition=='social_with_info',true)
       
     }
@@ -480,6 +488,20 @@ function presentDisplay () {
   setTimeout(function() {
     for (var i = dots.length - 1; i >= 0; i--) {
       dots[i].hide();
+    }
+    if (display_SWI==false && learning_strategy=='social'){
+      $('#social_reminder').css('margin-top','128px')
+      $('#instructions').css('margin-top','60px')
+
+      var social_reminder_str = '<div id = "reminder_icons">'+ reminder_str + '</div>'
+      $('#social_reminder').html(social_reminder_str)
+      $('#social_reminder').css('display','block')
+    } else if (display_SWI==true && learning_strategy=='social') {
+      $('#social_reminder').css('margin-top','95px')
+      $('#instructions').css('margin-top','30px')
+      var social_reminder_str = '<div id = "reminder_icons">'+ reminder_str + '</div>' + '<div id = "reminder_disclaimer">'+ reminder_disclaimer_str + '</div>'
+      $('#social_reminder').html(social_reminder_str)
+      $('#social_reminder').css('display','block')
     }
     $('svg').remove() // remove the annoying disabled version of the screen from the dot display
     $("#more-blue").removeClass('disabled');
@@ -543,7 +565,7 @@ function regenerateDisplay (propUtility) {
       colors.push(1);
     }
 
-    random_string = String(generation) + String(net_decision_index) + '1'
+    random_string = String(generation) + String(net_decision_index) + String(network_id)
 
     var myrng0 = new Math.seedrandom(random_string+'_colors');
     colors = shuffle(colors,myrng0);
@@ -588,25 +610,17 @@ function getBlueDots(propUtility){
   }
 }
 
-function randi(min, max,random_generator) {
-  //generation_seed = generation_seed + 0.05;
-  //network_id_seed = network_id_seed + 0.05;
-  //random_number = (generation_random(generation_seed)+network_random(network_id_seed) + addition)/3
-  //console.log(random_number)
+function randi(min, max,random_generator) {  
+  random_number = random_generator()
   //random_number = Math.random();
-  
-  //random_number = random_generator()
-  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o,random_generator){
-  //generation_seed = generation_seed + 0.05;
-  //network_id_seed = network_id_seed + 0.05;
-  //random_number = (generation_random(generation_seed)+network_random(network_id_seed))/2
+
   
-  //random_number = random_generator()
-  random_number = Math.random();
+  random_number = random_generator()
+  //random_number = Math.random();
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -691,6 +705,7 @@ report = function (color) {
   }).done(function (resp) {
       //$("#more-blue").removeClass('disabled');
       //$("#more-green").removeClass('disabled');
+      $('#social_reminder').css('display','none')
       $("#instructions").html("")
       $("#instructions").hide()
       updateResponseHTML(true_color,color,dotStr,accuracy_b,condition_b)
@@ -972,7 +987,12 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       $(".button-wrapper").css("display", "none");
       $(".outcome").css("text-align",'center')
       $('.outcome').css('margin-top','150px')
-      $(".outcome").html("<b>Loading next round ...</b>")
+      if (learning_strategy=='social'){
+        $(".outcome").html("<b>Loading next round ...</b>")
+      } else{
+        $(".outcome").css("display",'none')
+        $(".outcome").html("")
+      }
       $("#instructions").html("")
       create_agent();
     }
@@ -999,7 +1019,12 @@ function display_practice_info(){
           $(".button-wrapper").css("display", "none");
           $('#continue_button').html('Next round')
           $('.outcome').css('margin-top','150px')
-          $(".outcome").html("<b>Loading next round ...</b>")
+          if (learning_strategy=='social'){
+            $(".outcome").html("<b>Loading next round ...</b>")
+          } else{
+            $(".outcome").html("")
+            $(".outcome").css('display','none')
+          }
           $("#instructions").html("")
           get_social_info();
       });
@@ -1010,7 +1035,7 @@ function display_test_info(){
       $('.outcome').css('margin','0 auto')
       $('.outcome').css('margin-top','60px')
       $('.outcome').css('width','320px')
-      $('#continue_button').html('Start practice rounds')
+      $('#continue_button').html('Start test rounds')
       $(".outcome").css("display", "block");
       //$(".button-wrapper").css("text-align", "right");
       $(".button-wrapper").css("display", "block");
@@ -1255,7 +1280,11 @@ function display_earnings(){
         $('#headerText').css('font-size','30px')
         $('#topResult').css('font-size','19px')
         var final_contents = {
-          bias_value: value_html
+          bias_value: value_html,
+          social_condition: social_condition,
+          payout_condition:payout_condition,
+          metadata_type: metadata_type,
+          participant_id: dallinger.identity.participantId
         }
         dallinger.createInfo(my_node_id, {
           contents: JSON.stringify(final_contents),

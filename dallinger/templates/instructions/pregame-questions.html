@@ -142,10 +142,12 @@
   var max_num_failed = 3;
   var cover_story = localStorage.getItem('cover_story')=='true';
   var payout_condition = localStorage.getItem('payout_condition');
+  var generation = localStorage.getItem('generation');
   var social_condition = localStorage.getItem('social_condition');
   var include_gems = localStorage.getItem('include_gems')=='true';
   // hacky but gets the job done
-  if (social_condition=='asocial'){
+  if (social_condition=='asocial' || generation==0){
+    var social_condition = 'asocial';
     $('#question-7-wrapper').css('display','none')
   }
 
