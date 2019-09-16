@@ -1,6 +1,7 @@
 from operator import attrgetter
 import random
 import json
+import numpy as np
 
 import logging
 logger = logging.getLogger(__file__)
@@ -15,6 +16,7 @@ from dallinger import transformations
 from dallinger.information import Gene, Meme, State
 from dallinger.nodes import Agent, Environment, Source
 from dallinger.models import Info, Network, Participant, Node
+from dallinger import db
 import pysnooper
 
 class ParticleFilter(Network):
@@ -106,6 +108,22 @@ class ParticleFilter(Network):
     def condition(cls):
         """Make condition queryable."""
         return cls.property5
+
+    @pysnooper.snoop()
+    def all_slots_full(self, generation):
+        full_slots = (db.session.query(Particle,Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Particle.failed == False)
+            .filter(Participant.status == "approved")
+            .filter(Particle.property2 == repr(generation))
+            .filter(not_(Particle.property5.contains("OVF")))
+            .distinct(Particle.property1)
+            .all())
+
+        integer_slots = [int(slotresult[0].property1) for slotresult in full_slots]
+        full = np.all([slot in integer_slots for slot in range(int(self.generation_size))])
+        return full
+
 
     def calculate_full(self):
         return Particle.query.filter_by(network_id = self.id, failed = False).filter(not_(Particle.property5.contains("OVF"))).count() >= self.max_size

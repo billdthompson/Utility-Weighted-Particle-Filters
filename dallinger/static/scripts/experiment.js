@@ -72,13 +72,13 @@ if (curr_rounds_practice==true){
   var trial = 0;
   $('#round_info').html('Practice round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_practice_trials);
-  var timeout_duration = 2000;
+  var timeout_duration = 0//2000;
   var num_seconds = '5';
 } else {
   var trial = num_practice_trials;
   $('#round_info').html('Test round <span id="trial-number">1</span> of <span id="total-trial-number"></span>')
   $("#total-trial-number").html(num_test_trials);
-  var timeout_duration = 1500;
+  var timeout_duration = 0//1500;
   var num_seconds = '3';
 
 }

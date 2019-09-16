@@ -24,16 +24,18 @@ class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
 	 
 	 TODO: 
-	 - debug multiple replications ofoverflow conditions
-	 - ensure overflow conditions are handed out randomly
-	 - snoop on data_check to see why "real" participants are failing at the end of a generation
+	 - yoke G0
+	 - reassign slot at submission
+	 - check all slots full at recruit
+	 - change timing back to ral
+	 - change proprtions back to proper
 	"""
 
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
-		'generations': 1,
+		'generation_size':4, 
+		'generations': 2,
 		'planned_overflow':2,
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -100,7 +102,7 @@ class UWPFWP(Experiment):
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition	}
 
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values())
@@ -263,7 +265,10 @@ class UWPFWP(Experiment):
 		# estbalish current generation
 		current_generation = network.current_generation
 
-		all_nodes_this_network_this_generation_so_far =  self.models.Particle.query.filter(self.models.Particle.property2 == repr(int(current_generation)), not_(self.models.Particle.property5.contains("OVF"))).filter_by(network_id = network.id, failed = False).all()
+		all_nodes_this_network_this_generation_so_far = (self.models.Particle.query.filter_by(network_id = network.id, failed = False).filter(
+			self.models.Particle.property2 == repr(int(current_generation)),
+			not_(self.models.Particle.property5.contains("OVF")))
+		.all())
 
 		# which slots (1, ..., n) are already occupied?
 		all_node_slots_already_taken = [existing_node.slot for existing_node in all_nodes_this_network_this_generation_so_far]
@@ -277,15 +282,15 @@ class UWPFWP(Experiment):
 			availible_overflow_node_slots = [slot for slot in range(self.generation_size) if slot not in overflow_node_slots_already_taken]
 			if not availible_overflow_node_slots:
 				random_slot = random.choice(range(self.generation_size))
-				self.log("No Epxerimental or Shadow slots availible for Participant {} in network {} [Cond: {}; Rep: {}]. Assigning slot {} at random.".format(participant.id, network.id, network.condition, network.replication, random_slot), key)
+				self.log("No Epxerimental or Shadow slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning slot {} at random.".format(participant.id, network.id, network.condition, network.replication, network.current_generation, random_slot), key)
 				return random_slot
 
 			random_slot = random.choice(availible_overflow_node_slots)
-			self.log("No Epxerimental slots availible for Participant {} in network {} [Cond: {}; Rep: {}]. Assigning Shadow slot {} at random (from {} availible).".format(participant.id, network.id, network.condition, network.replication, random_slot, len(availible_overflow_node_slots)), key)
+			self.log("No Epxerimental slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning Shadow slot {} at random (from {} availible).".format(participant.id, network.id, network.condition, network.replication, network.current_generation, random_slot, len(availible_overflow_node_slots)), key)
 			return random_slot
 		
 		random_slot = random.choice(node_slots_still_availible)
-		self.log("{} Epxerimental slots remain availible for Participant {} in network {} [Cond: {}; Rep: {}]. Assigning slot {} at random.".format(len(node_slots_still_availible), participant.id, network.id, network.condition, network.replication, random_slot), key)
+		self.log("{} Epxerimental slots remain availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning slot {} at random.".format(len(node_slots_still_availible), participant.id, network.id, network.condition, network.replication,network.current_generation, random_slot), key)
 		return random_slot
 
 	#@pysnooper.snoop()
@@ -370,7 +375,7 @@ class UWPFWP(Experiment):
 			nra.current_generation = int(nra.current_generation) + 1
 		self.log("Rolled new generation: all networks now at generation: {}".format(int(net.current_generation)), key)
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def recruit(self):
 		"""Recruit participants"""
 		key = "experiment.py >> recruit: "
@@ -397,7 +402,8 @@ class UWPFWP(Experiment):
 		)
 
 		# Is this generation complete?
-		end_of_generation = num_experimental_nodes_approved_this_generation >= self.num_experimental_nodes_per_generation
+		# end_of_generation = num_experimental_nodes_approved_this_generation >= self.num_experimental_nodes_per_generation
+		end_of_generation = np.all([net.all_slots_full(int(current_generation)) for net in self.models.ParticleFilter.query.all()])
 
 		self.log("Generation in Progress: {}; Experimental nodes (particles) approved: {}; Required: {}".format(current_generation, num_experimental_nodes_approved_this_generation, self.num_experimental_nodes_per_generation), key)
 		self.log("End of generation: {}".format(end_of_generation), key)
@@ -435,7 +441,18 @@ class UWPFWP(Experiment):
 			self.rollover_generation()
 			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments)) + next_generation_required_overflow)
 
-	# @pysnooper.snoop()
+	@pysnooper.snoop()
+	def reassign_slot(self, current_slot, full_Slots, participant):
+		network_attributes = self.models.NetworkRandomAttributes.query.filter_by(network_id = participant.nodes()[0].network_id).one()
+		data = json.loads(network_attributes.details)
+		payout_colors, button_orders = data["payout_color"], data["button_order"]
+		equivelant_slots = [int(k) for (k, v) in payout_colors.items() if ((v == payout_colors[str(current_slot)]) and (int(k) != int(current_slot)) and (button_orders[str(k)] == button_orders[str(current_slot)]))]
+		availible_slots = [slot for slot in equivelant_slots if slot not in full_Slots]
+		if not availible_slots:
+			return None
+		return random.choice(availible_slots)
+
+	@pysnooper.snoop()
 	def submission_successful(self, participant):
 		key = "experiment.py >> submission_successful: "
 		nodes = participant.nodes()
@@ -447,20 +464,39 @@ class UWPFWP(Experiment):
 		approved_participant_ids = [p.id for p in approved_participants if p.id != participant.id]
 
 		network_ids = [node.network_id for node in nodes]
-		approved_nodes = (self.models.Particle.query.filter(and_(
-			self.models.Particle.network_id.in_(network_ids),
-			not_(self.models.Particle.property5.contains("OVF")),
-			self.models.Particle.property2 == repr(nodes[0].generation),
-			self.models.Particle.participant_id.in_(approved_participant_ids)))
-		.count())
-		
-		if approved_nodes >= self.generation_size * self.num_networks_per_participant:
-			for node in nodes:
-				node.condition = node.condition + "-OVF"
-			self.log("Participant {} [Gen: {}; Cond: {}] has been assigned status: Overflow".format(participant.id, nodes[0].generation, nodes[0].condition), key)
-			return
+		firsttrial_network = self.models.ParticleFilter.query.filter(and_(
+				self.models.ParticleFilter.property4 == repr(0), # decision_index
+				self.models.ParticleFilter.id.in_(network_ids)
+				)).one()
 
-		self.log("Participant {} [Gen: {}; Cond: {}] has been assigned status: Experimental".format(participant.id, nodes[0].generation, nodes[0].condition), key)
+		firsttrial_nodes = self.models.Particle.query.filter_by(failed = False, network_id = firsttrial_network.id).filter(
+			and_(self.models.Particle.property3 == repr(1),
+				 self.models.Particle.participant_id.in_(approved_participant_ids),
+				 not_(self.models.Particle.property5.contains("OVF")),
+				 self.models.Particle.property2 == repr(nodes[0].generation)
+				)).all()
+
+		assigned_slot = nodes[0].slot
+		full_Slots = [node.slot for node in firsttrial_nodes]
+		if assigned_slot in full_Slots:
+			self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] is in a slot that is already occupied. Attempting reassignment.".format(participant.id, nodes[0].generation, nodes[0].condition, nodes[0].slot), key)
+			new_slot = self.reassign_slot(current_slot = assigned_slot, full_Slots = full_Slots, participant = participant)
+			
+			if new_slot is not None:
+				for node in nodes:
+					node.slot = new_slot
+				self.log("Reassignment succesful. Participant {} [Gen: {}; Cond: {}; Slot: {}] has been given a new slot ({}) and assigned status: Experimental".format(participant.id, nodes[0].generation, nodes[0].condition, nodes[0].slot, new_slot), key)
+				
+			
+			else:
+				for node in nodes:
+					node.property5 = node.property5 + ":OVF"
+				self.log("Reassignment failed. Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] has assigned status: Overflow".format(participant.id, nodes[0].generation, nodes[0].condition, nodes[0].slot), key)
+				
+
+		else:
+			self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= availible)] has been assigned status: Experimental".format(participant.id, nodes[0].generation, nodes[0].condition, nodes[0].slot), key)
+			
 
 	#@pysnooper.snoop()
 	def bonus(self, participant):
