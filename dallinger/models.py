@@ -1,4 +1,5 @@
 from operator import attrgetter
+import sys
 import random
 import json
 import numpy as np
@@ -33,6 +34,7 @@ class ParticleFilter(Network):
         self.condition = condition
         self.decision_index = decision_index
         self.role = role
+        self.set_randomisation()
     
     @hybrid_property
     def current_generation(self):
@@ -109,23 +111,129 @@ class ParticleFilter(Network):
         """Make condition queryable."""
         return cls.property5
 
-    @pysnooper.snoop()
-    def all_slots_full(self, generation):
-        full_slots = (db.session.query(Particle,Participant)
+    def log(self, text, key="?????"):
+        """Print a string to the logs."""
+        print(">>>> {} {}".format(key, text))
+        sys.stdout.flush()
+
+    def set_randomisation(self):
+        n = float(self.generation_size)
+        self.payout_colours = dict(zip(range(int(n)), (["left"] * int(n / 2.)) + (["right"] * int(n / 2.))))
+        self.button_orders = dict(zip(range(int(n)), (["left"] * int(n / 2.)) + (["right"] * int(n / 2.))))
+
+    def assigned_slots(self, generation):
+        """Returns all slots that have been *provisionally asigned* @ generation"""
+        query = (
+            db.session.query(Particle).join(Participant)
             .filter(Particle.network_id == self.id)
             .filter(Particle.failed == False)
-            .filter(Participant.status == "approved")
             .filter(Particle.property2 == repr(generation))
             .filter(not_(Particle.property5.contains("OVF")))
-            .distinct(Particle.property1)
-            .all())
+            )
+        assigned_slots = query.all()
+        return [int(node.property1) for node in assigned_slots]
 
-        integer_slots = [int(slotresult[0].property1) for slotresult in full_slots]
-        full = np.all([slot in integer_slots for slot in range(int(self.generation_size))])
-        return full
+    def assigned_shadow_slots(self, generation):
+        """Returns all slots that have been *provisionally asigned to shadow participants* @ generation"""
+        query = (
+            db.session.query(Particle).join(Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Particle.failed == False)
+            .filter(Particle.property2 == repr(generation))
+            .filter(Particle.property5.contains("OVF"))
+            )
+        assigned_shadow_slots = query.all()
+        return [int(node.property1) for node in assigned_shadow_slots]
 
+    @pysnooper.snoop()
+    def full_slots(self, generation, ignore_id = None):
+        """Returns all slots that have been *filled* @ generation"""
 
-    def calculate_full(self):
+        query = (
+            db.session.query(Particle).join(Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Participant.status == "approved")
+            .filter(Particle.failed == False)
+            .filter(Particle.property2 == repr(generation))
+            .filter(not_(Particle.property5.contains("OVF")))
+            )
+
+        if ignore_id is not None:
+            query = query.filter(Participant.id != ignore_id)
+
+        full_slots = query.all()
+        return [int(node.property1) for node in full_slots]
+        
+    def assign_slot(self, participant):
+        key = "models.py >> assign_slot: "
+        """Assign a *provisional* slot to a new participant """
+        all_node_slots_already_taken = self.assigned_slots(self.current_generation)
+        node_slots_still_availible = [slot for slot in range(self.generation_size) if slot not in all_node_slots_already_taken]
+        
+        if not node_slots_still_availible:
+            overflow_node_slots_already_taken = self.assigned_shadow_slots(self.current_generation)
+            availible_overflow_node_slots = [slot for slot in range(self.generation_size) if slot not in overflow_node_slots_already_taken]
+            
+            if not availible_overflow_node_slots:
+                random_slot = random.choice(range(self.generation_size))
+                self.log("No Epxerimental or Shadow slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning slot {} at random.".format(participant.id, self.id, self.condition, self.replication, self.current_generation, random_slot), key)
+                return random_slot
+
+            random_slot = random.choice(availible_overflow_node_slots)
+            self.log("No Epxerimental slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning Shadow slot {} at random (from {} availible).".format(participant.id, self.id, self.condition, self.replication, self.current_generation, random_slot, len(availible_overflow_node_slots)), key)
+            return random_slot
+        
+        random_slot = random.choice(node_slots_still_availible)
+        self.log("{} Epxerimental slots remain availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning slot {} at random.".format(len(node_slots_still_availible), participant.id, self.id, self.condition, self.replication,self.current_generation, random_slot), key)
+        return random_slot
+
+    def reassign_slot(self, current_slot, generation):
+        """Choose a new slot for a participant who's provisionally assigned slot is taken"""
+        key = "models.py >> reassign_slot: "
+        relevant_variables = json.loads(NetworkRandomAttributes.query.filter_by(network_id = self.id).one().details)
+        payout_colors, button_orders = relevant_variables["payout_color"], relevant_variables["button_order"]
+        equivelant_slots = [
+            int(k) for (k, v) in payout_colors.items() 
+            if ((v == payout_colors[str(current_slot)]) 
+            and (int(k) != int(current_slot)) 
+            and (button_orders[str(k)] == button_orders[str(current_slot)]))
+        ]
+        self.log("There are {} slots with equivelant randomisation conditions to slot {}".format(len(equivelant_slots), current_slot), key)
+        availible_slots = [slot for slot in equivelant_slots if slot not in self.full_slots(generation)]
+        self.log("{} of the {} slots equivelant to slot {} are availible.".format(len(availible_slots), len(equivelant_slots), current_slot), key)
+        return None if not availible_slots else random.choice(availible_slots)
+
+    @pysnooper.snoop()
+    def distribute(self, node, nodes):
+        key = "models.py >> distribute: "
+        """Decide whether a participant keeps the provisional node or is reassigned."""
+        assigned_slot = node.slot
+        slot_occupied = assigned_slot in self.full_slots(int(node.generation), ignore_id = node.participant_id)
+        if slot_occupied:
+            self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] is in a slot that is already occupied. Attempting reassignment.".format(node.participant_id, node.generation, node.condition, node.slot), key)
+            new_slot = self.reassign_slot(current_slot = assigned_slot, generation = int(node.generation))
+            
+            if new_slot is not None:
+                for participant_node in nodes:
+                    participant_node.slot = new_slot
+                self.log("Reassignment succesful. Participant {} [Gen: {}; Cond: {}; Slot: {}] has been given a new slot ({}) and assigned status: Experimental. All nodes updated.".format(node.participant_id, node.generation, node.condition, node.slot, new_slot), key)
+            
+            else:
+                for participant_node in nodes:
+                    participant_node.property5 = node.property5 + ":OVF"
+                self.log("Reassignment failed. Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] has been assigned status: Overflow. All nodes updated.".format(node.participant_id, node.generation, node.condition, node.slot), key)
+
+        else:
+            self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= availible)] has been assigned status: Experimental".format(node.participant_id, node.generation, node.condition, node.slot), key)
+
+    def generation_complete(self, generation = None):
+        """Is the generation complete -- are all slots full?"""
+        if generation is None:
+            generation = self.current_generation
+        return np.all([slot in self.full_slots(generation) for slot in range(int(self.generation_size))])
+
+    def network_full(self):
+        """Have all experimental nodes been collected?"""
         return Particle.query.filter_by(network_id = self.id, failed = False).filter(not_(Particle.property5.contains("OVF"))).count() >= self.max_size
 
     def experimental_nodes_approved_this_generation(self, generation):
@@ -136,6 +244,18 @@ class ParticleFilter(Network):
             Particle.participant_id.in_(approved_participant_ids),
             not_(Particle.property5.contains("OVF"))))
         .count())
+
+    def overflow_uptake_this_generation(self):
+        """How many participants started working or have completed working this generation?"""
+        uptake = (Particle.query.filter_by(failed = False, network_id = self.id)
+            .filter(Particle.property2 == repr(self.current_generation))
+            .count() - self.generation_size)
+        return max([0, uptake])
+
+    def create_node(self, participant, slot = None):
+        if slot is None:
+            slot = self.assign_slot(participant)
+        return Particle(network=self, participant=participant, slot = slot)
 
     def overflow_nodes_approved_this_generation(self, generation):
         return Particle.query.filter_by(network_id = self.id, failed = False).filter(and_(Particle.property2 == repr(int(generation)), Particle.property5.contains("OVF"))).count()
