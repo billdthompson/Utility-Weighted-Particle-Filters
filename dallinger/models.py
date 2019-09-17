@@ -145,7 +145,7 @@ class ParticleFilter(Network):
         assigned_shadow_slots = query.all()
         return [int(node.property1) for node in assigned_shadow_slots]
 
-    @pysnooper.snoop()
+    # @pysnooper.snoop()
     def full_slots(self, generation, ignore_id = None):
         """Returns all slots that have been *filled* @ generation"""
 
@@ -203,7 +203,7 @@ class ParticleFilter(Network):
         self.log("{} of the {} slots equivelant to slot {} are availible.".format(len(availible_slots), len(equivelant_slots), current_slot), key)
         return None if not availible_slots else random.choice(availible_slots)
 
-    @pysnooper.snoop()
+    # @pysnooper.snoop()
     def distribute(self, node, nodes):
         key = "models.py >> distribute: "
         """Decide whether a participant keeps the provisional node or is reassigned."""

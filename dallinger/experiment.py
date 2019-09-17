@@ -18,7 +18,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
@@ -32,13 +32,13 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
-		'generations': 2,
-		'planned_overflow':1,
-		'num_replications_per_condition':1,
-		'num_fixed_order_experimental_networks_per_experiment': 0,
-		'num_random_order_experimental_networks_per_experiment': 2,
-		'num_practice_networks_per_experiment': 2,
+		'generation_size':8, 
+		'generations': 4,
+		'planned_overflow':10,
+		'num_replications_per_condition':3,
+		'num_fixed_order_experimental_networks_per_experiment': 4,
+		'num_random_order_experimental_networks_per_experiment': 4,
+		'num_practice_networks_per_experiment': 4,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -93,14 +93,17 @@ class UWPFWP(Experiment):
 			setattr(self, key, value)
 
 		# Internal parameters
-		self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
-		self.fixed_order_experimental_network_proportions = []
-		self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
+		# self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
+		# self.fixed_order_experimental_network_proportions = []
+		# self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
+		self.practice_network_proportions = [.53, .46, .47, .54] #if not DEBUG else [.52]
+		self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] #if not DEBUG else [.52]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition	}
+		self.condition_counts = {"SWT:W-U":self.num_replications_per_condition,
+								 "SOC:W-U":self.num_replications_per_condition}
 
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values())
@@ -136,17 +139,17 @@ class UWPFWP(Experiment):
 			for replication in range(replications):
 				for p in range(self.num_practice_networks_per_experiment):
 					network = self.create_network(condition = condition, replication = replication, role = 'practice', decision_index = p, proportion = self.practice_network_proportions[p])
-					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = self.planned_overflow)
+					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = 0)
 					
 				for f in range(self.num_fixed_order_experimental_networks_per_experiment):
 					decision_index = self.num_practice_networks_per_experiment + f
 					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.fixed_order_experimental_network_proportions[f])
-					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = self.planned_overflow)
+					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = 0)
 
 				for r in range(self.num_random_order_experimental_networks_per_experiment):
 					decision_index = self.num_practice_networks_per_experiment + self.num_fixed_order_experimental_networks_per_experiment + r
 					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.random_order_experimental_network_proportions[r])
-					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = self.planned_overflow)
+					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = 0)
 		self.session.commit()
 
 	def network_occupancy_counts(self):
@@ -313,7 +316,7 @@ class UWPFWP(Experiment):
 	# @pysnooper.snoop(prefix = "@snoopsten: ")
 	def overflow_uptake_count_this_generation(self):
 		"""How many participants started working or have completed working this generation in each overflow replication?"""
-		return sum([net.overflow_uptake_this_generation() for net in self.models.ParticleFilter.query.all()])
+		return sum([net.overflow_uptake_this_generation() for net in self.models.ParticleFilter.query.filter(self.models.ParticleFilter.property4 == repr(0)).all()])
 
 	def overflow_uptake_count_total(self):
 		return int(self.models.NetworkRandomAttributes.query.first().overflow_pool)
@@ -484,7 +487,7 @@ class UWPFWP(Experiment):
 		return True
 
 	def is_complete(self):
-		required_participants = (self.generations * self.generation_size * sum(self.condition_counts.values())) + int(self.models.NetworkRandomAttributes.query.first().overflow_pool)
+		required_participants = (self.generations * self.generation_size * sum(self.condition_counts.values())) + max([self.planned_overflow, int(self.models.NetworkRandomAttributes.query.first().overflow_pool)])
 		completed_participants = self.models.Participant.query.filter_by(status="approved", failed = False).count()
 		return completed_participants >= required_participants
 
@@ -553,7 +556,7 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		
 		return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 
-	@pysnooper.snoop()
+	# @pysnooper.snoop()
 	def f(network_id = None, node_slot = None, node_generation = None):
 
 		# establish whether we're dealing with an overflow node or not
