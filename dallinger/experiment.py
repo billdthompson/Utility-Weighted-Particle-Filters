@@ -43,7 +43,7 @@ class UWPFWP(Experiment):
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
 		'num_random_order_experimental_networks_per_experiment': 8,
-		'num_practice_networks_per_experiment': 4,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -95,7 +95,7 @@ class UWPFWP(Experiment):
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
 		# self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
-		self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
+		self.practice_network_proportions = [.65, .46] if not DEBUG else [.9,0.4]
 		# self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		self.fixed_order_experimental_network_proportions = []
 		self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
@@ -115,7 +115,7 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-		self.condition_counts = {"SWT:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SWB:W-U":self.num_replications_per_condition}
 
 
 		# Derrived Quantities

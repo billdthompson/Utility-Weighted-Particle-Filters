@@ -46,8 +46,9 @@
 
         var social_condition = localStorage.getItem("social_condition");      
         var generation = parseInt(localStorage.getItem("generation"));     
-        var cover_story = localStorage.getItem("cover_story")=='true';    
-        //var payout_blue = localStorage.getItem("payout_blue")=='true';
+        var cover_story = localStorage.getItem("cover_story")=='true';
+        var playground = localStorage.getItem("playground")=='true';        
+
         var payout_condition = localStorage.getItem('payout_condition');
         var include_gems = localStorage.getItem('include_gems')=='true';
 
@@ -162,29 +163,28 @@
                     $('#read_div').css('visibility','visible')
 
 
-                    if (social_condition=='asocial'||generation==0){
-                        advance = function(){
-                        var nextpage = 'instructions/instruct-ready'
-                        dallinger.goToPage(nextpage)
+                    if (playground==false){
+                        if (social_condition=='asocial'||generation==0){
+                            nextpage = 'instructions/instruct-ready'
+                        } else{
+                            nextpage = 'instructions/instruct-4'
+                        }
+                    } else {
+                        if (social_condition=='asocial'){
+                            nextpage = 'instructions/instruct-ready'
+                        } else{
+                            nextpage = 'instructions/instruct-4'
+                        }
                     }
+
+                    advance = function(){
+                                dallinger.goToPage(nextpage)
+                            }
 
                     reverse = function(){
                         var previouspage = 'instructions/instruct-2'
                         dallinger.goToPage(previouspage)
                         }
-                    } else{
-                        advance = function(){
-                        var nextpage = 'instructions/instruct-4'
-                        dallinger.goToPage(nextpage)
-                        }
-
-                    reverse = function(){
-                        var previouspage = 'instructions/instruct-2'
-                        dallinger.goToPage(previouspage)
-                        }
-                    }
-
-
 
                 })
                 .fail(function (rejection) {

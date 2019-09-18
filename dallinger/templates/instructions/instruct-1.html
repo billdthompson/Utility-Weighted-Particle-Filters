@@ -33,6 +33,9 @@
             
             .done(function (resp) {
 
+                var playground = true;
+                localStorage.setItem('playground',playground)
+
                 var accuracy_bonus = 50;
                 var dot_bonus = 1;
                 localStorage.setItem('accuracy_bonus',accuracy_bonus)
