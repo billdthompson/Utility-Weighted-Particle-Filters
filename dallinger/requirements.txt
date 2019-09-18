@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 -e git://github.com/Dallinger/Dallinger.git@rest-to-sns#egg=dallinger
+=======
+dallinger==5.1.0
+>>>>>>> 2295b8b079821afb450b7d236817b88343aff097
 numpy
 pysnooper

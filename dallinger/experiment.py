@@ -115,7 +115,14 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
+<<<<<<< HEAD
 		self.condition_counts = {"SWB:W-U":self.num_replications_per_condition}
+=======
+		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
+								 "SWU:W-U":self.num_replications_per_condition,
+								 "SWB:W-U":self.num_replications_per_condition,
+								 "SWT:W-U":self.num_replications_per_condition,}
+>>>>>>> 2295b8b079821afb450b7d236817b88343aff097
 
 
 		# Derrived Quantities
@@ -640,7 +647,7 @@ def getnet(network_id):
 		return Response(status=403, mimetype='application/json')
 
 @extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
-@pysnooper.snoop()
+# @pysnooper.snoop()
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
