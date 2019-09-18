@@ -38,7 +38,7 @@ class UWPFWP(Experiment):
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':4, 
+		'generation_size':40, 
 		'generations': 2, 
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
@@ -95,10 +95,10 @@ class UWPFWP(Experiment):
 		self.num_practice_networks_per_experiment = self.practice_decisions = self.public_properties['num_practice_networks_per_experiment']
 		self.bonus_max = self.public_properties['bonus_max']
 		# self.practice_network_proportions = [.65, .46, .35, .54] if not DEBUG else [.9,0.4]
-		self.practice_network_proportions = [.65, .46] if not DEBUG else [.9,0.4]
+		self.practice_network_proportions = [.47, .53] if not DEBUG else [.9,0.4]
 		# self.fixed_order_experimental_network_proportions = self.random_order_experimental_network_proportions = [.48, .52, .51, .49] if not DEBUG else [.2,0.4]
 		self.fixed_order_experimental_network_proportions = []
-		self.random_order_experimental_network_proportions = [.49] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.) + [.51] * int(float(self.num_random_order_experimental_networks_per_experiment) / 2.)
+		self.random_order_experimental_network_proportions = [0.48,0.48,0.49,0.49,0.51,0.51,0.52,0.52]
 		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
@@ -115,14 +115,12 @@ class UWPFWP(Experiment):
 		# OVF:W-U
 		# OVF:N-U
 		# "OVF:W-U":1
-<<<<<<< HEAD
-		self.condition_counts = {"SWB:W-U":self.num_replications_per_condition}
-=======
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition,
-								 "SWU:W-U":self.num_replications_per_condition,
-								 "SWB:W-U":self.num_replications_per_condition,
-								 "SWT:W-U":self.num_replications_per_condition,}
->>>>>>> 2295b8b079821afb450b7d236817b88343aff097
+		self.condition_counts = {"ASO:W-U":self.num_replications_per_condition,
+								"SOC:W-U":self.num_replications_per_condition,
+								"SWU:W-U":self.num_replications_per_condition,
+								"SWB:W-U":self.num_replications_per_condition,
+								"SWT:W-U":self.num_replications_per_condition
+								}
 
 
 		# Derrived Quantities
@@ -647,7 +645,7 @@ def getnet(network_id):
 		return Response(status=403, mimetype='application/json')
 
 @extra_routes.route("/random_attributes/<int:network_id>/<int:node_generation>/<int:node_slot>", methods=["GET"])
-# @pysnooper.snoop()
+#@pysnooper.snoop()
 def get_random_atttributes(network_id, node_generation, node_slot):
 	# logger.info("--->>> generation: {}, {}".format(generation, type(generation)))
 
@@ -680,13 +678,13 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 		# [.65, .46, .35, .54] // [.49, .51, .51, .49] // [.48, .52, .51, .49]
 		# ks = [12, 5, 0, 7]  + [8, 12, 4, 0] + [12, 0, 4, 8]
 		assert exp.num_random_order_experimental_networks_per_experiment == 8
-		ks = [12, 5, 2, 9] + [2, 5, 7, 10] + [0,4,8,12]
+		ks = [5,6] + [5,6,5,3,2,6,6,7]
 
-		n = 12
+		n = 8
 
 		i = int(net.decision_index)
 
-		return Response(json.dumps({"k":ks[i], "n":12, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
+		return Response(json.dumps({"k":ks[i], "n":n, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 		
 		# return Response(json.dumps({"k":-1, "n":-1, "b":-1, "button_order":node_button_order, "node_utility":node_payout}), status=200, mimetype="application/json")
 

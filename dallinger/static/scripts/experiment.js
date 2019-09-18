@@ -621,16 +621,16 @@ function getBlueDots(propUtility){
 }
 
 function randi(min, max,random_generator) {  
-  random_number = random_generator()
-  //random_number = Math.random();
+  //random_number = random_generator()
+  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o,random_generator){
 
   
-  random_number = random_generator()
-  //random_number = Math.random();
+  //random_number = random_generator()
+  random_number = Math.random();
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -693,6 +693,7 @@ report = function (color) {
     var chose_correct = color=='green'
   }
 
+  //console.log(proportion_blue)
   var contents = {choice:color,
                   trial_num:trial,
                   is_practice:is_practice,
@@ -723,7 +724,7 @@ report = function (color) {
                   chose_utility:+chose_utility
                 }
 
-    console.log(chose_correct,chose_utility)
+    //console.log(chose_correct,chose_utility)
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
