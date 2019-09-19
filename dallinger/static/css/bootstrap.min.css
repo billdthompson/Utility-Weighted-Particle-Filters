@@ -6756,7 +6756,6 @@ button.close {
     }
 }
 
-
 #container {
     width:785px;
     height:150px;
@@ -6864,7 +6863,7 @@ button.close {
   #social_reminder{
       display:none;
       margin:0 auto;
-      width:520px;
+      width:540px;
       margin-top:95px;
   }
 

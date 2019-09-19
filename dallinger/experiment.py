@@ -25,17 +25,16 @@ class UWPFWP(Experiment):
 	 
 	 TODO: 
 	 - yoke G0
-	 - change timing back to ral
-	 - change proprtions back to proper
+	 - add node replication
 	"""
 
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':8, 
-		'generations': 4,
-		'planned_overflow':10,
-		'num_replications_per_condition':3,
+		'generation_size':2, 
+		'generations': 2,
+		'planned_overflow':1,
+		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 4,
 		'num_random_order_experimental_networks_per_experiment': 4,
 		'num_practice_networks_per_experiment': 4,

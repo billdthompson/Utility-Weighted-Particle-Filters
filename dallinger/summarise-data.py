@@ -53,14 +53,16 @@ def run(infofile, nodefile):
 	df = pd.read_csv(infofile)
 	df = df[(df.type == "meme") & (df.failed == "f")].copy()
 	df = pd.concat([df, df.contents.apply(json.loads).apply(pd.Series)], axis = 1)
-	print(df.columns)
+	# print(df.columns)
 	df['chose_utility'] = (df.choice == df.randomization_color).astype(int)
 	df['chose_correct'] = ((df.proportion_utility > .5) & (df.chose_utility.astype(bool))) | ((df.proportion_utility < .5) & (~df.chose_utility.astype(bool)))
 	df["asocial"] = df.generation == 0
 	df["is_overflow"] = df.origin_id.map(lambda id_: "OVF" in (nodes.loc[id_].property5))
+	df["condition"] = df.social_condition.map({"social":0, "social_with_info":1})
 	# print(df.is_practice)
 	# print(df[~(df.is_practice)].groupby(['social_condition', 'payout_condition']).mean()[['chose_utility', 'chose_correct']])
-	print(df.groupby(['social_condition', 'generation']).nunique()['participant_id'])
+	# print(df[df.is_overflow].groupby(['social_condition', 'condition_replication', 'generation']).participant_id.nunique())
+	print(df[(df.social_condition == "social") & (df.generation == 3) & (df.condition_replication == 2)].sum()[['k_chose_blue', 'k_chose_green']])
 
 if __name__ == '__main__':
     run()
