@@ -11,7 +11,9 @@ var is_green = false;
 
 var k_chose_blue = -1;
 var k_chose_green = -1;
-var show_SWI = false;
+
+
+//var playground = localStorage.getItem("playground")=='true'; 
 
 
 
@@ -50,7 +52,7 @@ var points_per_dot = 1;
 if (payout_condition=='blue'){
   var inner_strs = 'sapphires'
   var inner_str = 'sapphire'
-} else if (payout_condition=='green'){
+} else if (payout_condition=='green'){ 
   var inner_strs = 'emeralds'
   var inner_str = 'emerald'
 }
@@ -59,8 +61,8 @@ if (metadata_type=='utility'){
   var disclaimer_str = 'Workers in this group were paid for '+inner_strs+'.'
   var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group were paid for '+inner_strs + '.'
 } else if (metadata_type=='bias_index'){
-  var disclaimer_str = 'This group <b>chose '+inner_str+' more often </b> (compared to other workers).'
-  var reminder_disclaimer_str = '<b>Reminder:</b> This group chose '+inner_str+' more than usual.'
+  var disclaimer_str = 'Workers in this group <b>chose '+inner_str+' more often </b> (compared to other workers).'
+  var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group chose '+inner_str+' abnormally often.'
 } else if (metadata_type=='truth_index'){
   var disclaimer_str = 'Workers in this group tended to <b>overestimate</b> the number of '+inner_strs+'.'
   var reminder_disclaimer_str = '<b>Reminder:</b> Workers in this group overestimated the number of '+inner_strs + '.'
@@ -126,13 +128,21 @@ $('#other_text').css('padding-top','30px')
 
 var is_practice = true;
 
-if (social_condition=='asocial' || generation==0){
-  var learning_strategy = "asocial";
-  $("#instructions").css('margin-top','140px')
+if (playground==false){
+  if (social_condition=='asocial' || generation==0){
+    var learning_strategy = "asocial";
+    $("#instructions").css('margin-top','140px')
+  } else{
+    var learning_strategy = "social";
+  }  
 } else{
-  var learning_strategy = "social";
+  if (social_condition=='asocial'){
+    var learning_strategy = "asocial";
+    $("#instructions").css('margin-top','140px')
+  } else{
+    var learning_strategy = "social";
+  } 
 }
-
 
 function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
   if (payout_c=='green'){
@@ -490,14 +500,14 @@ function presentDisplay () {
       dots[i].hide();
     }
     if (display_SWI==false && learning_strategy=='social'){
-      $('#social_reminder').css('margin-top','128px')
-      $('#instructions').css('margin-top','60px')
+      $('#social_reminder').css('margin-top','110px')
+      $('#instructions').css('margin-top','30px')
 
       var social_reminder_str = '<div id = "reminder_icons">'+ reminder_str + '</div>'
       $('#social_reminder').html(social_reminder_str)
       $('#social_reminder').css('display','block')
     } else if (display_SWI==true && learning_strategy=='social') {
-      $('#social_reminder').css('margin-top','95px')
+      $('#social_reminder').css('margin-top','80px')
       $('#instructions').css('margin-top','30px')
       var social_reminder_str = '<div id = "reminder_icons">'+ reminder_str + '</div>' + '<div id = "reminder_disclaimer">'+ reminder_disclaimer_str + '</div>'
       $('#social_reminder').html(social_reminder_str)
@@ -528,12 +538,12 @@ function regenerateDisplay (propUtility) {
 
   paper = Raphael(horizontalOffset, 185, width, height);
 
-  center_x = width/2
-  center_y = height/2
-  horizontal_width = 28
-  horizontal_height = 3
-  vertical_width = 3
-  vertical_height = 28
+  var center_x = width/2
+  var center_y = height/2
+  var horizontal_width = 28
+  var horizontal_height = 3
+  var vertical_width = 3
+  var vertical_height = 28
   var outer_rect = paper.rect(0,0,width,height)
   outer_rect.attr("fill",'#ffffff')
   outer_rect.attr("stroke",'#333333')
@@ -565,7 +575,7 @@ function regenerateDisplay (propUtility) {
       colors.push(1);
     }
 
-    random_string = String(generation) + String(net_decision_index) + String(network_id)
+    var random_string = String(generation) + String(net_decision_index) + String(condition_replication)//+ String(network_id)
 
     var myrng0 = new Math.seedrandom(random_string+'_colors');
     colors = shuffle(colors,myrng0);
@@ -611,16 +621,16 @@ function getBlueDots(propUtility){
 }
 
 function randi(min, max,random_generator) {  
-  random_number = random_generator()
-  //random_number = Math.random();
+  //random_number = random_generator()
+  random_number = Math.random();
   return Math.floor(random_number * (max - min + 1)) + min;
 }
 
 function shuffle(o,random_generator){
 
   
-  random_number = random_generator()
-  //random_number = Math.random();
+  //random_number = random_generator()
+  random_number = Math.random();
   for (var j, x, i = o.length; i; j = Math.floor(random_number * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o;
 }
@@ -671,6 +681,19 @@ report = function (color) {
 
   proportion_blue=getBlueDots(proportion_utility)/100
 
+  if (randomization_color=='blue'){
+    var chose_utility = color=='blue'
+  } else if (randomization_color=='green'){
+    var chose_utility = color=='green'
+  }
+
+  if (proportion_blue>0.5){
+    var chose_correct = color=='blue'
+  }else{
+    var chose_correct = color=='green'
+  }
+
+  //console.log(proportion_blue)
   var contents = {choice:color,
                   trial_num:trial,
                   is_practice:is_practice,
@@ -696,8 +719,12 @@ report = function (color) {
                   condition_replication: condition_replication,
                   metadata_type: metadata_type,
                   green_first:green_first,
-                  tie:tie
+                  tie:tie,
+                  chose_correct:+chose_correct,
+                  chose_utility:+chose_utility
                 }
+
+    //console.log(chose_correct,chose_utility)
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(contents),
@@ -950,7 +977,7 @@ function updateResponseHTML(truth,response,dotStr,accuracy_bonus,condition_bonus
       }
       $('.outcome').css('text-align','center')
       $('.outcome').css('margin','0 auto')
-      $('.outcome').css('margin-top','120px')
+      $('.outcome').css('margin-top','150px')
       $('.button-wrapper').css('margin-top','70px')
       $(".outcome").html("<div class='titleOutcome'>"+
       "&nbsp;&nbsp;<p class = 'computer_number' id = 'topResult'> <font size='+2'> Test round " + String(trial-num_practice_trials) + " of " + String(num_test_trials)+ " complete.</font></p></div>")
