@@ -53,15 +53,14 @@ def run(infofile, nodefile):
 	df = pd.read_csv(infofile)
 	df = df[(df.type == "meme") & (df.failed == "f")].copy()
 	df = pd.concat([df, df.contents.apply(json.loads).apply(pd.Series)], axis = 1)
+	print(df.columns)
 	df['chose_utility'] = (df.choice == df.randomization_color).astype(int)
 	df['chose_correct'] = ((df.proportion_utility > .5) & (df.chose_utility.astype(bool))) | ((df.proportion_utility < .5) & (~df.chose_utility.astype(bool)))
 	df["asocial"] = df.generation == 0
 	df["is_overflow"] = df.origin_id.map(lambda id_: "OVF" in (nodes.loc[id_].property5))
-	# print(df.columns)
-	# g = sns.catplot(data = df[~df.is_practice][['generation', "chose_utility", "social_condition", "condition_replication", 'k_chose_utility', 'proportion_utility']], x = "k_chose_utility", y = "chose_utility", hue = "social_condition", kind = "bar", row = "proportion_utility")
-	# plt.show()
-	# print(df[~df.is_practice].groupby(['social_condition', "asocial"]).mean()[['chose_utility', 'chose_correct']])
-	plotdots(df[(df.social_condition == "social_with_info") & (df.is_practice) & ~(df.is_overflow)]) # & (df.trial_num > 8)
+	# print(df.is_practice)
+	# print(df[~(df.is_practice)].groupby(['social_condition', 'payout_condition']).mean()[['chose_utility', 'chose_correct']])
+	print(df.groupby(['social_condition', 'generation']).nunique()['participant_id'])
 
 if __name__ == '__main__':
     run()
