@@ -52,7 +52,7 @@ var points_per_dot = 1;
 if (payout_condition=='blue'){
   var inner_strs = 'sapphires'
   var inner_str = 'sapphire'
-} else if (payout_condition=='green'){
+} else if (payout_condition=='green'){ 
   var inner_strs = 'emeralds'
   var inner_str = 'emerald'
 }
