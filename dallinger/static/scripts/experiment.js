@@ -302,8 +302,8 @@ $('#more-green').css('width','160px')
 $('#more-green').css('outline','none')
 
 
-$('#more-blue').css('background-color','#0084ff')
-$('#more-blue').css('border-color','#0084ff')
+$('#more-blue').css('background-color','#007ef8')
+$('#more-blue').css('border-color','#007ef8')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','160px')
 $('#more-blue').css('outline','none')
@@ -552,9 +552,9 @@ function regenerateDisplay (propUtility) {
     colors = [];
 
     if (randomization_color=='blue'){
-      colorsRGB = ['#0084ff','#009500']
+      colorsRGB = ['#007ef8','#009500']
     } else {
-      colorsRGB = ['#009500','#0084ff']
+      colorsRGB = ['#009500','#007ef8']
     }
 
 
