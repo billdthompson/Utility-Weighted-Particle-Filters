@@ -203,10 +203,43 @@ class ParticleFilter(Network):
         self.log("{} of the {} slots equivelant to slot {} are availible.".format(len(availible_slots), len(equivelant_slots), current_slot), key)
         return None if not availible_slots else random.choice(availible_slots)
 
+    def experimental_nodes_approved_this_generation(self, generation):
+        query = (
+            db.session.query(Particle).join(Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Participant.status == "approved")
+            .filter(Particle.failed == False)
+            .filter(Particle.property2 == repr(generation))
+            .filter(not_(Particle.property5.contains("OVF")))
+            )
+        return query.count()
+
+    def assign_to_overflow(self, participant_id):
+        key = "models.py >> assign_to_overflow: "
+        participant = Participant.query.get(participant_id)
+        if not participant:
+            self.log("Participant object not found for participant: {}".format(participant_id, key))
+            return
+        
+        nodes = participant.nodes(type = Particle)
+        if not nodes:
+            self.log("No nodes found for participant: {}".format(participant_id, key))
+            return
+        
+        for participant_node in nodes:
+            participant_node.property5 = participant_node.property5 + ":OVF"
+        self.log("Assigned all {} of participants {}'s nodes to the overflow.".format(len(nodes), participant_id, key))
+
     # @pysnooper.snoop()
     def distribute(self, node, nodes):
         key = "models.py >> distribute: "
         """Decide whether a participant keeps the provisional node or is reassigned."""
+
+        if self.generation_complete(generation = int(node.generation), ignore_id = node.participant_id):
+            self.assign_to_overflow(node.participant_id)
+            self.log("Generation already completed. Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] assigned to overflow.".format(node.participant_id, node.generation, node.condition, node.slot), key)
+            return
+
         assigned_slot = node.slot
         slot_occupied = assigned_slot in self.full_slots(int(node.generation), ignore_id = node.participant_id)
         if slot_occupied:
@@ -219,31 +252,23 @@ class ParticleFilter(Network):
                 self.log("Reassignment succesful. Participant {} [Gen: {}; Cond: {}; Slot: {}] has been given a new slot ({}) and assigned status: Experimental. All nodes updated.".format(node.participant_id, node.generation, node.condition, node.slot, new_slot), key)
             
             else:
-                for participant_node in nodes:
-                    participant_node.property5 = node.property5 + ":OVF"
+                self.assign_to_overflow(node.participant_id)
                 self.log("Reassignment failed. Participant {} [Gen: {}; Cond: {}; Slot: {} (= Shadow)] has been assigned status: Overflow. All nodes updated.".format(node.participant_id, node.generation, node.condition, node.slot), key)
 
         else:
             self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= availible)] has been assigned status: Experimental".format(node.participant_id, node.generation, node.condition, node.slot), key)
 
-    def generation_complete(self, generation = None):
+    def generation_complete(self, generation = None, ignore_id = None):
         """Is the generation complete -- are all slots full?"""
         if generation is None:
             generation = self.current_generation
+        if ignore_id is not None:
+            return np.all([slot in self.full_slots(generation, ignore_id = ignore_id) for slot in range(int(self.generation_size))])
         return np.all([slot in self.full_slots(generation) for slot in range(int(self.generation_size))])
 
     def network_full(self):
         """Have all experimental nodes been collected?"""
         return Particle.query.filter_by(network_id = self.id, failed = False).filter(not_(Particle.property5.contains("OVF"))).count() >= self.max_size
-
-    def experimental_nodes_approved_this_generation(self, generation):
-        approved_participants = Participant.query.filter_by(status="approved", failed = False).all()
-        approved_participant_ids = [p.id for p in approved_participants]
-        return (Particle.query.filter_by(network_id = self.id, failed = False).filter(and_(
-            Particle.property2 == repr(int(generation)),
-            Particle.participant_id.in_(approved_participant_ids),
-            not_(Particle.property5.contains("OVF"))))
-        .count())
 
     def overflow_uptake_this_generation(self):
         """How many participants started working or have completed working this generation?"""
