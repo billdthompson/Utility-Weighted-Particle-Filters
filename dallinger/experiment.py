@@ -25,15 +25,17 @@ class UWPFWP(Experiment):
 	 
 	 TODO: 
 	 - yoke G0
-	 - add node replication
+	 - revert consent to point to instruct-1.html
+	 - add a recruit button
+	 - add a pause button
 	"""
 
 	@property
 	def public_properties(self):
 		return {
-		'generation_size':2, 
-		'generations': 2,
-		'planned_overflow':1,
+		'generation_size':4, 
+		'generations': 4,
+		'planned_overflow':3,
 		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
 		'num_random_order_experimental_networks_per_experiment': 1,
@@ -98,10 +100,6 @@ class UWPFWP(Experiment):
 		self.practice_network_proportions = [.53, .47] if not DEBUG else [.52]
 		self.fixed_order_experimental_network_proportions = []
 		self.random_order_experimental_network_proportions = [.48, .52, .51, .49,.48, .52, .51, .49] if not DEBUG else [.52]
-		assert len(self.practice_network_proportions) == self.num_practice_networks_per_experiment
-		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
-		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
-
 		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition}
 
 		# Derrived Quantities
@@ -124,7 +122,6 @@ class UWPFWP(Experiment):
 				decision_index=decision_index,
 				role=role
 			)
-		
 		self.session.add(net)
 		
 		# create the Genertative process for stimuli
@@ -169,6 +166,32 @@ class UWPFWP(Experiment):
 		network_counts = self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.network_id) \
 				.group_by(self.models.Particle.network_id) \
 				.filter(self.models.Particle.property2 == repr(generation)) \
+				.filter(not_(self.models.Particle.property5.contains("OVF"))) \
+				.filter_by(failed = False)\
+				.all()
+
+		# reverse the items so that the format is [(network_id, count), ...]
+		return [c[::-1] for c in network_counts]
+
+	def shadow_network_occupancy_counts(self, generation = None):
+		"""How many participants are already working or have completed working in each network?"""
+
+		if generation is None:
+			arbitrary_network = self.models.ParticleFilter.query.filter_by(failed = False, full = False).first()
+			if not arbitrary_network:
+				return []
+
+			generation = arbitrary_network.current_generation
+
+		# Goal: identify networks that do not already have a full generation of workers working / completed 
+		# 1: count unique participant ids in all nodes
+		# 2: sum this count by network (by grouping)
+		# 3: subset down to just this generation
+		# 4: don't count failed nodes
+		network_counts = self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.network_id) \
+				.group_by(self.models.Particle.network_id) \
+				.filter(self.models.Particle.property2 == repr(generation)) \
+				.filter(self.models.Particle.property5.contains("OVF")) \
 				.filter_by(failed = False)\
 				.all()
 
@@ -217,28 +240,12 @@ class UWPFWP(Experiment):
 
 		return chosen_network
 
-	# #@pysnooper.snoop(prefix = "@snoop: ")
-	def get_network_for_new_participant(self, participant):
-		key = "experiment.py >> get_network_for_new_participant ({}); ".format(participant.id)
-
-		# Get all first-trial networks
-		nets = self.models.ParticleFilter.query.filter_by(full = False).filter(self.models.ParticleFilter.property4 == repr(0)).all()
+	def triage(self, network_counts, shadow = False):
+		key = "experiment.py >> triage: " if not shadow else "experiment.py >> triage (Shadow): "
 
 		# And their IDs
 		net_ids = [net.id for net in nets]
-
-		# Get the occupancy counts for all networks
-		network_counts = self.network_occupancy_counts()
-
-		if not network_counts:
-			if nets:
-				# all networks have open slots, choose randomly
-				return random.choice(nets)
-			else:
-				# must be the end of the experiment, direct ps to overflow
-				# return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
-				return random.choice(self.models.ParticleFilter.query.filter_by(failed = False).filter(self.models.ParticleFilter.property4 == repr(0)).all())
-
+		
 		# Subset netowek counts down to only first trial networks
 		network_counts = dict(filter(lambda count: count[0] in net_ids, network_counts))
 		self.log("Network Counts: {}".format(network_counts), key)
@@ -253,11 +260,42 @@ class UWPFWP(Experiment):
 
 		# filter out any conditions who already have enough nodes in this generation
 		availible_networks = [net for net in nets if net.id in (not_started + list(not_saturated.keys()))]
+		return availible_networks
+
+	# #@pysnooper.snoop(prefix = "@snoop: ")
+	def get_network_for_new_participant(self, participant):
+		key = "experiment.py >> get_network_for_new_participant ({}); ".format(participant.id)
+
+		# Get all first-trial networks
+		nets = self.models.ParticleFilter.query.filter_by(full = False).filter(self.models.ParticleFilter.property4 == repr(0)).all()
+
+		# Get the occupancy counts for all networks
+		network_counts = self.network_occupancy_counts(nets)
+
+		if not network_counts:
+			if nets:
+				# all networks have open slots, choose randomly
+				return random.choice(nets)
+			else:
+				# must be the end of the experiment, direct ps to overflow
+				# return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
+				return random.choice(self.models.ParticleFilter.query.filter_by(failed = False).filter(self.models.ParticleFilter.property4 == repr(0)).all())
+
+		availible_networks = self.triage(network_counts)
 
 		if not availible_networks:
 			self.log("All experimental networks currently are at capacity. Assigning participant to a random network.", key)
-			# return self.models.OverFlow.query.order_by(self.models.OverFlow.property4.asc()).first()
-			return random.choice(self.models.ParticleFilter.query.filter_by(failed = False).filter(self.models.ParticleFilter.property4 == repr(0)).all())
+			shadow_network_occupancy_counts = self.shadow_network_occupancy_counts(nets)
+
+			availible_shadow_networks = self.triage(shadow_network_occupancy_counts)
+
+			if not availible_shadow_networks:
+				self.log("All experimental networks currently are at *shadow* capacity. Assigning participant to a random network.", key)
+				return random.choice(self.models.ParticleFilter.query.filter_by(failed = False).filter(self.models.ParticleFilter.property4 == repr(0)).all())
+
+			self.log("These networks have unfilled shadow slots: {}. Selecting one at random.".format([net.id for net in availible_networks]), key)
+			return random.choice(availible_shadow_networks)
+
 
 		self.log("The availible networks are: {}".format([net.id for net in availible_networks]), key)
 		return random.choice(availible_networks)
@@ -353,6 +391,21 @@ class UWPFWP(Experiment):
 	def calculate_required_overrecruitment(self):
 		return min([self.planned_overflow, self.overflow_uptake_count_this_generation()])
 
+	def current_generation(self):
+		return self.models.ParticleFilter.query.first().current_generation
+
+	def generation_complete(self, generation):
+		return np.all([net.generation_complete(generation) for net in self.models.ParticleFilter.query.all()])
+
+	def finish_generation(self, generation):
+		# have the seed networks freeze their generation (& log their slot structure)
+		for net in self.models.ParticleFilter.query.filter(self.models.ParticleFilter.property4 == repr(0)).all():
+			net.freeze_generation(generation)
+			net.log_slots()
+		
+		# change persistent state
+		self.rollover_generation()
+
 	def rollover_generation(self):
 		key ="experiment.py >> rollover_generation: "
 		for net in self.networks():
@@ -361,48 +414,48 @@ class UWPFWP(Experiment):
 			nra.current_generation = int(nra.current_generation) + 1
 		self.log("Rolled new generation: all networks now at generation: {}".format(int(net.current_generation)), key)
 
-	@pysnooper.snoop()
-	def check_generation_size(self, generation, oversized = False):
-		key = "experiment.py >> check_generation_size: "
-		replication_counts = (self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.property5, self.models.ParticleFilter.property3) 
-					.group_by(self.models.Particle.property5, self.models.ParticleFilter.property3) 
-					.filter(self.models.Particle.property2 == repr(generation)) 
-					.filter(not_(self.models.Particle.property5.contains("OVF")))
-					.filter_by(failed = False)
-					.all())
+	# @pysnooper.snoop()
+	# def check_generation_size(self, generation, oversized = False):
+	# 	key = "experiment.py >> check_generation_size: "
+	# 	replication_counts = (self.session.query(func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.Particle.property5, self.models.ParticleFilter.property3) 
+	# 				.group_by(self.models.Particle.property5, self.models.ParticleFilter.property3) 
+	# 				.filter(self.models.Particle.property2 == repr(generation)) 
+	# 				.filter(not_(self.models.Particle.property5.contains("OVF")))
+	# 				.filter_by(failed = False)
+	# 				.all())
 
-		# reverse the items so that the format is [(replication, condition, count), ...]
-		replication_counts = [c[::-1] for c in replication_counts]
+	# 	# reverse the items so that the format is [(replication, condition, count), ...]
+	# 	replication_counts = [c[::-1] for c in replication_counts]
 
-		for (replication, condition, count) in replication_counts:
-			if count > self.generation_size:
-				oversized = True
-				overcount = count - self.generation_size
-				self.log("Condition {} (replication {}) has {} too many participants at generation {}. Redistributing into overflow.".format(condition, replication, overcount, generation), key)
+	# 	for (replication, condition, count) in replication_counts:
+	# 		if count > self.generation_size:
+	# 			oversized = True
+	# 			overcount = count - self.generation_size
+	# 			self.log("Condition {} (replication {}) has {} too many participants at generation {}. Redistributing into overflow.".format(condition, replication, overcount, generation), key)
 
-				participant_ids = (
-					db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
-					.filter(self.models.Participant.status == "approved")
-					.filter(self.models.ParticleFilter.property5 == condition)
-					.filter(self.models.ParticleFilter.property3 == replication)
-					.filter(self.models.Particle.failed == False)
-					.filter(self.models.Particle.property2 == repr(generation))
-					.filter(not_(self.models.Particle.property5.contains("OVF")))
-					.distinct(self.models.Particle.participant_id)
-					.all()
-					)
+	# 			participant_ids = (
+	# 				db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
+	# 				.filter(self.models.Participant.status == "approved")
+	# 				.filter(self.models.ParticleFilter.property5 == condition)
+	# 				.filter(self.models.ParticleFilter.property3 == replication)
+	# 				.filter(self.models.Particle.failed == False)
+	# 				.filter(self.models.Particle.property2 == repr(generation))
+	# 				.filter(not_(self.models.Particle.property5.contains("OVF")))
+	# 				.distinct(self.models.Particle.participant_id)
+	# 				.all()
+	# 				)
 				
-				bumped_participants = np.random.choice([participant_id[0] for participant_id in participant_ids], size = overcount, replace = False)
+	# 			bumped_participants = np.random.choice([participant_id[0] for participant_id in participant_ids], size = overcount, replace = False)
 
-				arbitrary_matched_condition_network = (self.models.ParticleFilter.query
-					.filter(self.models.ParticleFilter.property5 == condition)
-					.filter(self.models.ParticleFilter.property3 == replication)
-					.first()
-					)
+	# 			arbitrary_matched_condition_network = (self.models.ParticleFilter.query
+	# 				.filter(self.models.ParticleFilter.property5 == condition)
+	# 				.filter(self.models.ParticleFilter.property3 == replication)
+	# 				.first()
+	# 				)
 
-				for participant_id in bumped_participants:
-					arbitrary_matched_condition_network.assign_to_overflow(int(participant_id))
-		return oversized
+	# 			for participant_id in bumped_participants:
+	# 				arbitrary_matched_condition_network.assign_to_overflow(int(participant_id))
+	# 	return oversized
 
 	# @pysnooper.snoop()
 	def recruit(self):
@@ -410,14 +463,13 @@ class UWPFWP(Experiment):
 		key = "experiment.py >> recruit: "
 
 		# estbalish current generation
-		current_generation = self.models.ParticleFilter.query.first().current_generation
+		current_generation = self.current_generation()
 
 		# how many of this geenration's nodes have been approved?
 		num_experimental_participants_approved_this_generation = self.approved_experimental_participants(generation = current_generation) 
 
 		# Is this generation complete?
-		end_of_generation = np.all([net.generation_complete() for net in self.models.ParticleFilter.query.all()])
-
+		end_of_generation = self.generation_complete(current_generation)
 		self.log("Generation in Progress: {}; Experimental participants approved: {}; Required: {}".format(current_generation, num_experimental_participants_approved_this_generation, self.num_experimental_participants_per_generation), key)
 		self.log("End of generation: {}".format(end_of_generation), key)
 
@@ -442,14 +494,9 @@ class UWPFWP(Experiment):
 		elif end_of_generation:
 			next_generation_required_overflow = self.calculate_required_overrecruitment()
 			self.log("Required over-recruiment at the next generation is: {}.".format(next_generation_required_overflow), key)
-
-			oversized_generation = self.check_generation_size(current_generation)
-			if not oversized_generation: self.log("All replications recruited correctly: no redistribution required.", key)
+			self.finish_generation(current_generation)
 
 			# If we got here, it's time to roll out a new generation
-			# change state
-			self.log("Generation finished.", key)
-			self.rollover_generation()
 			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments)) + next_generation_required_overflow)
 
 	# @pysnooper.snoop()
@@ -666,4 +713,38 @@ def get_random_atttributes(network_id, node_generation, node_slot):
 
 	except Exception:
 		db.logger.exception('Error fetching network info')
+		return Response(status=403, mimetype='application/json')
+
+def fake_node(participant, exp):
+	# execute the request
+	network = exp.get_network_for_participant(participant=participant)
+	node = exp.create_node(participant=participant, network=network)
+	exp.add_node_to_network(node=node, network=network)
+	return node
+
+@extra_routes.route("/debugbot/<int:participant_id>/", methods=["POST"])
+def debugbot(participant_id):
+	try:
+		import models
+		exp = UWPFWP(db.session)
+		participant = models.Participant.query.filter_by(id=participant_id).one()
+
+		for practice_trial in range(exp.num_practice_networks_per_experiment):
+			node = fake_node(participant, exp)
+			if practice_trial == 0:
+				comprehensiontest = models.ComprehensionTest(origin = node, contents = json.dumps({"q1":"1","q2":"1","q3":"1"}))
+			contents = {"is_practice": True, "current_bonus": 50}
+			Meme(origin = node, contents = json.dumps(contents))
+
+		for test_trial in range(exp.num_random_order_experimental_networks_per_experiment):
+			node = fake_node(participant, exp)
+			contents = {"is_practice": False, "current_bonus": 50}
+			Meme(origin = node, contents = json.dumps(contents))
+		
+		db.session.commit()
+		exp.log("Faked Info structure for participant {}".format(participant_id), "experiment.py >> debugbot: ")
+		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error fetching node info')
 		return Response(status=403, mimetype='application/json')

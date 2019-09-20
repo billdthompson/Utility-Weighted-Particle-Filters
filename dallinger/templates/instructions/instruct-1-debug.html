@@ -1,0 +1,194 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="main_div">
+        <h1>Welcome</h1>
+        <hr>
+        <p id='welcome_message'>Welcome to the experiment!</p>
+        <hr>
+        <div>
+            <div class="row">
+                <div class="col-xs-10"></div>
+                <div class="col-xs-2">
+
+                    <!-- <button type="button" class="btn btn-primary btn-lg" id ="instruct1_button" onClick="advance();"> -->
+                    <button type="button" class="btn btn-primary btn-lg" id ="instruct1_button" onClick="dallinger.submitAssignment()";>
+                    Next</button>
+                </div>
+            </div>
+        </div>
+        <p id='loading_message' style='visibility:hidden;text-align:center;'><b>Loading the experiment...</b></p>
+        <br>
+        <p id='loading_message_2' style='visibility:hidden;text-align:center;'>This may take a few seconds. If this message displays for more than about 45 seconds, something must have gone wrong (please accept our apologies and return the HIT).</p>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $('#instruct1_button').css('background-color','#5c5c5c')
+        $('#instruct1_button').css('border','none')
+        $('#instruct1_button').css('outline','none')
+
+        create_agent = function() {
+          dallinger.createAgent()
+            
+            .done(function (resp) {
+
+                var accuracy_bonus = 50;
+                var dot_bonus = 1;
+                localStorage.setItem('accuracy_bonus',accuracy_bonus)
+                localStorage.setItem('dot_bonus',dot_bonus)
+
+                var include_gems = true;
+                localStorage.setItem('include_gems',include_gems)
+
+                var node_id = parseInt(resp.node.id);
+                localStorage.setItem("node_id",node_id);
+
+                var network_id = parseInt(resp.node.network_id)
+                localStorage.setItem("network_id",network_id);
+
+                var node_slot = parseInt(resp.node.property1);
+                localStorage.setItem("node_slot",node_slot);
+                
+                var generation = parseInt(resp.node.property2);
+                localStorage.setItem("generation",generation);
+
+                var decision_index = parseInt(resp.node.property3);
+                localStorage.setItem("decision_index",decision_index);
+                
+                var prop_utility = parseFloat(resp.node.property4);
+                localStorage.setItem("prop_utility",prop_utility);
+
+                var prop_utility = parseFloat(resp.node.property4);
+                localStorage.setItem("prop_utility",prop_utility);
+
+                var condition_info = resp.node.property5;
+
+                var curr_practice  = true;
+                localStorage.setItem('curr_practice',curr_practice)
+                
+                var network_string = '/network/' + String(network_id) + '/getnet/'
+                dallinger.get(network_string)
+                    .done(function(netresp) {
+
+                        var net_decision_index = parseInt(netresp.network.property4);
+                        localStorage.setItem("net_decision_index",net_decision_index);
+
+                        var condition_info = netresp.network.property5;
+                        localStorage.setItem('condition_info',condition_info)
+
+                        var condition_replication = netresp.network.property3;
+                        localStorage.setItem('condition_replication',condition_replication)
+
+                        var social_condition = condition_info.substring(0,2);
+                        if (social_condition=='AS' || social_condition=='OV'){
+                            localStorage.setItem("social_condition",'asocial');
+                            localStorage.setItem("metadata_type",'none');
+                        } else if (social_condition=='SO'){
+                            localStorage.setItem("social_condition",'social');
+                            localStorage.setItem("metadata_type",'none');
+                        } else if (social_condition=='SW'){
+                            localStorage.setItem("social_condition",'social_with_info');
+                            var metadata_type = condition_info.substring(2,3);
+                            if (metadata_type=='U'){
+                                localStorage.setItem("metadata_type",'utility');
+                            } else if (metadata_type=='B'){
+                                localStorage.setItem("metadata_type",'bias_index');
+                            } else if (metadata_type=='T'){
+                                localStorage.setItem("metadata_type",'truth_index');
+                            }
+                        }
+
+                        if (social_condition=='OV'){
+                            localStorage.setItem("is_overflow",'true');
+                        } else{
+                            localStorage.setItem("is_overflow",'false');
+                        }
+
+
+                        dallinger.get("/random_attributes/" + network_id +  "/" + generation + "/" +node_slot)
+                            .done(function (particlesResponse) {
+                                var randomization_color = particlesResponse.node_utility // 'green' or 'blue'
+                                localStorage.setItem('randomization_color',randomization_color)
+                                var utility_condition = condition_info.substring(4,7);
+                                if (utility_condition=='N-U'){
+                                    // no utility
+                                    localStorage.setItem("payout_condition",'no-utility');
+                                } else{
+                                    // with utility
+                                    if (randomization_color=='blue'){
+                                        localStorage.setItem("payout_condition",'blue');
+                                    } else{
+                                        localStorage.setItem("payout_condition",'green');
+                                    }
+                                }
+                                var button_order = particlesResponse.button_order // 'left' or 'right
+                                localStorage.setItem('button_order',button_order)
+                                localStorage.setItem('green_left',button_order=='left')
+                                dallinger.goToPage('instructions/instruct-2')
+                            }) 
+                            .fail(function (rejection) {
+                                // A 403 is our signal that it's time to go to the questionnaire
+                                if (rejection.status === 403) {
+                                    dallinger.allowExit();
+                                    dallinger.goToPage('questionnaire');
+                                    } else {
+                                    dallinger.error(rejection);
+                                    }
+                                })
+                            }) 
+
+                    .fail(function (rejection) {
+                        // A 403 is our signal that it's time to go to the questionnaire
+                        if (rejection.status === 403) {
+                            dallinger.allowExit();
+                            dallinger.goToPage('questionnaire');
+                          } else {
+                            dallinger.error(rejection);
+                          }
+                        
+                      }) 
+                })
+            .fail(function (rejection) {
+                // A 403 is our signal that it's time to go to the questionnaire
+                if (rejection.status === 403) {
+                    dallinger.allowExit();
+                    dallinger.goToPage('questionnaire');
+                  } else {
+                    dallinger.error(rejection);
+                  }
+                
+              }); 
+        };   
+
+        pleaseReturnHit = function(){
+
+            $("#loading_message").html("Sorry, Something has Gone Wrong.")
+            $("#loading_message_2").html("We were unable to assign a unique participant identification nuber based on your worker credentials. Please accept our apologies. Either you have alread participted in this experiment, or there has been a technical error. Please return this HIT. </br></br> We will be posting more experiments in the near future. We hope you will continue to take part in contributing to science! If you have any questions, please email the researcher at: wdt@princeton.edu")
+        } 
+
+        advance = function (){
+            // $('#instruct1_button').addClass('disabled')
+            // $('#instruct1_button').hide()
+            $('#loading_message').css('visibility','visible')
+            $('#loading_message_2').css('visibility','visible')
+            $(document).ready(function () {
+                dallinger.createParticipant()
+                .done(function (response) {
+                    // setTimeout(create_agent(), 3000)
+                    dallinger.post("/debugbot/" + dallinger.identity.participantId + "/")
+                    .done(function(debugresponse) {})
+                    .fail(function(error) {console.log("error", error)})
+
+                    
+                })
+                .fail(function (rejection) {pleaseReturnHit()});
+            })
+        }
+
+        advance();
+        
+    </script>
+{% endblock %}
+
