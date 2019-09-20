@@ -102,7 +102,7 @@ class UWPFWP(Experiment):
 		assert len(self.fixed_order_experimental_network_proportions) == self.num_fixed_order_experimental_networks_per_experiment
 		assert len(self.random_order_experimental_network_proportions) == self.num_random_order_experimental_networks_per_experiment
 
-		self.condition_counts = {"SOC:W-U":self.num_replications_per_condition}
+		self.condition_counts = {"SOC:N-U":self.num_replications_per_condition}
 
 		# Derrived Quantities
 		self.num_experiments = sum(self.condition_counts.values())
