@@ -145,10 +145,17 @@
   var generation = localStorage.getItem('generation');
   var social_condition = localStorage.getItem('social_condition');
   var include_gems = localStorage.getItem('include_gems')=='true';
+  var playground = localStorage.getItem('playground')=='true';
   // hacky but gets the job done
-  if (social_condition=='asocial' || generation==0){
-    var social_condition = 'asocial';
-    $('#question-7-wrapper').css('display','none')
+  if (playground==false){
+    if (social_condition=='asocial' || generation==0){
+      var social_condition = 'asocial';
+      $('#question-7-wrapper').css('display','none')
+    }
+  } else{
+    if (social_condition=='asocial'){
+      $('#question-7-wrapper').css('display','none')
+    }
   }
 
   if (include_gems==false || cover_story==false){

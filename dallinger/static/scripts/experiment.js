@@ -1,7 +1,6 @@
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
 is_equal,info_green, green_first, tie
 var total_points = 500;
-var playground = false;
 var a;
 var n_generation_size; // how many people per generation?
 var display_SWI = false;
@@ -13,7 +12,7 @@ var k_chose_blue = -1;
 var k_chose_green = -1;
 
 
-//var playground = localStorage.getItem("playground")=='true'; 
+var playground = localStorage.getItem("playground")=='true'; 
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
@@ -143,21 +142,28 @@ if (playground==false){
 }
 
 function draw_icons(n_green,n_blue,payout_c,green_l,is_SWI,include_animation){
-  if (payout_c=='green'){
-    var green_str = 'emerald'
-    var blue_str = 'water'
-    var green_strs = 'emeralds'
-    var blue_strs = 'water'
-  } else if (payout_c=='blue'){
-    var green_str = 'grass'
-    var blue_str = 'sapphire'
-    var green_strs = 'grass'
-    var blue_strs = 'sapphires'
-  } else if (payout_c=='no-utility'){
-    var green_str = 'emerald'
-    var blue_str = 'sapphire'
-    var green_strs = 'emeralds'
-    var blue_strs = 'sapphires'
+  if (payout_condition=='no-utility'){
+      var green_str = 'emerald'
+      var blue_str = 'sapphire'
+      var green_strs = 'emeralds'
+      var blue_strs = 'sapphires'
+  } else{
+    if (payout_c=='green'){
+      var green_str = 'emerald'
+      var blue_str = 'water'
+      var green_strs = 'emeralds'
+      var blue_strs = 'water'
+    } else if (payout_c=='blue'){
+      var green_str = 'grass'
+      var blue_str = 'sapphire'
+      var green_strs = 'grass'
+      var blue_strs = 'sapphires'
+    } else if (payout_c=='no-utility'){
+      var green_str = 'emerald'
+      var blue_str = 'sapphire'
+      var green_strs = 'emeralds'
+      var blue_strs = 'sapphires'
+    }
   }
 
   if (n_green>n_blue){
@@ -310,8 +316,8 @@ $('#more-green').css('width','160px')
 $('#more-green').css('outline','none')
 
 
-$('#more-blue').css('background-color','#0084ff')
-$('#more-blue').css('border-color','#0084ff')
+$('#more-blue').css('background-color','#007ef8')
+$('#more-blue').css('border-color','#007ef8')
 $('#more-blue').css('font-size','16px')
 $('#more-blue').css('width','160px')
 $('#more-blue').css('outline','none')
@@ -472,7 +478,7 @@ get_received_infos = function() {
       $("#instructions").hide()
       $("#button-div").hide()
 
-      draw_icons(k_chose_green,k_chose_blue,payout_condition,green_left,social_condition=='social_with_info',true)
+      draw_icons(k_chose_green,k_chose_blue,randomization_color,green_left,social_condition=='social_with_info',true)
       
     }
   })
@@ -560,9 +566,9 @@ function regenerateDisplay (propUtility) {
     colors = [];
 
     if (randomization_color=='blue'){
-      colorsRGB = ['#0084ff','#009500']
+      colorsRGB = ['#007ef8','#009500']
     } else {
-      colorsRGB = ['#009500','#0084ff']
+      colorsRGB = ['#009500','#007ef8']
     }
 
 
