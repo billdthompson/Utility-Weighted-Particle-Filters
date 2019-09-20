@@ -1,7 +1,7 @@
-//
 var n_generation_size, k_chose_blue,k_chose_green,choice_array,randomization_color,is_overflow,k_chose_utility, bar_chart,dots,
 is_equal,info_green, green_first, tie
 var total_points = 500;
+var playground = false;
 var a;
 var n_generation_size; // how many people per generation?
 var display_SWI = false;
@@ -14,8 +14,6 @@ var k_chose_green = -1;
 
 
 //var playground = localStorage.getItem("playground")=='true'; 
-
-
 
 var cover_story = localStorage.getItem('cover_story')=='true'; // string, "true", "false"
 var social_condition = localStorage.getItem('social_condition'); // string
