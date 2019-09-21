@@ -555,6 +555,37 @@ class NetworkRandomAttributes(Node):
         self.current_generation = 0
         self.overflow_pool = overflow_pool
 
+class Referee(Node):
+    """The experiment's referee.
+    The referee can pause and resume the experiment.
+    """
+
+    @declared_attr
+    def __mapper_args__(cls):
+        """The name of the source is derived from its class name."""
+        return {
+            "polymorphic_identity": cls.__name__.lower()
+        }
+   
+    @hybrid_property
+    def paused(self):
+        """Convert property1 to genertion."""
+        return self.property1
+
+    @paused.setter
+    def paused(self, paused):
+        """Make paused settable."""
+        self.property1 = repr(paused)
+
+    @paused.expression
+    def paused(self):
+        """Make current_generation queryable."""
+        return self.property1
+
+    def __init__(self, network, details = None):
+        super(Referee, self).__init__(network)
+        self.paused = "live"
+
 class TrialBonus(Info):
     """An Info that represents a parametrisable technology with a utility function."""
 

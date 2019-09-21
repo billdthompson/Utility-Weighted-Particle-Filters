@@ -36,8 +36,8 @@ class UWPFWP(Experiment):
 		return {
 		'generation_size':4, 
 		'generations': 4,
-		'planned_overflow':2,
-		'num_replications_per_condition':2,
+		'planned_overflow':1,
+		'num_replications_per_condition':1,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
 		'num_random_order_experimental_networks_per_experiment': 1,
 		'num_practice_networks_per_experiment': 1,
@@ -68,6 +68,7 @@ class UWPFWP(Experiment):
 		self.known_classes['generativemodel'] = self.models.GenerativeModel
 		self.known_classes["particlefilter"] = self.models.ParticleFilter
 		self.known_classes["networkrandomattributes"] = self.models.NetworkRandomAttributes
+		self.known_classes["referee"] = self.models.Referee
 
 	def set_params(self):
 		"""
@@ -147,6 +148,9 @@ class UWPFWP(Experiment):
 					decision_index = self.num_practice_networks_per_experiment + self.num_fixed_order_experimental_networks_per_experiment + r
 					network = self.create_network(condition = condition, replication = replication, role = 'experiment', decision_index = decision_index, proportion = self.random_order_experimental_network_proportions[r])
 					self.models.NetworkRandomAttributes(network = network, generations=self.generations, overflow_pool = 0)
+
+		# add the referee
+		self.models.Referee(network = network)
 		self.session.commit()
 
 	# #@pysnooper.snoop()
@@ -206,7 +210,7 @@ class UWPFWP(Experiment):
 			if not availible_shadow_networks:
 				# This should only happen at the end of the experiment
 				self.log("All networks are full. The experiment must be over. Returning a random network.", key)
-				return random.choice(seed_networks)
+				return random.choice(availible_networks.keys())
 
 			self.log("These networks still have unfilled slots: {}. Selecting one at random.".format([net.id for net in availible_shadow_networks]), key)
 			return random.choice(availible_shadow_networks)
@@ -371,7 +375,12 @@ class UWPFWP(Experiment):
 			self.finish_generation(current_generation)
 
 			# If we got here, it's time to roll out a new generation
-			self.recruiter.recruit(n = (self.generation_size * (self.num_experiments)) + next_generation_required_overflow)
+			referee = self.models.Referee.query.one()
+			if referee.paused == repr("live"):
+				self.recruiter.recruit(n = (self.generation_size * (self.num_experiments)) + next_generation_required_overflow)
+			else:
+				self.log("Experiment is paused. Blocking recruitment. Rollover executed as normal.", key)
+
 
 	# @pysnooper.snoop()
 	def submission_successful(self, participant):
@@ -616,7 +625,78 @@ def debugbot(participant_id):
 			Meme(origin = node, contents = json.dumps(contents))
 		
 		db.session.commit()
-		exp.log("Faked Info structure for participant {}".format(participant_id), "experiment.py >> debugbot: ")
+		exp.log("Faked Info structure for participant {}".format(participant_id), "experiment.py >> /debugbot: ")
+		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error fetching node info')
+		return Response(status=403, mimetype='application/json')
+
+@extra_routes.route("/pause", methods=["GET"])
+def pause():
+	"""This prevents recruitment
+	
+	If you need to use this:
+	- Be calm, this works.
+	- 1) Press pause
+	- 2) Wait for the genration to complte and rollover. 
+		 This will always happen eventually, b/c the required HITs have already been posted.
+	- 3) See exp log for recruied over recruiment.
+	- 4) Click resume/ -- this will simply unblock recruitment.
+	- 5) Click the recrutibutton/ with exp.generationsize * nconditions * replications + requiredoverflow.
+	"""
+	try:
+		import models
+		exp = UWPFWP(db.session)
+		referee =  models.Referee.query.one()
+		referee.paused = "paused"
+		db.session.commit()
+		exp.log("Paused the experiment.", "experiment.py >> /pause: ")
+		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error pausing')
+		return Response(status=403, mimetype='application/json')
+
+
+@extra_routes.route("/resume", methods=["GET"])
+def resume():
+	try:
+		import models
+		exp = UWPFWP(db.session)
+		referee =  models.Referee.query.one()
+		referee.paused = "live"
+		db.session.commit()
+		exp.log("Resumed the experiment.", "experiment.py >> /resume: ")
+		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error pausing')
+		return Response(status=403, mimetype='application/json')
+
+@extra_routes.route("/experimentrecruit", methods=["GET"])
+def experimentrecruit():
+	try:
+		import models
+		exp = UWPFWP(db.session)
+		exp.recruit()
+		exp.log("Clicked experiment.recruit().", "experiment.py >> /experimentrecruit: ")
+		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error pausing')
+		return Response(status=403, mimetype='application/json')
+
+@extra_routes.route("/recruitbutton/<int:nparticipants>/", methods=["GET"])
+def recruitbutton(nparticipants):
+	try:
+		import models
+		exp = UWPFWP(db.session)
+
+		exp.recruiter.recruit(n = nparticipants)
+
+		exp.log("Made {} recruitments.".format(nparticipants), "experimnt.py >> **--Recruitbutton Hit: ")
+		
 		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
 
 	except Exception:
