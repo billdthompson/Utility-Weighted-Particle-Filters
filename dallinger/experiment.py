@@ -18,7 +18,7 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
