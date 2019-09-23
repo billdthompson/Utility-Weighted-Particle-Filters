@@ -121,7 +121,48 @@ class ParticleFilter(Network):
         self.payout_colours = dict(zip(range(int(n)), (["left"] * int(n / 2.)) + (["right"] * int(n / 2.))))
         self.button_orders = dict(zip(range(int(n)), (["left"] * int(n / 2.)) + (["right"] * int(n / 2.))))
 
-    def slot_occupancy(self, generation):
+    def slots(self, generation = None, ignore_id = None, assigned = False, full = False, shadow = False):
+
+        query = (
+            db.session.query(Particle).join(Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Particle.failed == False)
+            )
+
+        # this func is for assigned | full | assigned and full
+        assert assigned or full
+
+        if generation is not None:
+            query = query.filter(Particle.property2 == repr(generation))
+
+        # Don't count this participant
+        if ignore_id is not None:
+            query = query.filter(Participant.id != ignore_id)
+
+        # + slots that have been asigned
+        # - slots that have been filled 
+        if assigned and not full:
+            query = query.filter(Participant.status != "approved")
+
+        # + slots that have been asigned
+        # + slots that have been filled
+        if assigned and full:
+            pass
+
+        # - slots that have been asigned
+        # + slots that have been filled
+        if not assigned and full:
+            query = query.filter(Participant.status == "approved")
+
+        if shadow:
+            query = query.filter(Particle.property5.contains("OVF"))
+
+        else:
+            query = query.filter(not_(Particle.property5.contains("OVF")))
+
+        return [int(node.property1) for node in query.all()]
+
+    def slot_occupancy(self, generation, ignore_id = None):
         """How many participants (approved or still working) have been 
         (provisionally or definitively) assigned to any already-assigned slot?"""
         slot_counts = (
@@ -130,50 +171,30 @@ class ParticleFilter(Network):
             .filter(Particle.property2 == repr(generation)) 
             .filter(Particle.network_id == self.id) 
             .filter_by(failed = False)
-            .all()
         )
 
+        if ignore_id is not None:
+            slot_counts = slot_counts.filter(Particle.network_id == self.id) 
         # [(slot, count), ...]
-        return [c[::-1] for c in slot_counts]
+        return [c[::-1] for c in slot_counts.all()]
+
+    def full_slots(self, generation = None, ignore_id = None, shadow = False):
+        if generation is None:
+            generation = int(self.current_generation)
+        return self.slots(generation = generation, ignore_id = ignore_id, shadow = shadow, full = True, assigned = False)
+        
+    def assigned_slots(self, generation = None, ignore_id = None, shadow = False):
+        if generation is None:
+            generation = int(self.current_generation)
+        return self.slots(generation = generation, ignore_id = ignore_id, shadow = shadow, full = False, assigned = True)
 
     # @pysnooper.snoop()
-    def overoccupied_slots(self, generation):
+    def overoccupied_slots(self, generation, ignore_id = None):
         """Returns all slots that have been *provisionally asigned to shadow participants* @ generation"""
-        slot_counts = self.slot_occupancy(generation)
+        slot_counts = self.slot_occupancy(generation, ignore_id = ignore_id)
 
         # return only slots with more than one participant 
         return [int(shadow_slot) for (shadow_slot, occupancy) in slot_counts if occupancy > 1]
-
-    def assigned_slots(self, generation):
-        """Returns all slots that have been *provisionally asigned* @ generation"""
-        query = (
-            db.session.query(Particle).join(Participant)
-            .filter(Particle.network_id == self.id)
-            .filter(Particle.failed == False)
-            .filter(Participant.status != "approved")
-            .filter(Particle.property2 == repr(generation))
-            .filter(not_(Particle.property5.contains("OVF")))
-            )
-        assigned_slots = query.all()
-        return [int(node.property1) for node in assigned_slots]
-
-    # @pysnooper.snoop()
-    def full_slots(self, generation, ignore_id = None):
-        """Returns all slots that have been *filled* @ generation"""
-        query = (
-            db.session.query(Particle).join(Participant)
-            .filter(Particle.network_id == self.id)
-            .filter(Participant.status == "approved")
-            .filter(Particle.failed == False)
-            .filter(Particle.property2 == repr(generation))
-            .filter(not_(Particle.property5.contains("OVF")))
-            )
-
-        if ignore_id is not None:
-            query = query.filter(Participant.id != ignore_id)
-
-        full_slots = query.all()
-        return [int(node.property1) for node in full_slots]
 
     def availability(self, generation = None):
         if generation is None:
@@ -189,7 +210,18 @@ class ParticleFilter(Network):
 
         return "accepting"
 
-    def log_slots(self, generation = None, assigned_slots = None, full_slots = None, chosen_slot = None, show_shadow = True, chosen_shadow = None, show_pointer = False):
+    def log_slots(self, generation = None,
+                        assigned_slots = None,
+                        full_slots = None,
+                        overassigned_slots = None,
+                        chosen_slot = None,
+                        show_shadow = True,
+                        chosen_shadow = None,
+                        show_pointer = False,
+                        ignore_id = None,
+                        ignore_shadow_id = None,
+                    ):
+        return
         key = "models.py >> log_slots: "
         if generation is None:
             generation = int(self.current_generation)
@@ -197,6 +229,8 @@ class ParticleFilter(Network):
             assigned_slots = self.assigned_slots(int(generation))
         if full_slots is None:
             full_slots = self.full_slots(int(generation))
+        if overassigned_slots is None:
+            overassigned_slots = self.overoccupied_slots(int(generation), ignore_id = ignore_shadow_id)
         schematic = ["-"] * int(self.generation_size)
         for slot in assigned_slots:
             schematic[int(slot)] = "+"
@@ -207,7 +241,7 @@ class ParticleFilter(Network):
         self.log("{};R{};G{}: {}".format(self.condition, self.replication, generation, schematic), key)
 
         if show_pointer:
-            pointer_schematic = ["="] * self.generation_size
+            pointer_schematic = [":"] * self.generation_size
             if chosen_slot is not None:
                 pointer_schematic[int(chosen_slot)] = "^"
             if chosen_shadow is not None:
@@ -216,7 +250,7 @@ class ParticleFilter(Network):
     
         if show_shadow:
             shadow_schematic = ["-"] * int(self.generation_size)
-            for slot in self.overoccupied_slots(int(generation)):
+            for slot in overassigned_slots:
                 shadow_schematic[int(slot)] = "$"
             if chosen_shadow is not None:
                 shadow_schematic[int(chosen_shadow)] = "@"
@@ -242,18 +276,24 @@ class ParticleFilter(Network):
             
             if not unoccupied_shadow_slots:
                 unfilled_slots = [slot for slot in range(self.generation_size) if slot not in full_slots]
+
+                if not unfilled_slots:
+                    random_slot = random.choice(list(range(self.generation_size)))
+                    self.log("No slots remain unfilled for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Assigning shadow slot {} at random.".format(participant.id, self.id, self.condition, self.replication, self.current_generation, random_slot), key)
+                    return random_slot
+                
                 random_slot = random.choice(unfilled_slots)
-                self.log_slots(assigned_slots = assigned_slots, chosen_shadow = random_slot)
+                self.log_slots(assigned_slots = assigned_slots, chosen_shadow = random_slot, full_slots = full_slots, overassigned_slots = multi_occupancy_slots)
                 self.log("No empty experimental or empty shadow slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Provisionally assigning shadow slot {} at random from all {} unfilled slots.".format(participant.id, self.id, self.condition, self.replication, self.current_generation, random_slot, len(unfilled_slots)), key)
                 return random_slot
 
             random_slot = random.choice(unoccupied_shadow_slots)
-            self.log_slots(assigned_slots = assigned_slots, chosen_shadow = random_slot)
+            self.log_slots(assigned_slots = assigned_slots, chosen_shadow = random_slot, full_slots = full_slots, overassigned_slots = multi_occupancy_slots)
             self.log("No Epxerimental slots availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Provisionally assigning Shadow slot {} at random (from {} availible).".format(participant.id, self.id, self.condition, self.replication, self.current_generation, random_slot, len(unoccupied_shadow_slots)), key)
             return random_slot
         
         random_slot = random.choice(node_slots_still_availible)
-        self.log_slots(assigned_slots = assigned_slots, chosen_slot = random_slot)
+        self.log_slots(assigned_slots = assigned_slots, chosen_slot = random_slot, full_slots = full_slots)
         self.log("{} Epxerimental slots remain availible for Participant {} in network {} [Cond: {}; Rep: {}; Gen: {}]. Provisionally assigning slot {} at random.".format(len(node_slots_still_availible), participant.id, self.id, self.condition, self.replication,self.current_generation, random_slot), key)
         return random_slot
 
@@ -304,13 +344,13 @@ class ParticleFilter(Network):
             )
 
         if not participant_ids:
-            self.log("[C{}; R{}; G{}] Frozen generation {}; No outstanding participants.".format(self.condition, self.replication, generation, generation, len(participant_ids)), key)
+            self.log("[{}; R{}; G{}] Frozen generation {}; No outstanding participants.".format(self.condition, self.replication, generation, generation, len(participant_ids)), key)
             return 
 
         for participant_id in participant_ids:
             self.assign_to_overflow(participant_id[0])
 
-        self.log("[C{}; R{}; G{}] Frozen generation {}; {} outstanding participants automatically assigned to overflow.".format(self.condition, self.replication, generation, generation, len(participant_ids)), key)
+        self.log("[{}; R{}; G{}] Frozen generation {}; {} outstanding participants automatically assigned to overflow.".format(self.condition, self.replication, generation, generation, len(participant_ids)), key)
 
     # @pysnooper.snoop()
     def distribute(self, node, nodes):
@@ -347,7 +387,7 @@ class ParticleFilter(Network):
 
         else:
             self.log("Participant {} [Gen: {}; Cond: {}; Slot: {} (= availible)] has been assigned status: Experimental".format(node.participant_id, node.generation, node.condition, node.slot), key)
-            self.log_slots(generation = int(node.property2), chosen_slot = int(node.property1), show_pointer = True)
+            self.log_slots(generation = int(node.property2), chosen_slot = int(node.property1), show_pointer = True, ignore_shadow_id = node.participant_id)
 
     def generation_complete(self, generation = None, ignore_id = None):
         """Is the generation complete -- are all slots full?"""
@@ -400,6 +440,21 @@ class ParticleFilter(Network):
             parent.transmit(to_whom=node)
 
         node.receive()
+
+    # @pysnooper.snoop()
+    def calculate_full(self):
+        """Set whether the Particle Filter is *full*."""
+        # self.full = len(self.nodes()) >= (self.max_size or 0)
+        approved_particles = (
+            db.session.query(Particle).join(Participant)
+            .filter(Particle.network_id == self.id)
+            .filter(Participant.status == "approved")
+            .filter(Particle.failed == False)
+            .filter(not_(Particle.property5.contains("OVF")))
+            .count()
+        )
+        threshold = (int(self.max_size) - 2)
+        self.full = int(approved_particles) >= threshold
 
 class Particle(Node):
     """The Rogers Agent."""

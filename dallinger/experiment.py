@@ -8,6 +8,8 @@ from sqlalchemy import Integer
 from dallinger import db
 from flask import Blueprint, Response
 
+import collections
+from operator import itemgetter
 import numpy as np 
 import random
 import json
@@ -18,29 +20,33 @@ from collections import Counter
 import logging
 logger = logging.getLogger(__file__)
 
-DEBUG = True
+DEBUG = False
 
 class UWPFWP(Experiment):
 	"""Utility Weighted Particle Filter with People.
 	 
 	 TODO: 
-	 - yoke G0
 	 - revert consent to point to instruct-1.html
-	 - add a recruit button
-	 - add a pause button
 	 - split button orderign over four again
+	 - removedebugbot route
+	 - check pay
+	 - check dynos
+	 - revert DEBUG proportions
+	 - keep bias report?
+	 - put all conditions back
+	 - 
 	"""
 
 	@property
 	def public_properties(self):
 		return {
 		'generation_size':2, 
-		'generations': 3,
-		'planned_overflow':0,
-		'num_replications_per_condition':1,
+		'generations': 1,
+		'planned_overflow':2,
+		'num_replications_per_condition':2,
 		'num_fixed_order_experimental_networks_per_experiment': 0,
-		'num_random_order_experimental_networks_per_experiment': 1,
-		'num_practice_networks_per_experiment': 1,
+		'num_random_order_experimental_networks_per_experiment': 8,
+		'num_practice_networks_per_experiment': 2,
 		'cover_story': 'true',
 		'payout_blue':'true',
 		'bonus_max': 1,
@@ -166,6 +172,8 @@ class UWPFWP(Experiment):
 		# What condition is this participant in?
 		participant_condition = participant_nodes[0].property5 # node.property5 = condition
 
+		if ":OVF" in participant_condition: participant_condition = participant_condition.replace(":OVF", "")
+
 		# which networks has this participant already completed?
 		networks_participated_in = [node.network_id for node in participant_nodes]
 
@@ -205,18 +213,27 @@ class UWPFWP(Experiment):
 	def triage(self, candidate_networks):
 		key = "experiment.py >> triage: "
 		# Which networks have slots that have not even been started?
-		self.log("Candidate_networks: {}".format(candidate_networks), key)
 		availible_networks = [net for (net, status) in candidate_networks.items() if status == "recruiting"]
 
 		if not availible_networks:
 			self.log("All experimental networks have assigned or filled all of their slots.", key)
 			# these networks have assigned all their slots but not yet filled them up
-			availible_shadow_networks = availible_networks = [net for (net, status) in candidate_networks.items() if status == "accepting"]
+			availible_shadow_networks = [net for (net, status) in candidate_networks.items() if status == "accepting"]
 
+			# This should only happen at the end of the experiment
+			# If there are no accepting networks, then we should have rolled a new generation
 			if not availible_shadow_networks:
-				# This should only happen at the end of the experiment
-				self.log("All networks are full. The experiment must be over. Returning a random network.", key)
-				return random.choice(candidate_networks.keys())
+				
+				# If there are no candidate networks
+				# All must be *Full*
+				# The requesting node will be assigned to overflow
+				if len(candidate_networks) == 0:
+					self.log("All networks are completely full. The experiment must be over. Returning a random network.", key)
+					return random.choice(self.models.ParticleFilter.query.filter_by(full = False, failed = False).filter(self.models.ParticleFilter.property4 == repr(0)).all())
+				
+				# We should never be in the situation where there are only "status = full" nets in candidate_net
+				self.log("All networks are full for this generation. An overflow node must be requesting an old network. This shouldn't happen. Returning a random seed net.", key)	
+				return random.choice(list(candidate_networks.keys()))
 
 			self.log("These networks still have unfilled slots: {}. Selecting one at random.".format([net.id for net in availible_shadow_networks]), key)
 			return random.choice(availible_shadow_networks)
@@ -246,12 +263,14 @@ class UWPFWP(Experiment):
 		key = "experiment.py >> get_network_for_participant ({}); ".format(participant.id)
 		participant_nodes = participant.nodes()
 		if not participant_nodes:
+			decision_index = 0
 			chosen_network = self.get_network_for_new_participant(participant)
 		else:
+			decision_index = len(participant_nodes) + 1
 			chosen_network = self.get_network_for_existing_participant(participant, participant_nodes)
 
 		if chosen_network is not None:
-			self.log("Assigned to network: {}; Condition: {}; Replication: {}; Decsion Index: {};".format(chosen_network.id, chosen_network.condition, chosen_network.replication, chosen_network.decision_index), key)
+			self.log("Assigned to network: {}; Condition: {}; Replication: {}; Generation: {}; PDI: {}".format(chosen_network.id, chosen_network.condition, chosen_network.replication, chosen_network.current_generation, decision_index), key)
 
 		else:
 			self.log("Requested a network but was assigned None.".format(len(participant_nodes)), key)
@@ -297,7 +316,30 @@ class UWPFWP(Experiment):
 		return sum([net.overflow_uptake_this_generation() for net in self.models.ParticleFilter.query.filter(self.models.ParticleFilter.property4 == repr(0)).all()])
 
 	def overflow_uptake_count_total(self):
-		return int(self.models.NetworkRandomAttributes.query.first().overflow_pool)
+		key = "experiment.py >> overflow_uptake_count_total: "
+		# count participant ids for all approved overflow participants before the final generation
+		num_participant_ids_approved_ovf = (
+			db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
+			.filter(self.models.Participant.status == "approved")
+			.filter(self.models.Particle.failed == False)
+			.filter(self.models.ParticleFilter.property4 == repr(0))
+			.filter(self.models.Particle.property2 != repr(int(self.generations) - 1))
+			.filter(self.models.Particle.property5.contains("OVF"))
+			.distinct(self.models.Particle.participant_id)
+			.count()
+			)
+
+		# see self.tag_failed_overflow
+		num_participant_ids_ovfprf = (
+			db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
+			.filter(self.models.ParticleFilter.property4 == repr(0))
+			.filter(self.models.Particle.property2 != repr(int(self.generations) - 1))
+			.filter(self.models.Particle.property5.contains("OVFPRF"))
+			.distinct(self.models.Particle.participant_id)
+			.count()
+			)
+		self.log("Approved OVF participants: {}; OVFPRF participants: {}".format(num_participant_ids_approved_ovf, num_participant_ids_ovfprf), key)
+		return int(num_participant_ids_approved_ovf) + int(num_participant_ids_ovfprf) + self.planned_overflow
 
 	def approved_participants(self, generation = None, overflow = False):
 		"""How many experimental participants have been aproved so far?"""
@@ -377,30 +419,30 @@ class UWPFWP(Experiment):
 			for info in node.infos(type = Meme):
 				clone_info = Meme(origin = clone_node, contents = info.contents)
 		participant.status = "approved"
-		self.log("Cloned {} nodes from participant {} [C: {}; R: {}] --> {}".format(len(participant_nodes), participant_id, sourcenetwork.condition, sourcenetwork.replication, targetcondition), key)
+		# self.log("Cloned {} nodes from participant {} [C: {}; R: {}] --> {}".format(len(participant_nodes), participant_id, sourcenetwork.condition, sourcenetwork.replication, targetcondition), key)
 
 	def copy_replication(self, sourcecondition, targetcondition, generation = 0):
 		key = "experiment.py >> copy_replication: "
 		participant_ids = (
-            db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
-            .filter(self.models.Participant.status == "approved")
-            .filter(self.models.Particle.failed == False)
-            .filter(self.models.Particle.property2 == repr(generation))
-            .filter(self.models.Particle.property5.contains(sourcecondition))
-            .filter(not_(self.models.Particle.property5.contains("OVF")))
-            .distinct(self.models.Particle.participant_id)
-            .all()
-            )
+			db.session.query(self.models.Particle.participant_id).join(self.models.Participant).join(self.models.ParticleFilter)
+			.filter(self.models.Participant.status == "approved")
+			.filter(self.models.Particle.failed == False)
+			.filter(self.models.Particle.property2 == repr(generation))
+			.filter(self.models.Particle.property5.contains(sourcecondition))
+			.filter(not_(self.models.Particle.property5.contains("OVF")))
+			.distinct(self.models.Particle.participant_id)
+			.all()
+			)
 		
 		for (participant_id,) in participant_ids:
 			self.copy_participant(participant_id, targetcondition)
-		self.log("Cloned G0 social data from {} to {}".format(sourcecondition, targetcondition), key)
+		self.log("Cloned G0 social data [{} participants] from {} --> {}".format(len(participant_ids), sourcecondition, targetcondition), key)
 
 	def yoke(self):
 		key = "epxeriment.py >> yoke: "
 		self.log("Cloning G0 accross conditions.", key)
 		self.copy_replication(sourcecondition = "ASO:W-U", targetcondition = "SOC:W-U")
-		self.copy_replication(sourcecondition = "ASO:N-U", targetcondition = "SOC:N-U")
+		# self.copy_replication(sourcecondition = "ASO:N-U", targetcondition = "SOC:N-U")
 
 	# @pysnooper.snoop()
 	def recruit(self):
@@ -415,7 +457,8 @@ class UWPFWP(Experiment):
 
 		# Is this generation complete?
 		end_of_generation = self.generation_complete(current_generation)
-		self.log("Generation in Progress: {}; Experimental participants approved: {}; Required: {}".format(current_generation, num_experimental_participants_approved_this_generation, self.num_experimental_participants_per_generation), key)
+		participants_required_this_generation = self.num_experimental_participants_per_generation if int(current_generation) > 0 else (self.initial_recruitment_size - self.planned_overflow)
+		self.log("Generation in Progress: {}; Experimental participants approved: {}; Required: {}".format(current_generation, num_experimental_participants_approved_this_generation, participants_required_this_generation), key)
 		self.log("End of generation: {}".format(end_of_generation), key)
 
 		# Are all experimental generations complete?
@@ -426,6 +469,7 @@ class UWPFWP(Experiment):
 			# How many overflow nodes are required according to the recruitments that have been issued?
 			total_overflow_participants_required = self.overflow_uptake_count_total()
 			num_approved_overflow_participants = self.approved_participants(overflow = True)
+			self.log("Total overflow participants required: {}; Total overflow participants approved: {}".format(total_overflow_participants_required, num_approved_overflow_participants), key)
 
 			if num_approved_overflow_participants >= total_overflow_participants_required:
 				self.log("All experimental networks are full. Overflow is full. Experiment complete: closing recruitment", key)
@@ -483,6 +527,19 @@ class UWPFWP(Experiment):
 		if totalbonus > self.bonus_max:
 			totalbonus = self.bonus_max
 		return totalbonus
+
+	def tag_failed_overflow(self, participant_nodes):
+		"""
+		EDGE CASE:
+			- an overfolow node fials after the generation has rolled over
+			- a recruitment is made to replace the overflow node
+			- but calculate_required_overrecruitment has alreeady replaced to overflow slot
+			- so: some nodes are gonna be failed, without an overflow tag
+			- this func tags these nodes with OVF "Post Rollover Failure" 
+			- so that they can be counted
+		"""
+		for node in participant_nodes:
+			node.property5 = node.property5 + "OVFPRF"
    
 	def fail_participant(self, participant):
 		"""Fail all the nodes of a participant."""
@@ -493,6 +550,9 @@ class UWPFWP(Experiment):
 		if participant_nodes:
 			for node in participant_nodes:
 				node.fail()
+			if int(participant_nodes[0].property2) != int(self.current_generation()):
+				self.tag_failed_overflow(participant_nodes)
+
 		self.log("--**fail participant**-->>")
 		
 	def attention_check(self, participant=None):
@@ -536,6 +596,27 @@ class UWPFWP(Experiment):
 		required_participants = (self.generations * (self.generation_size - 1) * sum(self.condition_counts.values())) + max([self.planned_overflow, int(self.models.NetworkRandomAttributes.query.first().overflow_pool)]) + self.initial_recruitment_size
 		completed_participants = self.models.Participant.query.filter_by(status="approved", failed = False).count()
 		return completed_participants >= required_participants
+
+	def custom_summary(self):
+		key = "experiment.py >> custom_summary: "
+		status_counts = (
+			db.session.query(
+			func.count(self.models.Particle.participant_id.distinct()).label('count'), self.models.ParticleFilter.property5, self.models.ParticleFilter.property3, self.models.Particle.property5, self.models.Particle.property2, self.models.Participant.status)
+			.join(self.models.Participant)
+			.join(self.models.ParticleFilter)
+			.group_by(self.models.ParticleFilter.property5, self.models.ParticleFilter.property3, self.models.Particle.property5, self.models.Particle.property2, self.models.Participant.status)  
+			.filter_by(failed = False)
+		)
+		fullsummary = {}
+		for (status, generation, pcondition, replication, condition, count) in [c[::-1] for c in status_counts]:
+			ovf_status = "OVF" if "OVF" in pcondition else "EXP"
+			label = "{} | R:{} | G:{} | P:{} | {}".format(condition, replication, generation, ovf_status, status)
+			fullsummary[label] = count
+
+		for row in collections.OrderedDict(sorted(fullsummary.items())):
+			self.log("{}: {}".format(str(row), str(fullsummary[row])), key)
+
+		return fullsummary
 
 	#@pysnooper.snoop()
 	def getnet(self, network_id):
@@ -675,32 +756,32 @@ def fake_node(participant, exp):
 	exp.add_node_to_network(node=node, network=network)
 	return node
 
-@extra_routes.route("/debugbot/<int:participant_id>/", methods=["POST"])
-def debugbot(participant_id):
-	try:
-		import models
-		exp = UWPFWP(db.session)
-		participant = models.Participant.query.filter_by(id=participant_id).one()
+# @extra_routes.route("/debugbot/<int:participant_id>/", methods=["POST"])
+# def debugbot(participant_id):
+# 	try:
+# 		import models
+# 		exp = UWPFWP(db.session)
+# 		participant = models.Participant.query.filter_by(id=participant_id).one()
 
-		for practice_trial in range(exp.num_practice_networks_per_experiment):
-			node = fake_node(participant, exp)
-			if practice_trial == 0:
-				comprehensiontest = models.ComprehensionTest(origin = node, contents = json.dumps({"q1":"1","q2":"1","q3":"1"}))
-			contents = {"is_practice": True, "current_bonus": 50}
-			Meme(origin = node, contents = json.dumps(contents))
+# 		for practice_trial in range(exp.num_practice_networks_per_experiment):
+# 			node = fake_node(participant, exp)
+# 			if practice_trial == 0:
+# 				comprehensiontest = models.ComprehensionTest(origin = node, contents = json.dumps({"q1":"1","q2":"1","q3":"1"}))
+# 			contents = {"is_practice": True, "current_bonus": 50}
+# 			Meme(origin = node, contents = json.dumps(contents))
 
-		for test_trial in range(exp.num_random_order_experimental_networks_per_experiment):
-			node = fake_node(participant, exp)
-			contents = {"is_practice": False, "current_bonus": 50}
-			Meme(origin = node, contents = json.dumps(contents))
+# 		for test_trial in range(exp.num_random_order_experimental_networks_per_experiment):
+# 			node = fake_node(participant, exp)
+# 			contents = {"is_practice": False, "current_bonus": 50}
+# 			Meme(origin = node, contents = json.dumps(contents))
 		
-		db.session.commit()
-		exp.log("Faked Info structure for participant {}".format(participant_id), "experiment.py >> /debugbot: ")
-		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+# 		db.session.commit()
+# 		exp.log("Faked Info structure for participant {}".format(participant_id), "experiment.py >> /debugbot: ")
+# 		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
 
-	except Exception:
-		db.logger.exception('Error fetching node info')
-		return Response(status=403, mimetype='application/json')
+# 	except Exception:
+# 		db.logger.exception('Error fetching node info')
+# 		return Response(status=403, mimetype='application/json')
 
 @extra_routes.route("/pause", methods=["GET"])
 def pause():
@@ -768,6 +849,20 @@ def recruitbutton(nparticipants):
 		exp.log("Made {} recruitments.".format(nparticipants), "experimnt.py >> **--Recruitbutton Hit: ")
 		
 		return Response(json.dumps({"status": "Success!"}), status=200, mimetype="application/json")
+
+	except Exception:
+		db.logger.exception('Error fetching node info')
+		return Response(status=403, mimetype='application/json')
+
+@extra_routes.route("/customsummary", methods=["GET"])
+def customsummary():
+	try:
+		
+		exp = UWPFWP(db.session)
+
+		summary = exp.custom_summary()
+		
+		return Response(json.dumps({"status": "Success!", "summary": summary}), status=200, mimetype="application/json")
 
 	except Exception:
 		db.logger.exception('Error fetching node info')

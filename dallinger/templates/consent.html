@@ -26,7 +26,7 @@
            <h4>Do you understand and consent to these terms?</h4>
            <br>
            {% block consent_button %}
-           <button type="button" class="btn btn-primary btn-lg" onClick="window.location='/instructions/instruct-1-debug?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';"
+           <button type="button" class="btn btn-primary btn-lg" onClick="window.location='/instructions/instruct-1?hit_id={{ hit_id }}&assignment_id={{ assignment_id }}&worker_id={{ worker_id }}&mode={{ mode }}';"
            style="float: left;">I agree
            {% endblock consent_button %}
            {% block reject_button %}
